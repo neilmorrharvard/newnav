@@ -84,6 +84,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 .category-pill.active::after, #comm-container.active::after { content: ""; position: absolute; bottom: -1px; left: 0; width: 100%; height: 4px; background-color: var(--primary); z-index: 2; }
                 .bottom-row-inner { padding-top: 20px; padding-left: 12px; }
                 .text-link { font-size: 11px; }
+                .desktop-down-arrow { display: none !important; }
             }
 
             @media (max-width: 990px) {
