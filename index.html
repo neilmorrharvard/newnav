@@ -110,7 +110,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 .category-pill[data-category="politics"]::after { background-color: rgba(139, 92, 246, 0.5); }
                 .category-pill[data-category="weather"]::after { background-color: rgba(59, 130, 246, 0.5); }
                 .category-pill[data-category="crime"]::after { background-color: rgba(107, 114, 128, 0.5); }
-                .category-pill.hover-active::after, #comm-container.hover-active::after { height: 4px; }
                 .category-pill.active::after, #comm-container.active::after { height: 4px; background-color: var(--primary); z-index: 3; }
                 .bottom-row-inner { padding-top: 20px; padding-left: 12px; }
                 .text-link { font-size: 12px; }
@@ -306,20 +305,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
             const show = () => {
                 clearTimeout(hoverTimeout);
-                // Remove hover-active from all pills before adding to current one
-                document.querySelectorAll('.category-pill, #comm-container').forEach(p => p.classList.remove('hover-active'));
                 if (activeDropdown && activeDropdown !== dropdown) activeDropdown.classList.remove('visible');
                 const pRect = pill.getBoundingClientRect(), wRect = wrapper.getBoundingClientRect();
                 dropdown.style.left = (pRect.left - wRect.left) + (pRect.width / 2) + 'px';
                 dropdown.style.top = (pRect.bottom - wRect.top + 4) + 'px';
                 dropdown.classList.add('visible');
-                pill.classList.add('hover-active');
                 activeDropdown = dropdown;
             };
             const hide = () => { 
                 hoverTimeout = setTimeout(() => { 
                     dropdown.classList.remove('visible'); 
-                    pill.classList.remove('hover-active');
                     if (activeDropdown === dropdown) activeDropdown = null; 
                 }, 150); 
             };
@@ -328,12 +323,8 @@ document.addEventListener('DOMContentLoaded', function() {
             pill.addEventListener('mouseleave', hide);
             dropdown.addEventListener('mouseenter', () => {
                 clearTimeout(hoverTimeout);
-                pill.classList.add('hover-active');
             }); 
-            dropdown.addEventListener('mouseleave', () => {
-                pill.classList.remove('hover-active');
-                hide();
-            });
+            dropdown.addEventListener('mouseleave', hide);
         });
     }
 });
