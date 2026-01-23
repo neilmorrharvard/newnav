@@ -83,7 +83,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 .top-row::after { content: ""; position: absolute; bottom: -2px; left: 0; width: 100%; height: 1px; background-color: var(--separator-color); z-index: 1; }
                 .category-pill.active::after, #comm-container.active::after { content: ""; position: absolute; bottom: -1px; left: 0; width: 100%; height: 4px; background-color: var(--primary); z-index: 2; }
                 .bottom-row-inner { padding-top: 20px; padding-left: 12px; }
-                .text-link { font-size: 11px; }
+                .text-link { font-size: 12px; }
                 .desktop-down-arrow { display: none !important; }
             }
 
@@ -95,17 +95,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 .bottom-row { margin-top: 0 !important; }
             }
 
-            .pill-hover-dropdown { position: absolute; top: 44px; background: var(--dropdown-glass) !important; backdrop-filter: blur(20px) saturate(180%) !important; border: 1px solid rgba(255,255,255,0.3); border-radius: 12px; min-width: 220px; z-index: 9999999; box-shadow: 0 15px 35px rgba(0,0,0,0.2); visibility: hidden; opacity: 0; transition: opacity 0.2s; transform: translateX(-50%) translateY(8px); overflow: visible; }
-            .pill-hover-dropdown::before { content: ""; position: absolute; top: -8px; left: -8px; right: -8px; bottom: -8px; backdrop-filter: blur(8px); background: rgba(0, 0, 0, 0.03); border-radius: 16px; z-index: -1; opacity: 0; transition: opacity 0.2s; pointer-events: none; }
+            .pill-hover-dropdown { position: absolute; top: 44px; background: var(--dropdown-glass) !important; backdrop-filter: blur(20px) saturate(180%) !important; border: 1px solid rgba(255,255,255,0.3); border-radius: 12px; min-width: 220px; z-index: 9999999; box-shadow: 0 15px 35px rgba(0,0,0,0.2); visibility: hidden; opacity: 0; transition: opacity 0.2s; transform: translateX(-50%) translateY(8px); overflow: hidden; }
             .pill-hover-dropdown.visible { visibility: visible; opacity: 1; transform: translateX(-50%) translateY(0); pointer-events: auto; }
-            .pill-hover-dropdown.visible::before { opacity: 1; }
             .pill-hover-dropdown a { display: block; padding: 12px 18px; color: #000; text-decoration: none; font-size: 13.5px; font-weight: 600; border-bottom: 1px solid rgba(0,0,0,0.05); }
             .pill-hover-dropdown a:hover { background: var(--primary); color: white; }
             
             .bottom-row { display: none; height: 44px; width: 100%; opacity: 0; position: relative; margin-top: 10px; }
             .bottom-row.active { display: flex; opacity: 1; }
             .bottom-row-inner { display: flex; align-items: center; gap: 20px; padding: 10px 0; padding-left: 10px; width: 100%; }
-            .text-link { color: var(--text-inactive); text-decoration: none; font-size: 11px; font-weight: 400; border-bottom: 2px solid transparent; padding-bottom: 2px; }
+            .text-link { color: var(--text-inactive); text-decoration: none; font-size: 12px; font-weight: 400; border-bottom: 2px solid transparent; padding-bottom: 2px; }
             .text-link.active { color: var(--primary); font-weight: 700; border-bottom: none; }
             
             .external-icon { width: 14px !important; height: 14px !important; margin-left: 6px; flex-shrink: 0; display: inline-block; vertical-align: middle; }
