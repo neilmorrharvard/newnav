@@ -63,7 +63,7 @@ document.addEventListener('DOMContentLoaded', function() {
     <div id="village-nav-container">
         <style>
             :root { --primary: #007bff; --nav-bg: #ffffff; --pill-bg: #f1f3f5; --text-inactive: #000000; --dropdown-glass: rgba(255, 255, 255, 0.95); --separator-color: #e9ecef; }
-            #village-nav-container { background: var(--nav-bg); padding: 12px 0 0 0; width: 100%; position: relative; box-sizing: border-box; z-index: 1000; }
+            #village-nav-container { background: var(--nav-bg); padding: 12px 0 0 0; width: 100%; position: relative; box-sizing: border-box; z-index: 1000; overflow: visible; }
             .nav-content-wrapper { width: 990px; margin: 0 auto; position: relative; padding: 0 10px; display: flex; flex-direction: column; align-items: flex-start; z-index: 10; }
             @media (max-width: 990px) { .nav-content-wrapper { width: 100%; } }
 
@@ -102,10 +102,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 .bottom-row { margin-top: 0 !important; }
             }
 
-            .pill-hover-dropdown { position: absolute; background: var(--dropdown-glass) !important; backdrop-filter: blur(20px) saturate(180%) !important; border: 1px solid rgba(255,255,255,0.3); border-radius: 12px; min-width: 220px; z-index: 9999999; box-shadow: 0 15px 35px rgba(0,0,0,0.2); visibility: hidden; opacity: 0; transition: opacity 0.2s; transform: translateX(-50%) translateY(8px); overflow: hidden; }
-            .pill-hover-dropdown.visible { visibility: visible; opacity: 1; transform: translateX(-50%) translateY(0); pointer-events: auto; }
-            .pill-hover-dropdown a { display: block; padding: 12px 18px; color: #000; text-decoration: none; font-size: 13.5px; font-weight: 600; border-bottom: 1px solid rgba(0,0,0,0.05); }
-            .pill-hover-dropdown a:hover { background: var(--primary); color: white; }
+            .desktop-mega-menu { position: absolute; top: 100%; left: 0; right: 0; background: var(--nav-bg); max-height: 0; overflow: hidden; transition: max-height 0.3s ease; z-index: 1000; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+            .desktop-mega-menu.visible { max-height: 400px; }
+            .desktop-mega-menu-inner { display: flex; width: 990px; margin: 0 auto; padding: 30px 10px; gap: 40px; }
+            .desktop-mega-menu-links { flex: 0 0 60%; display: flex; flex-direction: column; gap: 12px; }
+            .desktop-mega-menu-links a { color: var(--text-inactive); text-decoration: none; font-size: 14px; font-weight: 500; padding: 4px 0; transition: color 0.2s; }
+            .desktop-mega-menu-links a:hover { color: var(--primary); }
+            .desktop-mega-menu-newsletters { flex: 0 0 40%; }
+            .desktop-mega-menu-newsletters h3 { font-size: 14px; font-weight: 700; margin: 0 0 12px 0; color: var(--text-inactive); }
+            .desktop-mega-menu-newsletters p { font-size: 13px; color: #666; margin: 0; }
+            @media (max-width: 990px) { .desktop-mega-menu { display: none !important; } }
             
             .bottom-row { display: none; height: 44px; width: 100%; opacity: 0; position: relative; margin-top: 10px; }
             .bottom-row.active { display: flex; opacity: 1; }
@@ -263,7 +269,15 @@ document.addEventListener('DOMContentLoaded', function() {
         if (window.innerWidth <= 990) return;
         const pills = document.querySelectorAll('.category-pill:not(#mega-menu-trigger), #comm-container');
         const wrapper = document.querySelector('.nav-content-wrapper');
-        let activeDropdown = null, hoverTimeout = null;
+        let hoverTimeout = null;
+
+        // Create a single mega menu container
+        let megaMenu = wrapper.querySelector('.desktop-mega-menu');
+        if (!megaMenu) {
+            megaMenu = document.createElement('div');
+            megaMenu.className = 'desktop-mega-menu';
+            wrapper.appendChild(megaMenu);
+        }
 
         pills.forEach(pill => {
             const cat = pill.dataset.category;
@@ -271,38 +285,55 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!links) return;
 
             pill.insertAdjacentHTML('beforeend', downArrow);
-            const dropdown = document.createElement('div');
-            dropdown.className = 'pill-hover-dropdown';
-            links.forEach(link => {
-                const a = document.createElement('a'); a.href = link.url;
-                a.innerHTML = link.external ? `${link.text} ${extIcon}` : link.text;
-                if (link.external) a.target = '_blank';
-                dropdown.appendChild(a);
-            });
-            wrapper.appendChild(dropdown);
 
             const show = () => {
                 clearTimeout(hoverTimeout);
-                if (activeDropdown && activeDropdown !== dropdown) activeDropdown.classList.remove('visible');
-                const pRect = pill.getBoundingClientRect(), wRect = wrapper.getBoundingClientRect();
-                dropdown.style.left = (pRect.left - wRect.left) + (pRect.width / 2) + 'px';
-                dropdown.style.top = (pRect.bottom - wRect.top + 4) + 'px';
-                dropdown.classList.add('visible');
-                activeDropdown = dropdown;
+                
+                // Build the mega menu content
+                const inner = document.createElement('div');
+                inner.className = 'desktop-mega-menu-inner';
+                
+                // Left section - links (60%)
+                const linksSection = document.createElement('div');
+                linksSection.className = 'desktop-mega-menu-links';
+                links.forEach(link => {
+                    const a = document.createElement('a');
+                    a.href = link.url;
+                    if (link.external) {
+                        a.target = '_blank';
+                        a.innerHTML = `${link.text} ${extIcon}`;
+                    } else {
+                        a.textContent = link.text;
+                    }
+                    linksSection.appendChild(a);
+                });
+                
+                // Right section - newsletters placeholder (40%)
+                const newslettersSection = document.createElement('div');
+                newslettersSection.className = 'desktop-mega-menu-newsletters';
+                newslettersSection.innerHTML = '<h3>Newsletters</h3><p>Newsletter placeholder for this category</p>';
+                
+                inner.appendChild(linksSection);
+                inner.appendChild(newslettersSection);
+                
+                // Clear and populate
+                megaMenu.innerHTML = '';
+                megaMenu.appendChild(inner);
+                megaMenu.classList.add('visible');
             };
+            
             const hide = () => { 
                 hoverTimeout = setTimeout(() => { 
-                    dropdown.classList.remove('visible'); 
-                    if (activeDropdown === dropdown) activeDropdown = null; 
+                    megaMenu.classList.remove('visible');
                 }, 150); 
             };
 
             pill.addEventListener('mouseenter', show); 
             pill.addEventListener('mouseleave', hide);
-            dropdown.addEventListener('mouseenter', () => {
+            megaMenu.addEventListener('mouseenter', () => {
                 clearTimeout(hoverTimeout);
             }); 
-            dropdown.addEventListener('mouseleave', hide);
+            megaMenu.addEventListener('mouseleave', hide);
         });
     }
 });
