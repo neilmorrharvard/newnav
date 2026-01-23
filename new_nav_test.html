@@ -102,7 +102,7 @@
         <div id="village-nav-container">
             <style>
                 :root { --primary: #007bff; --nav-bg: #ffffff; --pill-bg: #f1f3f5; --text-inactive: #000000; --dropdown-glass: rgba(255, 255, 255, 0.75); --separator-color: #e9ecef; }
-                #village-nav-container { background: var(--nav-bg); padding: 12px 0 0 0; width: 100%; position: relative; box-sizing: border-box; z-index: 1000; }
+                #village-nav-container { background: var(--nav-bg); padding: 12px 0 0 0; width: 100%; position: relative; box-sizing: border-box; z-index: 1000; overflow: visible; }
                 .nav-content-wrapper { width: 990px; margin: 0 auto; position: relative; padding: 0 10px; display: flex; flex-direction: column; align-items: flex-start; z-index: 10; }
                 @media (max-width: 990px) { .nav-content-wrapper { width: 100%; } }
 
@@ -129,10 +129,19 @@
                     .desktop-down-arrow { display: none !important; }
                 }
 
-                .pill-hover-dropdown { position: absolute; top: 44px; background: var(--dropdown-glass) !important; backdrop-filter: blur(20px) saturate(180%) !important; border: 1px solid rgba(255,255,255,0.3); border-radius: 12px; min-width: 220px; z-index: 9999999; box-shadow: 0 15px 35px rgba(0,0,0,0.2); visibility: hidden; opacity: 0; transition: opacity 0.2s; transform: translateX(-50%) translateY(8px); overflow: hidden; }
-                .pill-hover-dropdown.visible { visibility: visible; opacity: 1; transform: translateX(-50%) translateY(0); pointer-events: auto; }
-                .pill-hover-dropdown a { display: block; padding: 12px 18px; color: #000; text-decoration: none; font-size: 13.5px; font-weight: 600; border-bottom: 1px solid rgba(0,0,0,0.05); }
-                .pill-hover-dropdown a:hover { background: var(--primary); color: white; }
+                .desktop-mega-menu { position: absolute; top: 100%; left: 0; right: 0; width: 100%; background: var(--nav-bg); max-height: 0; overflow: hidden; transition: max-height 0.3s ease; z-index: 1000; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+                .desktop-mega-menu.visible { max-height: 400px; }
+                .desktop-mega-menu-inner { display: flex; width: 990px; margin: 0 auto; padding: 30px 10px; gap: 24px; }
+                .desktop-mega-menu-links { flex: 0 0 60%; display: flex; flex-direction: column; gap: 12px; }
+                .desktop-mega-menu-links.communities-split { flex: 0 0 50%; }
+                .desktop-mega-menu-links h3 { font-size: 14px; font-weight: 700; margin: 0 0 12px 0; color: var(--text-inactive); }
+                .desktop-mega-menu-links a { color: var(--text-inactive); text-decoration: none; font-size: 14px; font-weight: 500; padding: 4px 0; transition: color 0.2s; }
+                .desktop-mega-menu-links a:hover { color: var(--primary); }
+                .desktop-mega-menu-newsletters { flex: 0 0 40%; }
+                .desktop-mega-menu-newsletters.communities-split { flex: 0 0 50%; }
+                .desktop-mega-menu-newsletters h3 { font-size: 14px; font-weight: 700; margin: 0 0 12px 0; color: var(--text-inactive); }
+                .desktop-mega-menu-newsletters p { font-size: 13px; color: #666; margin: 0; }
+                @media (max-width: 990px) { .desktop-mega-menu { display: none !important; } }
                 
                 .bottom-row { display: none; height: 44px; width: 100%; opacity: 0; position: relative; }
                 .bottom-row.active { display: flex; opacity: 1; }
@@ -289,36 +298,176 @@
             if (window.innerWidth <= 990) return;
             const pills = document.querySelectorAll('.category-pill:not(#mega-menu-trigger), #comm-container');
             const wrapper = document.querySelector('.nav-content-wrapper');
-            let activeDropdown = null, hoverTimeout = null;
+            const container = document.getElementById('village-nav-container');
+            let hoverTimeout = null;
+
+            // Create a single mega menu container - append to container for full width
+            let megaMenu = container.querySelector('.desktop-mega-menu');
+            if (!megaMenu) {
+                megaMenu = document.createElement('div');
+                megaMenu.className = 'desktop-mega-menu';
+                container.appendChild(megaMenu);
+            }
 
             pills.forEach(pill => {
                 const cat = pill.dataset.category;
-                const links = (cat === 'communities') ? routes.communityLinks.communities : routes.categoryLinks[cat];
+                const isCommunities = (cat === 'communities' || pill.id === 'comm-container');
+                const links = isCommunities ? routes.communityLinks.communities : routes.categoryLinks[cat];
                 if (!links) return;
 
                 pill.insertAdjacentHTML('beforeend', downArrow);
-                const dropdown = document.createElement('div');
-                dropdown.className = 'pill-hover-dropdown';
-                links.forEach(link => {
-                    const a = document.createElement('a'); a.href = link.url;
-                    a.innerHTML = link.external ? `${link.text} ${extIcon}` : link.text;
-                    if (link.external) a.target = '_blank';
-                    dropdown.appendChild(a);
-                });
-                wrapper.appendChild(dropdown);
 
                 const show = () => {
                     clearTimeout(hoverTimeout);
-                    if (activeDropdown && activeDropdown !== dropdown) activeDropdown.classList.remove('visible');
-                    const pRect = pill.getBoundingClientRect(), wRect = wrapper.getBoundingClientRect();
-                    dropdown.style.left = (pRect.left - wRect.left) + (pRect.width / 2) + 'px';
-                    dropdown.classList.add('visible');
-                    activeDropdown = dropdown;
+                    
+                    // Hide the bottom-row when mega menu is visible
+                    document.querySelectorAll('.bottom-row').forEach(row => {
+                        row.style.display = 'none';
+                    });
+                    
+                    // Calculate position to cover bottom-row area
+                    const wrapperRect = wrapper.getBoundingClientRect();
+                    const containerRect = container.getBoundingClientRect();
+                    const topRow = wrapper.querySelector('.top-row');
+                    const topRowRect = topRow ? topRow.getBoundingClientRect() : wrapperRect;
+                    megaMenu.style.top = (topRowRect.bottom - containerRect.top) + 'px';
+                    
+                    // Build the mega menu content
+                    const inner = document.createElement('div');
+                    inner.className = 'desktop-mega-menu-inner';
+                    
+                    if (isCommunities) {
+                        // Special handling for Communities
+                        const commContainer = document.getElementById('comm-container');
+                        const isActive = commContainer && commContainer.classList.contains('active');
+                        
+                        // Find active community
+                        let activeCommunityName = null;
+                        let childLinks = [];
+                        
+                        if (isActive) {
+                            const url = window.location.href.split('?')[0].replace(/\/$/, "");
+                            const activeBottomRow = document.querySelector('.bottom-row.active[id^="community-"]');
+                            
+                            if (activeBottomRow) {
+                                const commId = activeBottomRow.id.replace('community-', '');
+                                // Find community name from routes - check URL first, then ID
+                                let commLink = routes.communityLinks.communities.find(c => url.includes(c.url.split('/').pop()));
+                                if (!commLink) {
+                                    commLink = routes.communityLinks.communities.find(c => 
+                                        c.url.includes(commId) || c.text.toLowerCase() === commId.toLowerCase()
+                                    );
+                                }
+                                
+                                if (commLink) {
+                                    activeCommunityName = commLink.text;
+                                    // Get child links from the active bottom row
+                                    const childLinkElements = activeBottomRow.querySelectorAll('.text-link');
+                                    childLinks = Array.from(childLinkElements).map(link => {
+                                        const text = link.textContent.trim();
+                                        const hasIcon = link.querySelector('.external-icon') !== null;
+                                        return {
+                                            text: text,
+                                            url: link.href,
+                                            external: hasIcon || link.target === '_blank'
+                                        };
+                                    });
+                                }
+                            }
+                        }
+                        
+                        // Left section - Communities list
+                        const communitiesSection = document.createElement('div');
+                        communitiesSection.className = 'desktop-mega-menu-links communities-split';
+                        const communitiesHeading = document.createElement('h3');
+                        communitiesHeading.textContent = isActive ? 'Change Your Community' : 'Pick a Community';
+                        communitiesSection.appendChild(communitiesHeading);
+                        
+                        links.forEach(link => {
+                            const a = document.createElement('a');
+                            a.href = link.url;
+                            if (link.external) {
+                                a.target = '_blank';
+                                a.innerHTML = `${link.text} ${extIcon}`;
+                            } else {
+                                a.textContent = link.text;
+                            }
+                            communitiesSection.appendChild(a);
+                        });
+                        
+                        inner.appendChild(communitiesSection);
+                        
+                        // Right section - Community sections (only if active)
+                        if (isActive && activeCommunityName && childLinks.length > 0) {
+                            const sectionsSection = document.createElement('div');
+                            sectionsSection.className = 'desktop-mega-menu-newsletters communities-split';
+                            const sectionsHeading = document.createElement('h3');
+                            sectionsHeading.textContent = `${activeCommunityName} Sections`;
+                            sectionsSection.appendChild(sectionsHeading);
+                            
+                            childLinks.forEach(link => {
+                                const a = document.createElement('a');
+                                a.href = link.url;
+                                if (link.external) {
+                                    a.target = '_blank';
+                                    a.innerHTML = `${link.text} ${extIcon}`;
+                                } else {
+                                    a.textContent = link.text;
+                                }
+                                sectionsSection.appendChild(a);
+                            });
+                            
+                            inner.appendChild(sectionsSection);
+                        }
+                    } else {
+                        // Regular categories - 60/40 split with links and newsletter
+                        // Left section - links (60%)
+                        const linksSection = document.createElement('div');
+                        linksSection.className = 'desktop-mega-menu-links';
+                        links.forEach(link => {
+                            const a = document.createElement('a');
+                            a.href = link.url;
+                            if (link.external) {
+                                a.target = '_blank';
+                                a.innerHTML = `${link.text} ${extIcon}`;
+                            } else {
+                                a.textContent = link.text;
+                            }
+                            linksSection.appendChild(a);
+                        });
+                        
+                        // Right section - newsletters placeholder (40%)
+                        const newslettersSection = document.createElement('div');
+                        newslettersSection.className = 'desktop-mega-menu-newsletters';
+                        newslettersSection.innerHTML = '<h3>Newsletters</h3><p>Newsletter placeholder for this category</p>';
+                        
+                        inner.appendChild(linksSection);
+                        inner.appendChild(newslettersSection);
+                    }
+                    
+                    // Clear and populate
+                    megaMenu.innerHTML = '';
+                    megaMenu.appendChild(inner);
+                    megaMenu.classList.add('visible');
                 };
-                const hide = () => { hoverTimeout = setTimeout(() => { dropdown.classList.remove('visible'); if (activeDropdown === dropdown) activeDropdown = null; }, 150); };
+                
+                const hide = () => { 
+                    hoverTimeout = setTimeout(() => { 
+                        megaMenu.classList.remove('visible');
+                        // Restore bottom-row visibility when mega menu is hidden
+                        const activeBottomRow = document.querySelector('.bottom-row.active');
+                        if (activeBottomRow) {
+                            activeBottomRow.style.display = 'flex';
+                        }
+                    }, 150); 
+                };
 
-                pill.addEventListener('mouseenter', show); pill.addEventListener('mouseleave', hide);
-                dropdown.addEventListener('mouseenter', () => clearTimeout(hoverTimeout)); dropdown.addEventListener('mouseleave', hide);
+                pill.addEventListener('mouseenter', show); 
+                pill.addEventListener('mouseleave', hide);
+                megaMenu.addEventListener('mouseenter', () => {
+                    clearTimeout(hoverTimeout);
+                }); 
+                megaMenu.addEventListener('mouseleave', hide);
             });
         }
     });
