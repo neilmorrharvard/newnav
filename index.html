@@ -84,7 +84,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const navHTML = `
     <div id="village-nav-container">
         <style>
-            :root { --primary: #007bff; --nav-bg: #ffffff; --pill-bg: #f1f3f5; --text-inactive: #000000; --dropdown-glass: rgba(255, 255, 255, 0.75); --separator-color: #e9ecef; }
+            :root { --primary: #007bff; --nav-bg: #ffffff; --pill-bg: #f1f3f5; --text-inactive: #000000; --dropdown-glass: rgba(255, 255, 255, 0.95); --separator-color: #e9ecef; }
             #village-nav-container { background: var(--nav-bg); padding: 12px 0 0 0; width: 100%; position: relative; box-sizing: border-box; z-index: 1000; }
             .nav-content-wrapper { width: 990px; margin: 0 auto; position: relative; padding: 0 10px; display: flex; flex-direction: column; align-items: flex-start; z-index: 10; }
             @media (max-width: 990px) { .nav-content-wrapper { width: 100%; } }
@@ -327,7 +327,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 clearTimeout(hoverTimeout);
                 pill.classList.add('hover-active');
             }); 
-            dropdown.addEventListener('mouseleave', hide);
+            dropdown.addEventListener('mouseleave', () => {
+                pill.classList.remove('hover-active');
+                hide();
+            });
         });
     }
 });
