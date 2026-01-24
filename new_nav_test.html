@@ -129,6 +129,7 @@
                     .category-pill[data-category="crime"]::after { background-color: rgba(107, 114, 128, 0.5); }
                     .category-pill:hover::after, #comm-container:hover::after { height: 4px; }
                     .category-pill.active::after, #comm-container.active::after { height: 4px; background-color: var(--primary); z-index: 3; }
+                    .top-row:hover .category-pill.active:not(:hover)::after, .top-row:hover #comm-container.active:not(:hover)::after { height: 0; }
                 }
 
                 @media (max-width: 990px) {
