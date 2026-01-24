@@ -300,7 +300,8 @@ document.addEventListener('DOMContentLoaded', function() {
         megaMenu.addEventListener('mouseenter', () => {
             clearTimeout(hoverTimeout);
             // Keep hover-active class when entering mega menu - only for the current pill
-            if (currentPill) {
+            // But don't add it if the current pill is the active one (it should stay hidden)
+            if (currentPill && !currentPill.classList.contains('active')) {
                 currentPill.classList.add('hover-active');
             }
         }); 
@@ -308,7 +309,10 @@ document.addEventListener('DOMContentLoaded', function() {
             hoverTimeout = setTimeout(() => { 
                 megaMenu.classList.remove('visible');
                 if (currentPill) {
-                    currentPill.classList.remove('hover-active');
+                    // Only remove hover-active if the pill is not active
+                    if (!currentPill.classList.contains('active')) {
+                        currentPill.classList.remove('hover-active');
+                    }
                     currentPill = null;
                 }
                 // Restore bottom-row visibility when mega menu is hidden
@@ -492,7 +496,10 @@ document.addEventListener('DOMContentLoaded', function() {
             const hide = () => { 
                 hoverTimeout = setTimeout(() => { 
                     megaMenu.classList.remove('visible');
-                    pill.classList.remove('hover-active');
+                    // Only remove hover-active if the pill is not active
+                    if (!pill.classList.contains('active')) {
+                        pill.classList.remove('hover-active');
+                    }
                     if (currentPill === pill) {
                         currentPill = null;
                     }

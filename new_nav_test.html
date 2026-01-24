@@ -329,28 +329,32 @@
                 container.appendChild(megaMenu);
             }
 
-            // Set up mega menu event listeners only once
-            megaMenu.addEventListener('mouseenter', () => {
-                clearTimeout(hoverTimeout);
-                // Keep hover-active class when entering mega menu - only for the current pill
+        // Set up mega menu event listeners only once
+        megaMenu.addEventListener('mouseenter', () => {
+            clearTimeout(hoverTimeout);
+            // Keep hover-active class when entering mega menu - only for the current pill
+            // But don't add it if the current pill is the active one (it should stay hidden)
+            if (currentPill && !currentPill.classList.contains('active')) {
+                currentPill.classList.add('hover-active');
+            }
+        });
+        megaMenu.addEventListener('mouseleave', () => {
+            hoverTimeout = setTimeout(() => { 
+                megaMenu.classList.remove('visible');
                 if (currentPill) {
-                    currentPill.classList.add('hover-active');
-                }
-            }); 
-            megaMenu.addEventListener('mouseleave', () => {
-                hoverTimeout = setTimeout(() => { 
-                    megaMenu.classList.remove('visible');
-                    if (currentPill) {
+                    // Only remove hover-active if the pill is not active
+                    if (!currentPill.classList.contains('active')) {
                         currentPill.classList.remove('hover-active');
-                        currentPill = null;
                     }
-                    // Restore bottom-row visibility when mega menu is hidden
-                    const activeBottomRow = document.querySelector('.bottom-row.active');
-                    if (activeBottomRow) {
-                        activeBottomRow.style.display = 'flex';
-                    }
-                }, 150);
-            });
+                    currentPill = null;
+                }
+                // Restore bottom-row visibility when mega menu is hidden
+                const activeBottomRow = document.querySelector('.bottom-row.active');
+                if (activeBottomRow) {
+                    activeBottomRow.style.display = 'flex';
+                }
+            }, 150);
+        });
 
             pills.forEach(pill => {
                 const cat = pill.dataset.category;
@@ -525,7 +529,10 @@
                 const hide = () => { 
                     hoverTimeout = setTimeout(() => { 
                         megaMenu.classList.remove('visible');
-                        pill.classList.remove('hover-active');
+                        // Only remove hover-active if the pill is not active
+                        if (!pill.classList.contains('active')) {
+                            pill.classList.remove('hover-active');
+                        }
                         if (currentPill === pill) {
                             currentPill = null;
                         }
