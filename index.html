@@ -110,11 +110,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 .category-pill[data-category="politics"]::after { background-color: rgba(139, 92, 246, 0.5); }
                 .category-pill[data-category="weather"]::after { background-color: rgba(59, 130, 246, 0.5); }
                 .category-pill[data-category="crime"]::after { background-color: rgba(107, 114, 128, 0.5); }
-                .category-pill:hover::after, #comm-container:hover::after, .category-pill.hover-active::after, #comm-container.hover-active::after { height: 4px; }
-                .category-pill.active::after, #comm-container.active::after { height: 4px; background-color: var(--primary); z-index: 3; }
+                .category-pill:hover::after, #comm-container:hover::after, .category-pill.hover-active::after, #comm-container.hover-active::after { height: 3px; }
+                .category-pill.active::after, #comm-container.active::after { height: 3px; background-color: var(--primary); z-index: 3; }
                 .top-row:hover .category-pill.active:not(:hover):not(.hover-active)::after, .top-row:hover #comm-container.active:not(:hover):not(.hover-active)::after { height: 0; }
                 #village-nav-container.suppress-active-underline .category-pill.active::after, #village-nav-container.suppress-active-underline #comm-container.active::after { height: 0; }
-                .category-pill.hover-active.active::after, #comm-container.hover-active.active::after { height: 4px; background-color: var(--primary); z-index: 3; }
+                .category-pill.hover-active.active::after, #comm-container.hover-active.active::after { height: 3px; background-color: var(--primary); z-index: 3; }
                 .bottom-row-inner { padding-top: 20px; padding-left: 12px; }
                 .text-link { font-size: 12px; }
                 .desktop-down-arrow { display: block !important; width: 15px; height: 15px; }
