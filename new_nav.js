@@ -101,7 +101,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 .bottom-row { margin-top: 0 !important; }
             }
 
-            .desktop-mega-menu { position: absolute; top: 100%; left: 0; right: 0; width: 100%; background: var(--nav-bg); max-height: 0; overflow: hidden; z-index: 1000; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+            .desktop-mega-menu { position: relative; left: 0; right: 0; width: 100%; background: var(--nav-bg); max-height: 0; overflow: hidden; z-index: 1000; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
             .desktop-mega-menu.visible { max-height: 400px; }
             .desktop-mega-menu-inner { display: flex; width: 990px; margin: 0 auto; padding: 30px 10px 30px 30px; gap: 80px; }
             .desktop-mega-menu-inner.communities-menu { gap: 80px; }
@@ -367,14 +367,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     row.style.display = 'none';
                 });
                 
-                // Calculate position using top-row's offset to match natural flow position
-                const wrapper = document.querySelector('.nav-content-wrapper');
-                const topRow = wrapper.querySelector('.top-row');
-                // Get top-row position relative to container
-                const topRowOffsetTop = topRow.offsetTop + wrapper.offsetTop;
-                const topRowHeight = topRow.offsetHeight;
-                // Position mega menu at top-row bottom + 3px (for underline extension)
-                megaMenu.style.top = (topRowOffsetTop + topRowHeight + 3) + 'px';
+                // Remove JavaScript positioning - not needed with relative positioning
                 
                     // Build the mega menu content
                     const inner = document.createElement('div');
