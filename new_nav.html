@@ -126,6 +126,13 @@ document.addEventListener('DOMContentLoaded', function() {
             .desktop-mega-menu-newsletters a { color: var(--text-inactive); text-decoration: none; font-size: 12px; font-weight: 500; padding: 4px 0; transition: color 0.2s; text-align: left; }
             .desktop-mega-menu-newsletters a:hover { color: var(--primary); }
             .desktop-mega-menu-newsletters p { font-size: 13px; color: #666; margin: 0; }
+            .desktop-mega-menu-brand { flex: 0 0 auto; display: flex; flex-direction: column; gap: 12px; align-items: flex-start; }
+            .desktop-mega-menu-brand h3 { font-size: 11px; font-weight: 500; margin: 0 0 12px 0; color: #999; width: 100%; text-transform: uppercase; }
+            .desktop-mega-menu-brand-content { display: flex; flex-direction: column; gap: 12px; width: 100%; }
+            .desktop-mega-menu-brand-content .brand-logo { max-width: 200px; height: auto; margin-bottom: 8px; }
+            .desktop-mega-menu-brand-content p { font-size: 12px; color: var(--text-inactive); margin: 0; line-height: 1.5; }
+            .desktop-mega-menu-brand-content p a { color: var(--primary); text-decoration: none; font-weight: 500; }
+            .desktop-mega-menu-brand-content p a:hover { text-decoration: underline; }
             @media (max-width: 990px) { .desktop-mega-menu { display: none !important; } }
             
             .bottom-row { display: none; height: 44px; width: 100%; opacity: 0; position: relative; margin-top: 10px; }
@@ -517,13 +524,39 @@ document.addEventListener('DOMContentLoaded', function() {
                     });
                     
                     linksSection.appendChild(linksItems);
+                    inner.appendChild(linksSection);
                     
-                    // Right section - newsletters placeholder (40%)
+                    // Middle section - brand promotion (Sports and Agriculture only)
+                    if (cat === 'sports' || cat === 'agriculture') {
+                        const brandSection = document.createElement('div');
+                        brandSection.className = 'desktop-mega-menu-brand';
+                        
+                        if (cat === 'sports') {
+                            brandSection.innerHTML = `
+                                <h3>SportsCage</h3>
+                                <div class="desktop-mega-menu-brand-content">
+                                    <img src="https://www.vmcdn.ca/files/sportscage/images/logos/HMI-SPORTS-CAGE-RIDERS-green.svg" alt="SportsCage" class="brand-logo">
+                                    <p>Our most comprehensive Sask sports coverage is available on <a href="https://sportscage.com" target="_blank">SportsCage</a>. <a href="https://sportscage.com" target="_blank">Visit SportsCage</a></p>
+                                </div>
+                            `;
+                        } else if (cat === 'agriculture') {
+                            brandSection.innerHTML = `
+                                <h3>SaskAgToday</h3>
+                                <div class="desktop-mega-menu-brand-content">
+                                    <img src="https://www.vmcdn.ca/files/ui/harvard/saskagtoday.svg" alt="SaskAgToday" class="brand-logo">
+                                    <p>Our most comprehensive ag news, crop pricing, weather forecasts and more are available on <a href="https://saskagtoday.com" target="_blank">SaskAgToday</a>. <a href="https://saskagtoday.com" target="_blank">Visit SaskAgToday</a></p>
+                                </div>
+                            `;
+                        }
+                        
+                        inner.appendChild(brandSection);
+                    }
+                    
+                    // Right section - newsletters placeholder
                     const newslettersSection = document.createElement('div');
                     newslettersSection.className = 'desktop-mega-menu-newsletters';
                     newslettersSection.innerHTML = '<h3>Newsletters</h3><p>Newsletter placeholder for this category</p>';
                     
-                    inner.appendChild(linksSection);
                     inner.appendChild(newslettersSection);
                 }
                 
@@ -549,7 +582,6 @@ document.addEventListener('DOMContentLoaded', function() {
                         activeBottomRow.style.display = 'flex';
                     }
                 }, 300); // 300ms delay - longer than show delay to prevent flicker when moving between parents
-            }; 
             };
 
             pill.addEventListener('mouseenter', () => {
