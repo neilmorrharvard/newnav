@@ -405,7 +405,7 @@
                     const containerRect = container.getBoundingClientRect();
                     const topRow = wrapper.querySelector('.top-row');
                     const topRowRect = topRow ? topRow.getBoundingClientRect() : wrapperRect;
-                    megaMenu.style.top = (topRowRect.bottom - containerRect.top) + 'px';
+                    megaMenu.style.top = (topRowRect.bottom - containerRect.top + 1) + 'px';
                     
                     // Build the mega menu content
                     const inner = document.createElement('div');
