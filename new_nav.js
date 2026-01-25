@@ -284,6 +284,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const wrapper = document.querySelector('.nav-content-wrapper');
         const container = document.getElementById('village-nav-container');
         let hoverTimeout = null;
+        let showTimeout = null; // Timeout for showing the mega menu
         let currentPill = null; // Track which pill is currently showing the mega menu
         let userHasInteracted = false;
 
@@ -341,6 +342,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const show = () => {
                 if (!userHasInteracted) return;
                 clearTimeout(hoverTimeout);
+                clearTimeout(showTimeout); // Clear any pending show timeout
                 
                 // Set current pill
                 currentPill = pill;
@@ -529,6 +531,7 @@ document.addEventListener('DOMContentLoaded', function() {
             };
             
             const hide = () => { 
+                clearTimeout(showTimeout); // Clear any pending show timeout
                 hoverTimeout = setTimeout(() => { 
                     megaMenu.classList.remove('visible');
                     // Only remove hover-active if the pill is not active
@@ -547,8 +550,19 @@ document.addEventListener('DOMContentLoaded', function() {
                 }, 150); 
             };
 
-            pill.addEventListener('mouseenter', show); 
-            pill.addEventListener('mouseleave', hide);
+            pill.addEventListener('mouseenter', () => {
+                // Clear any existing show timeout
+                clearTimeout(showTimeout);
+                // Add a delay before showing to prevent accidental activation
+                showTimeout = setTimeout(() => {
+                    show();
+                }, 250); // 250ms delay - prevents accidental activation when moving past items
+            });
+            pill.addEventListener('mouseleave', () => {
+                // Clear the show timeout if user moves away before delay completes
+                clearTimeout(showTimeout);
+                hide();
+            });
         });
     }
 });
