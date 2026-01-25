@@ -367,14 +367,13 @@ document.addEventListener('DOMContentLoaded', function() {
                     row.style.display = 'none';
                 });
                 
-                // Calculate position to cover bottom-row area
-                const wrapperRect = wrapper.getBoundingClientRect();
-                const containerRect = container.getBoundingClientRect();
+                // Calculate position based on container height to avoid gap issues
+                const wrapper = document.querySelector('.nav-content-wrapper');
                 const topRow = wrapper.querySelector('.top-row');
-                const topRowRect = topRow ? topRow.getBoundingClientRect() : wrapperRect;
-                // Position mega menu right at the bottom of the underline (underline extends to -3px from bottom of top-row)
-                // topRowRect.bottom includes the separator at -2px, so we add 1px to reach the bottom of the underline at -3px
-                megaMenu.style.top = (topRowRect.bottom - containerRect.top + 1) + 'px';
+                // Use offsetHeight to get the actual rendered height including borders/padding
+                const topRowHeight = topRow ? topRow.offsetHeight : 0;
+                // Account for container padding-top (12px) and underline extension (3px)
+                megaMenu.style.top = (12 + topRowHeight + 3) + 'px';
                 
                     // Build the mega menu content
                     const inner = document.createElement('div');
