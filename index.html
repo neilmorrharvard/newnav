@@ -271,7 +271,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (commKey !== 'all' && url.includes(commKey)) {
                     commContainer.classList.add('active');
                     if (window.innerWidth <= 990) topRow.prepend(commContainer);
-                    document.getElementById('community-label').textContent = commKey.charAt(0).toUpperCase() + commKey.slice(1);
+                    document.getElementById('community-label').textContent = commKey.charAt(0).toUpperCase() + commKey.slice(1) + ', SK';
                     const bottomRow = document.getElementById(`community-${commKey}`);
                     bottomRow?.classList.add('active');
                     if (bottomRow) container.classList.add('mega-menu-open');
