@@ -94,7 +94,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 #village-nav-container:not(:has(.bottom-row.active)) .category-pill.active, 
                 #village-nav-container:not(:has(.bottom-row.active)) #comm-container.active { padding-bottom: 10px; }
                 .top-row::after { content: ""; position: absolute; bottom: -2px; left: 0; width: 100%; height: 1px; background-color: var(--separator-color); z-index: 1; opacity: 0; }
-                #village-nav-container.mega-menu-open .top-row::after, #village-nav-container:has(.bottom-row.active) .top-row::after { opacity: 1; }
+                #village-nav-container.mega-menu-open .top-row::after, #village-nav-container:has(.bottom-row.active) .top-row::after, #village-nav-container:has(.desktop-mega-menu.visible) .top-row::after { opacity: 1; }
                 .category-pill::after, #comm-container::after { content: ""; position: absolute; bottom: -1px; left: 12px; right: 12px; height: 2px; background-color: var(--primary); transform: scaleX(0); transform-origin: center; z-index: 2; transition: transform 0.3s ease; border-radius: 2px 2px 0 0; }
                 .category-pill:hover::after, #comm-container:hover::after, .category-pill.hover-active::after, #comm-container.hover-active::after { transform: scaleX(1); }
                 .category-pill.active::after, #comm-container.active::after { transform: scaleX(1); background-color: var(--primary); z-index: 3; }
@@ -505,7 +505,11 @@ document.addEventListener('DOMContentLoaded', function() {
             const hideSearchMenu = () => {
                 if (searchMegaMenu) {
                     searchMegaMenu.classList.remove('visible');
-                    if (container) container.classList.remove('mega-menu-open');
+                    // Only remove mega-menu-open if no other mega menu is visible
+                    const otherMegaMenu = container.querySelector('.desktop-mega-menu:not(.search-menu).visible');
+                    if (!otherMegaMenu) {
+                        container.classList.remove('mega-menu-open');
+                    }
                     
                     // Remove hover-active class from search trigger
                     searchTrigger.classList.remove('hover-active');
@@ -630,6 +634,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (searchMenuToClose) {
                     searchMenuToClose.classList.remove('visible');
                     searchMenuToClose.remove();
+                    // Don't remove mega-menu-open class here - it will be added back when showing this menu
                     // Restore bottom-row visibility when search menu is closed
                     const activeBottomRow = document.querySelector('.bottom-row.active');
                     if (activeBottomRow) {
