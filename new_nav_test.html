@@ -405,6 +405,9 @@
                         p.classList.remove('hover-active');
                     });
                     
+                    // Add hover-active class to search trigger to show underline
+                    searchTrigger.classList.add('hover-active');
+                    
                     // Build search menu
                     const inner = document.createElement('div');
                     inner.className = 'desktop-mega-menu-inner';
