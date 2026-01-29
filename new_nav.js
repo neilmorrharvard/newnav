@@ -441,6 +441,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 }, 100);
             });
         }
+        } catch (error) {
+            console.error('Error initializing search:', error);
+        }
         
         document.addEventListener('click', () => { document.getElementById('village-nav-dropdown-mobile').style.display = 'none'; });
     }
