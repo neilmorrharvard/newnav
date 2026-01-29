@@ -514,6 +514,9 @@ document.addEventListener('DOMContentLoaded', function() {
                                 megaMenu.classList.remove('visible');
                                 if (container) container.classList.remove('mega-menu-open');
                                 
+                                // Remove hover-active class from search trigger
+                                searchTrigger.classList.remove('hover-active');
+                                
                                 // Restore bottom-row visibility when search menu is closed
                                 const activeBottomRow = document.querySelector('.bottom-row.active');
                                 if (activeBottomRow) {
