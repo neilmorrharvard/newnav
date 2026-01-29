@@ -346,6 +346,12 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Function to show search menu
             const showSearchMenu = () => {
+                // Remove any existing regular mega menu first
+                const regularMegaMenu = container.querySelector('.desktop-mega-menu:not(.search-menu)');
+                if (regularMegaMenu) {
+                    regularMegaMenu.classList.remove('visible');
+                }
+                
                 if (!searchMegaMenu) {
                     searchMegaMenu = document.createElement('div');
                     searchMegaMenu.className = 'desktop-mega-menu search-menu';
@@ -545,7 +551,13 @@ document.addEventListener('DOMContentLoaded', function() {
         document.addEventListener('mousemove', enableInteractions);
 
         // Create a single mega menu container - append to container for full width
-        let megaMenu = container.querySelector('.desktop-mega-menu');
+        // First, remove any search menu element if it exists
+        const existingSearchMenu = container.querySelector('.desktop-mega-menu.search-menu');
+        if (existingSearchMenu) {
+            existingSearchMenu.remove();
+        }
+        
+        let megaMenu = container.querySelector('.desktop-mega-menu:not(.search-menu)');
         if (!megaMenu) {
             megaMenu = document.createElement('div');
             megaMenu.className = 'desktop-mega-menu';
@@ -594,10 +606,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 clearTimeout(hoverTimeout);
                 clearTimeout(showTimeout); // Clear any pending show timeout
                 
-                // Close search menu if open
-                if (megaMenu && megaMenu.classList.contains('search-menu')) {
-                    megaMenu.classList.remove('visible', 'search-menu');
-                    container.classList.remove('mega-menu-open');
+                // Close search menu if open (it's a separate element)
+                const searchMenuToClose = container.querySelector('.desktop-mega-menu.search-menu');
+                if (searchMenuToClose) {
+                    searchMenuToClose.classList.remove('visible');
+                    searchMenuToClose.remove();
+                    // Restore bottom-row visibility when search menu is closed
+                    const activeBottomRow = document.querySelector('.bottom-row.active');
+                    if (activeBottomRow) {
+                        activeBottomRow.style.display = 'flex';
+                    }
                 }
                 
                 // Set current pill
@@ -805,8 +823,16 @@ document.addEventListener('DOMContentLoaded', function() {
                     inner.appendChild(newslettersSection);
                 }
                 
+                // Ensure search menu is closed and removed
+                const searchMenuToRemove = container.querySelector('.desktop-mega-menu.search-menu');
+                if (searchMenuToRemove) {
+                    searchMenuToRemove.classList.remove('visible');
+                    searchMenuToRemove.remove();
+                }
+                
                 // Clear and populate
                 megaMenu.innerHTML = '';
+                megaMenu.classList.remove('search-menu'); // Ensure regular mega menu doesn't have search-menu class
                 megaMenu.appendChild(inner);
                 megaMenu.classList.add('visible');
                 container.classList.add('mega-menu-open');

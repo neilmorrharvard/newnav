@@ -368,16 +368,22 @@ document.addEventListener('DOMContentLoaded', function() {
                     e.stopPropagation();
                     e.stopImmediatePropagation();
                     
+                    // Remove any existing regular mega menu first
+                    const regularMegaMenu = container.querySelector('.desktop-mega-menu:not(.search-menu)');
+                    if (regularMegaMenu) {
+                        regularMegaMenu.classList.remove('visible');
+                    }
+                    
                     if (!megaMenu) {
-                    megaMenu = document.createElement('div');
-                    megaMenu.className = 'desktop-mega-menu search-menu';
-                    if (container) container.appendChild(megaMenu);
-                }
-                
-                // Close any other active mega menus
-                document.querySelectorAll('.category-pill, #comm-container').forEach(p => {
-                    p.classList.remove('hover-active');
-                });
+                        megaMenu = document.createElement('div');
+                        megaMenu.className = 'desktop-mega-menu search-menu';
+                        if (container) container.appendChild(megaMenu);
+                    }
+                    
+                    // Close any other active mega menus
+                    document.querySelectorAll('.category-pill, #comm-container').forEach(p => {
+                        p.classList.remove('hover-active');
+                    });
                 
                 // Build search menu
                 const inner = document.createElement('div');
@@ -510,7 +516,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     }, 100);
                 });
             }
-        }
         } catch (error) {
             console.error('Error initializing search:', error);
         }
@@ -536,7 +541,13 @@ document.addEventListener('DOMContentLoaded', function() {
         document.addEventListener('mousemove', enableInteractions);
 
         // Create a single mega menu container - append to container for full width
-        let megaMenu = container.querySelector('.desktop-mega-menu');
+        // First, remove any search menu element if it exists
+        const existingSearchMenu = container.querySelector('.desktop-mega-menu.search-menu');
+        if (existingSearchMenu) {
+            existingSearchMenu.remove();
+        }
+        
+        let megaMenu = container.querySelector('.desktop-mega-menu:not(.search-menu)');
         if (!megaMenu) {
             megaMenu = document.createElement('div');
             megaMenu.className = 'desktop-mega-menu';
@@ -580,11 +591,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 clearTimeout(hoverTimeout);
                 clearTimeout(showTimeout); // Clear any pending show timeout
                 
-                // Close search menu if open
-                if (megaMenu && megaMenu.classList.contains('search-menu')) {
-                    megaMenu.classList.remove('visible', 'search-menu');
-                    container.classList.remove('mega-menu-open');
-                    
+                // Close search menu if open (it's a separate element)
+                const searchMenuToClose = container.querySelector('.desktop-mega-menu.search-menu');
+                if (searchMenuToClose) {
+                    searchMenuToClose.classList.remove('visible');
+                    searchMenuToClose.remove();
                     // Restore bottom-row visibility when search menu is closed
                     const activeBottomRow = document.querySelector('.bottom-row.active');
                     if (activeBottomRow) {
@@ -802,8 +813,16 @@ document.addEventListener('DOMContentLoaded', function() {
                     inner.appendChild(newslettersSection);
                 }
                 
+                // Ensure search menu is closed and removed
+                const searchMenuToRemove = container.querySelector('.desktop-mega-menu.search-menu');
+                if (searchMenuToRemove) {
+                    searchMenuToRemove.classList.remove('visible');
+                    searchMenuToRemove.remove();
+                }
+                
                 // Clear and populate
                 megaMenu.innerHTML = '';
+                megaMenu.classList.remove('search-menu'); // Ensure regular mega menu doesn't have search-menu class
                 megaMenu.appendChild(inner);
                 megaMenu.classList.add('visible');
                 container.classList.add('mega-menu-open');
