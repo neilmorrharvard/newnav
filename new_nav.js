@@ -105,7 +105,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 .bottom-row-inner { padding-top: 5px; padding-bottom: 5px; padding-left: 12px; }
                 .text-link { font-size: 12px; }
                 .desktop-down-arrow { display: block !important; width: 15px; height: 15px; }
-                .external-icon { width: 10.5px !important; height: 10.5px !important; }
+                .external-icon { width: 10px !important; height: 10px !important; }
                 #category-sports .bottom-row-inner a[href*="sportscage.com"], #category-agriculture .bottom-row-inner a[href*="saskagtoday.com"] { display: none; }
                 #search-trigger { display: inline-flex !important; }
                 #search-trigger .search-icon { display: inline-flex; align-items: center; width: 18px; height: 18px; }
