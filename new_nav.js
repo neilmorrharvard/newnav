@@ -460,7 +460,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     }, 100);
                 });
             }
-        }
         } catch (error) {
             console.error('Error initializing search:', error);
         }
