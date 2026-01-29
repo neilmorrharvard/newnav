@@ -735,6 +735,14 @@
                                 };
                                 icon.src = cityMap[link.text] || 'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=60&h=60&fit=crop&q=75';
                             icon.alt = link.text;
+                            // Fade in image when loaded
+                            icon.addEventListener('load', () => {
+                                icon.classList.add('loaded');
+                            });
+                            // Handle case where image is already cached
+                            if (icon.complete) {
+                                icon.classList.add('loaded');
+                            }
                             a.appendChild(icon);
                             if (link.external) {
                                 a.target = '_blank';
