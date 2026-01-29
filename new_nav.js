@@ -344,49 +344,49 @@ document.addEventListener('DOMContentLoaded', function() {
                     e.stopImmediatePropagation();
                     
                     if (!megaMenu) {
-                    megaMenu = document.createElement('div');
-                    megaMenu.className = 'desktop-mega-menu search-menu';
-                    if (container) container.appendChild(megaMenu);
-                }
-                
-                // Close any other active mega menus
-                document.querySelectorAll('.category-pill, #comm-container').forEach(p => {
-                    p.classList.remove('hover-active');
-                });
-                
-                // Build search menu
-                const inner = document.createElement('div');
-                inner.className = 'desktop-mega-menu-inner';
-                
-                // Left section - Search
-                const searchSection = document.createElement('div');
-                searchSection.className = 'desktop-mega-menu-search';
-                searchSection.innerHTML = `
-                    <h3>What do you want to find?</h3>
-                    <input type="text" id="search-input" placeholder="Search..." autofocus>
-                `;
-                inner.appendChild(searchSection);
-                
-                // Right section - Trending Stories
-                const trendingSection = document.createElement('div');
-                trendingSection.className = 'desktop-mega-menu-trending';
-                const trendingHeading = document.createElement('h3');
-                trendingHeading.textContent = 'Trending Stories';
-                trendingSection.appendChild(trendingHeading);
-                
-                const trendingItems = document.createElement('div');
-                trendingItems.className = 'desktop-mega-menu-trending-items';
-                trendingItems.innerHTML = '<div style="color: #999; font-size: 12px;">Loading...</div>';
-                trendingSection.appendChild(trendingItems);
-                inner.appendChild(trendingSection);
-                
-                megaMenu.innerHTML = '';
-                megaMenu.classList.remove('search-menu');
-                megaMenu.classList.add('search-menu');
-                megaMenu.appendChild(inner);
-                megaMenu.classList.add('visible');
-                if (container) container.classList.add('mega-menu-open');
-                
+                        megaMenu = document.createElement('div');
+                        megaMenu.className = 'desktop-mega-menu search-menu';
+                        if (container) container.appendChild(megaMenu);
+                    }
+                    
+                    // Close any other active mega menus
+                    document.querySelectorAll('.category-pill, #comm-container').forEach(p => {
+                        p.classList.remove('hover-active');
+                    });
+                    
+                    // Build search menu
+                    const inner = document.createElement('div');
+                    inner.className = 'desktop-mega-menu-inner';
+                    
+                    // Left section - Search
+                    const searchSection = document.createElement('div');
+                    searchSection.className = 'desktop-mega-menu-search';
+                    searchSection.innerHTML = `
+                        <h3>What do you want to find?</h3>
+                        <input type="text" id="search-input" placeholder="Search..." autofocus>
+                    `;
+                    inner.appendChild(searchSection);
+                    
+                    // Right section - Trending Stories
+                    const trendingSection = document.createElement('div');
+                    trendingSection.className = 'desktop-mega-menu-trending';
+                    const trendingHeading = document.createElement('h3');
+                    trendingHeading.textContent = 'Trending Stories';
+                    trendingSection.appendChild(trendingHeading);
+                    
+                    const trendingItems = document.createElement('div');
+                    trendingItems.className = 'desktop-mega-menu-trending-items';
+                    trendingItems.innerHTML = '<div style="color: #999; font-size: 12px;">Loading...</div>';
+                    trendingSection.appendChild(trendingItems);
+                    inner.appendChild(trendingSection);
+                    
+                    megaMenu.innerHTML = '';
+                    megaMenu.classList.remove('search-menu');
+                    megaMenu.classList.add('search-menu');
+                    megaMenu.appendChild(inner);
+                    megaMenu.classList.add('visible');
+                    if (container) container.classList.add('mega-menu-open');
+                    
                     // Fetch trending stories
                     fetch('https://www.sasktoday.ca/rss/trending', { mode: 'cors' })
                         .then(response => {
