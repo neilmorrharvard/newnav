@@ -108,6 +108,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 .desktop-down-arrow { display: block !important; width: 15px; height: 15px; }
                 .external-icon { width: 10.5px !important; height: 10.5px !important; }
                 #category-sports .bottom-row-inner a[href*="sportscage.com"], #category-agriculture .bottom-row-inner a[href*="saskagtoday.com"] { display: none; }
+                #mega-menu-trigger .more-icon { display: none; }
+                #search-trigger { display: inline-flex !important; }
+                .desktop-mega-menu.search-menu .desktop-mega-menu-inner { gap: 40px; }
+                .desktop-mega-menu-search { flex: 0 0 auto; display: flex; flex-direction: column; gap: 16px; align-items: flex-start; min-width: 300px; }
+                .desktop-mega-menu-search h3 { font-size: 14px; font-weight: 500; margin: 0 0 8px 0; color: var(--text-inactive); }
+                .desktop-mega-menu-search input { width: 100%; padding: 12px 16px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; font-family: inherit; }
+                .desktop-mega-menu-search input:focus { outline: none; border-color: var(--primary); }
+                .desktop-mega-menu-trending { flex: 0 0 auto; display: flex; flex-direction: column; gap: 12px; align-items: flex-start; min-width: 300px; }
+                .desktop-mega-menu-trending h3 { font-size: 11px; font-weight: 500; margin: 0 0 12px 0; color: #999; width: 100%; text-transform: uppercase; }
+                .desktop-mega-menu-trending-items { display: flex; flex-direction: column; gap: 12px; width: 100%; }
+                .desktop-mega-menu-trending-items a { color: var(--text-inactive); text-decoration: none; font-size: 13px; font-weight: 500; line-height: 1.4; padding: 4px 0; transition: color 0.2s; }
+                .desktop-mega-menu-trending-items a:hover { color: var(--primary); }
             }
 
             @media (max-width: 990px) {
@@ -182,7 +194,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 <button class="category-pill" data-category="politics"><span>🏛️</span><span>Politics</span></button>
                 <button class="category-pill" data-category="weather"><span>☀️</span><span>Weather</span></button>
                 <button class="category-pill" data-category="crime"><span>🔎</span><span>Crime & Safety</span></button>
-                <button class="category-pill" id="mega-menu-trigger" data-category="more"><span>☰</span><span>More</span></button>
+                <button class="category-pill" id="mega-menu-trigger" data-category="more"><span class="more-icon">☰</span><span>More</span></button>
+                <button class="category-pill search-trigger" id="search-trigger" style="display: none;"><span>🔍</span><span>Search</span></button>
             </div>
             
             <div class="bottom-row" id="community-regina"><div class="bottom-row-inner hide-scrollbar"><a href="https://staging-www2.villagemedia.ca/regina-today" class="text-link">All Regina</a><a href="https://staging-www2.villagemedia.ca/regina-today/regina-news" class="text-link">Regina News</a><a href="https://staging-www2.villagemedia.ca/obituaries/regina-obituaries" class="text-link">Regina Obituaries</a><a href="https://staging-www2.villagemedia.ca/regina-today/regina-newsletters" class="text-link">Regina Newsletters</a><a href="https://staging-www2.villagemedia.ca/regina-today/regina-discussion" class="text-link">Regina Discussions</a><a href="https://staging-www2.villagemedia.ca/classifieds/regina-classifieds" class="text-link">Regina Classifieds</a></div></div>
@@ -319,7 +332,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function initHoverDropdowns() {
         if (window.innerWidth <= 990) return;
-        const pills = document.querySelectorAll('.category-pill, #comm-container');
+        const pills = document.querySelectorAll('.category-pill:not(#search-trigger), #comm-container');
         const wrapper = document.querySelector('.nav-content-wrapper');
         const container = document.getElementById('village-nav-container');
         let hoverTimeout = null;
@@ -378,6 +391,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (!userHasInteracted) return;
                 clearTimeout(hoverTimeout);
                 clearTimeout(showTimeout); // Clear any pending show timeout
+                
+                // Close search menu if open
+                if (megaMenu && megaMenu.classList.contains('search-menu')) {
+                    megaMenu.classList.remove('visible', 'search-menu');
+                    container.classList.remove('mega-menu-open');
+                }
                 
                 // Set current pill
                 currentPill = pill;
