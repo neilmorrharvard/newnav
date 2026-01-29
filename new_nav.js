@@ -63,7 +63,7 @@ document.addEventListener('DOMContentLoaded', function() {
             :root { --primary: #007bff; --nav-bg: #ffffff; --pill-bg: #f1f3f5; --text-inactive: #000000; --dropdown-glass: rgba(255, 255, 255, 0.95); --separator-color: #e9ecef; }
             #village-nav-container { background: var(--nav-bg); padding: 12px 0 0 0; width: 100%; position: relative; box-sizing: border-box; z-index: 1000; overflow: visible; }
             @media (min-width: 991px) {
-                #nav.mainnav.show-below-new-nav { display: block !important; position: relative; top: 0; margin-top: 0; z-index: 999; width: 100%; }
+                #nav.show-below-new-nav { display: block !important; position: relative; top: 0; margin-top: 0; z-index: 999; width: 100%; }
             }
             .nav-content-wrapper { width: 990px; margin: 0 auto; position: relative; padding: 0 10px; display: flex; flex-direction: column; align-items: flex-start; z-index: 10; }
             @media (max-width: 990px) { .nav-content-wrapper { width: 100%; } }
