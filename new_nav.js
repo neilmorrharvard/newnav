@@ -119,7 +119,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 .desktop-mega-menu-trending { flex: 0 0 auto; display: flex; flex-direction: column; gap: 12px; align-items: flex-start; min-width: 300px; }
                 .desktop-mega-menu-trending h3 { font-size: 11px; font-weight: 500; margin: 0 0 12px 0; color: #999; width: 100%; text-transform: uppercase; }
                 .desktop-mega-menu-trending-items { display: flex; flex-direction: column; gap: 12px; width: 100%; }
-                .desktop-mega-menu-trending-items a { color: var(--text-inactive); text-decoration: none; font-size: 13px; font-weight: 500; line-height: 1.4; padding: 4px 0; transition: color 0.2s; display: flex; align-items: center; gap: 10px; }
+                .desktop-mega-menu-trending-items a { color: var(--text-inactive); text-decoration: none; font-size: 13px; font-weight: 500; line-height: 1.4; padding: 4px 0; transition: color 0.2s, opacity 0.3s ease-in-out; display: flex; align-items: center; gap: 10px; opacity: 0; }
+                .desktop-mega-menu-trending-items a.visible { opacity: 1; }
                 .desktop-mega-menu-trending-items a:hover { color: var(--primary); }
                 .trending-story-icon { width: 24px; height: 24px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
                 .trending-story-icon svg { width: 100%; height: 100%; }
