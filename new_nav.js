@@ -388,6 +388,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
         }
+
+        // Track clicks on the site's standard hamburger menu button
+        if (siteBurgButton) {
+            siteBurgButton.addEventListener('click', () => {
+                // Trigger PostHog recording when site hamburger menu is clicked
+                triggerPostHogRecording('nav_hamburger_menu_click');
+            });
+        }
         
         // Search functionality
         try {
