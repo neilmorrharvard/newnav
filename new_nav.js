@@ -1,6 +1,28 @@
 document.addEventListener('DOMContentLoaded', function() {
     'use strict';
 
+    // PostHog session recording helper
+    const triggerPostHogRecording = (eventType) => {
+        try {
+            if (typeof posthog !== 'undefined' && posthog) {
+                // Start session recording if not already recording
+                if (posthog.startSessionRecording) {
+                    posthog.startSessionRecording();
+                }
+                // Also capture the event for analytics
+                if (posthog.capture) {
+                    posthog.capture('nav_interaction', {
+                        event_type: eventType,
+                        viewport: window.innerWidth > 990 ? 'desktop' : 'mobile'
+                    });
+                }
+            }
+        } catch (error) {
+            // Silently fail if PostHog is not available
+            console.debug('PostHog not available:', error);
+        }
+    };
+
     const routes = {
         communities: {
             regina: "https://staging-www2.villagemedia.ca/regina-today",
@@ -300,7 +322,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Parent Click Handlers
         document.querySelectorAll('.category-pill:not(#mega-menu-trigger):not(#search-trigger)').forEach(pill => {
-            pill.addEventListener('click', () => { window.location.href = routes.categories[pill.dataset.category]; });
+            pill.addEventListener('click', () => {
+                // Trigger PostHog recording on parent item click
+                triggerPostHogRecording('parent_item_click');
+                window.location.href = routes.categories[pill.dataset.category];
+            });
         });
 
         // Community Mobile Dropdown logic
@@ -316,13 +342,41 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         document.querySelectorAll('.dropdown-option').forEach(opt => {
-            opt.addEventListener('click', () => { window.location.href = routes.communities[opt.dataset.community]; });
+            opt.addEventListener('click', () => {
+                // Trigger PostHog recording on mobile community selection
+                if (window.innerWidth <= 990) {
+                    triggerPostHogRecording('parent_item_click');
+                }
+                window.location.href = routes.communities[opt.dataset.community];
+            });
         });
 
         // Child Active States
         document.querySelectorAll('.bottom-row.active .text-link').forEach(link => {
             if (url === link.href.replace(/\/$/, "")) link.classList.add('active');
         });
+
+        // Mobile horizontal scroll tracking for PostHog
+        if (window.innerWidth <= 990) {
+            let scrollTimeout = null;
+            const handleScroll = (element) => {
+                clearTimeout(scrollTimeout);
+                scrollTimeout = setTimeout(() => {
+                    triggerPostHogRecording('horizontal_scroll');
+                }, 150); // Debounce to avoid too many triggers
+            };
+
+            // Track scroll on parent row (top-row)
+            const topRow = document.getElementById('main-top-row');
+            if (topRow && topRow.classList.contains('hide-scrollbar')) {
+                topRow.addEventListener('scroll', () => handleScroll(topRow), { passive: true });
+            }
+
+            // Track scroll on child rows (bottom-row-inner)
+            document.querySelectorAll('.bottom-row-inner.hide-scrollbar').forEach(childRow => {
+                childRow.addEventListener('scroll', () => handleScroll(childRow), { passive: true });
+            });
+        }
 
         const megaMenuTrigger = document.getElementById('mega-menu-trigger'), siteBurgButton = document.querySelector('.navbt-burg');
         if (megaMenuTrigger) {
@@ -331,6 +385,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (window.innerWidth <= 990) {
                     e.preventDefault();
                     e.stopPropagation();
+                    // Trigger PostHog recording on hamburger menu click (mobile)
+                    triggerPostHogRecording('hamburger_menu_click');
                     // Mobile: use existing burger button behavior
                     if (siteBurgButton) {
                         siteBurgButton.click();
@@ -441,6 +497,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 searchMegaMenu.appendChild(inner);
                 searchMegaMenu.classList.add('visible');
                 if (container) container.classList.add('mega-menu-open');
+                
+                // Trigger PostHog recording when search mega menu appears (desktop)
+                if (window.innerWidth > 990) {
+                    triggerPostHogRecording('mega_menu_appear');
+                }
                 
                 // Ensure hover-active class is maintained on search trigger when menu is visible
                 searchTrigger.classList.add('hover-active');
@@ -919,6 +980,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 megaMenu.appendChild(inner);
                 megaMenu.classList.add('visible');
                 container.classList.add('mega-menu-open');
+                
+                // Trigger PostHog recording when mega menu appears (desktop)
+                if (window.innerWidth > 990) {
+                    triggerPostHogRecording('mega_menu_appear');
+                }
             };
             
             const hide = () => { 
