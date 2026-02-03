@@ -24,13 +24,12 @@ document.addEventListener('DOMContentLoaded', function() {
     'use strict';
 
     // PostHog session recording helper
-    // Note: Configure PostHog to start recording when 'nav_interaction' event is captured
-    const triggerPostHogRecording = (eventType) => {
+    // Note: Configure PostHog to start recording when any of these nav events are captured
+    const triggerPostHogRecording = (eventName) => {
         try {
             if (typeof posthog !== 'undefined' && posthog && posthog.capture) {
-                // Capture the event - PostHog will start recording based on your settings
-                posthog.capture('nav_interaction', {
-                    event_type: eventType,
+                // Capture the specific event - PostHog will start recording based on your settings
+                posthog.capture(eventName, {
                     viewport: window.innerWidth > 990 ? 'desktop' : 'mobile'
                 });
             }
@@ -339,7 +338,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('.category-pill:not(#mega-menu-trigger):not(#search-trigger)').forEach(pill => {
             pill.addEventListener('click', () => {
                 // Trigger PostHog recording on parent item click
-                triggerPostHogRecording('parent_item_click');
+                triggerPostHogRecording('nav_parent_item_click');
                 window.location.href = routes.categories[pill.dataset.category];
             });
         });
@@ -360,7 +359,7 @@ document.addEventListener('DOMContentLoaded', function() {
             opt.addEventListener('click', () => {
                 // Trigger PostHog recording on mobile community selection
                 if (window.innerWidth <= 990) {
-                    triggerPostHogRecording('parent_item_click');
+                    triggerPostHogRecording('nav_parent_item_click');
                 }
                 window.location.href = routes.communities[opt.dataset.community];
             });
@@ -377,7 +376,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const handleScroll = (element) => {
                 clearTimeout(scrollTimeout);
                 scrollTimeout = setTimeout(() => {
-                    triggerPostHogRecording('horizontal_scroll');
+                    triggerPostHogRecording('nav_horizontal_scroll');
                 }, 150); // Debounce to avoid too many triggers
             };
 
@@ -401,7 +400,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     e.preventDefault();
                     e.stopPropagation();
                     // Trigger PostHog recording on hamburger menu click (mobile)
-                    triggerPostHogRecording('hamburger_menu_click');
+                    triggerPostHogRecording('nav_hamburger_menu_click');
                     // Mobile: use existing burger button behavior
                     if (siteBurgButton) {
                         siteBurgButton.click();
@@ -505,7 +504,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 // Trigger PostHog recording when search mega menu appears (desktop)
                 if (window.innerWidth > 990) {
-                    triggerPostHogRecording('mega_menu_appear');
+                    triggerPostHogRecording('nav_mega_menu_appear');
                 }
                 
                 // Ensure hover-active class is maintained on search trigger when menu is visible
@@ -961,7 +960,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 // Trigger PostHog recording when mega menu appears (desktop)
                 if (window.innerWidth > 990) {
-                    triggerPostHogRecording('mega_menu_appear');
+                    triggerPostHogRecording('nav_mega_menu_appear');
                 }
             };
             
