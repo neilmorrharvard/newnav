@@ -112,7 +112,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     #village-nav-container:not(:has(.bottom-row.active)) #comm-container.active { padding-bottom: 10px; }
                 .top-row::after { content: ""; position: absolute; bottom: -2px; left: 0; width: 100%; height: 1px; background-color: var(--separator-color); z-index: 1; opacity: 0; }
                 #village-nav-container.mega-menu-open .top-row::after, #village-nav-container:has(.bottom-row.active) .top-row::after, #village-nav-container:has(.desktop-mega-menu.visible) .top-row::after { opacity: 1; }
-                    .category-pill::after, #comm-container::after { content: ""; position: absolute; bottom: -2px; left: 0; right: 0; height: 2px; background-color: var(--primary); transform: scaleX(0); transform-origin: center; z-index: 2; transition: transform 0.3s ease; border-radius: 2px 2px 0 0; }
+                    .category-pill::after, #comm-container::after { content: ""; position: absolute; bottom: -2px; left: 12px; width: var(--underline-width, auto); height: 2px; background-color: var(--primary); transform: scaleX(0); transform-origin: left; z-index: 2; transition: transform 0.3s ease; border-radius: 2px 2px 0 0; }
                     .category-pill:hover::after, #comm-container:hover::after, .category-pill.hover-active::after, #comm-container.hover-active::after { transform: scaleX(1); }
                     .category-pill.active::after, #comm-container.active::after { transform: scaleX(1); background-color: var(--primary); z-index: 3; }
                     .top-row:hover .category-pill.active:not(:hover):not(.hover-active)::after, .top-row:hover #comm-container.active:not(:hover):not(.hover-active)::after { transform: scaleX(0); }
@@ -241,6 +241,49 @@ document.addEventListener('DOMContentLoaded', function() {
         initNavLogic();
         initHoverDropdowns();
         handleScrollLogic();
+        
+        // Set underline width to match content width on desktop
+        if (window.innerWidth > 990) {
+            const setUnderlineWidth = () => {
+                document.querySelectorAll('.category-pill, #comm-container').forEach(pill => {
+                    // Get all child elements (spans, SVGs) that are the content
+                    const contentElements = Array.from(pill.children);
+                    if (contentElements.length === 0) return;
+                    
+                    // Create a temporary container to measure content width
+                    const tempContainer = document.createElement('div');
+                    tempContainer.style.position = 'absolute';
+                    tempContainer.style.visibility = 'hidden';
+                    tempContainer.style.whiteSpace = 'nowrap';
+                    tempContainer.style.display = 'inline-flex';
+                    tempContainer.style.alignItems = 'center';
+                    tempContainer.style.gap = '6px';
+                    tempContainer.style.fontSize = '14px';
+                    tempContainer.style.fontWeight = '550';
+                    
+                    // Clone all content elements
+                    contentElements.forEach(el => {
+                        const clone = el.cloneNode(true);
+                        tempContainer.appendChild(clone);
+                    });
+                    
+                    document.body.appendChild(tempContainer);
+                    const contentWidth = tempContainer.offsetWidth;
+                    document.body.removeChild(tempContainer);
+                    
+                    // Set the width on the ::after pseudo-element via CSS variable
+                    pill.style.setProperty('--underline-width', `${contentWidth}px`);
+                });
+            };
+            
+            // Set on load and resize
+            setUnderlineWidth();
+            window.addEventListener('resize', () => {
+                if (window.innerWidth > 990) {
+                    setUnderlineWidth();
+                }
+            });
+        }
     }
 
     function handleScrollLogic() {
