@@ -141,6 +141,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 .trending-story-icon { width: 24px; height: 24px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
                 .trending-story-icon svg { width: 100%; height: 100%; }
                 .trending-story-title { flex: 1; }
+                .trending-skeleton { display: flex; align-items: center; gap: 10px; padding: 4px 0; }
+                .trending-skeleton-icon { width: 24px; height: 24px; flex-shrink: 0; background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 200% 100%; animation: skeleton-loading 1.5s ease-in-out infinite; border-radius: 4px; }
+                .trending-skeleton-title { flex: 1; height: 16px; background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 200% 100%; animation: skeleton-loading 1.5s ease-in-out infinite; border-radius: 4px; }
+                .trending-skeleton-title.short { width: 60%; }
+                .trending-skeleton-title.medium { width: 80%; }
+                .trending-skeleton-title.long { width: 100%; }
+                @keyframes skeleton-loading { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
             }
 
             @media (max-width: 990px) {
@@ -517,24 +524,21 @@ document.addEventListener('DOMContentLoaded', function() {
                 const trendingItems = document.createElement('div');
                 trendingItems.className = 'desktop-mega-menu-trending-items';
                 
-                // Create 5 placeholder items to pre-allocate space and prevent height jump
+                // Create 5 skeleton loader items to pre-allocate space and prevent height jump
+                const skeletonWidths = ['short', 'medium', 'long', 'medium', 'short'];
                 for (let i = 0; i < 5; i++) {
-                    const placeholder = document.createElement('div');
-                    placeholder.className = 'trending-story-item';
-                    placeholder.style.opacity = '0.3';
-                    placeholder.style.pointerEvents = 'none';
+                    const skeleton = document.createElement('div');
+                    skeleton.className = 'trending-skeleton';
                     
                     const iconDiv = document.createElement('div');
-                    iconDiv.className = 'trending-story-icon';
-                    iconDiv.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#22c55e"><path d="m136-240-56-56 296-298 160 160 208-206H640v-80h240v240h-80v-104L536-320 376-480 136-240Z"/></svg>';
-                    placeholder.appendChild(iconDiv);
+                    iconDiv.className = 'trending-skeleton-icon';
+                    skeleton.appendChild(iconDiv);
                     
-                    const titleSpan = document.createElement('span');
-                    titleSpan.className = 'trending-story-title';
-                    titleSpan.textContent = 'Loading...';
-                    placeholder.appendChild(titleSpan);
+                    const titleDiv = document.createElement('div');
+                    titleDiv.className = `trending-skeleton-title ${skeletonWidths[i]}`;
+                    skeleton.appendChild(titleDiv);
                     
-                    trendingItems.appendChild(placeholder);
+                    trendingItems.appendChild(skeleton);
                 }
                 
                 trendingSection.appendChild(trendingItems);
