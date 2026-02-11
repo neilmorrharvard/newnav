@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', function() {
     'use strict';
 
     // Version identifier - check in console: window.navVersion
-    window.navVersion = '2024-12-19-d7f5f3e';
+    window.navVersion = '2024-12-19-7b4e366';
     if (console && console.log) {
         console.log('%cNew Nav Script Loaded', 'color: #016A1B; font-weight: bold; font-size: 12px;', 'Version:', window.navVersion);
     }
@@ -107,7 +107,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 #nav.show-below-new-nav { display: block !important; position: relative; top: 0; margin-top: 0; z-index: 999; width: 100%; }
             }
             .nav-content-wrapper { width: 990px; margin: 0 auto; position: relative; padding: 0 10px; display: flex; flex-direction: column; align-items: flex-start; z-index: 10; }
-            @media (max-width: 990px) { .nav-content-wrapper { width: 100%; } }
+            @media (min-width: 768px) and (max-width: 991px) { .nav-content-wrapper { width: 750px; } }
+            @media (max-width: 767px) { .nav-content-wrapper { width: 100%; } }
 
             .top-row { display: flex !important; gap: 8px; align-items: center; width: 100%; position: relative; z-index: 11; margin-bottom: 8px; }
             .hide-scrollbar { overflow-x: auto; white-space: nowrap; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
@@ -211,6 +212,7 @@ document.addEventListener('DOMContentLoaded', function() {
             .desktop-mega-menu.search-menu { z-index: 1001; }
             #village-nav-container:has(.desktop-mega-menu.search-menu.visible) .bottom-row.active { display: none !important; }
             .desktop-mega-menu-inner { display: flex; width: 990px; margin: 0 auto; padding: 30px 10px 30px 30px; gap: 80px; }
+            @media (min-width: 768px) and (max-width: 991px) { .desktop-mega-menu-inner { width: 750px; } }
             .desktop-mega-menu-inner.communities-menu { gap: 80px; }
             .desktop-mega-menu-links { flex: 0 0 auto; display: flex; flex-direction: column; gap: 12px; align-items: flex-start; }
             .desktop-mega-menu-links.communities-split { flex: 0 0 auto; }
