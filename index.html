@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', function() {
     'use strict';
 
     // Version identifier - check in console: window.navVersion
-    window.navVersion = '2024-12-19-da41ae9';
+    window.navVersion = '2024-12-19-40de1c7';
     if (console && console.log) {
         console.log('%cNew Nav Script Loaded', 'color: #016A1B; font-weight: bold; font-size: 12px;', 'Version:', window.navVersion);
     }
@@ -187,7 +187,12 @@ document.addEventListener('DOMContentLoaded', function() {
             @media (max-width: 990px) {
                 .top-row { padding-left: 10px; }
                 .category-pill.active, #comm-container.active { background: var(--primary) !important; color: white !important; }
-                .category-pill.active .category-icon svg path, #comm-container.active .category-icon svg path { fill: white !important; }
+                .category-pill.active .category-icon-wrapper .category-icon path,
+                .category-pill.active .category-icon-wrapper svg.category-icon path,
+                #comm-container.active .category-icon-wrapper .category-icon path,
+                #comm-container.active .category-icon-wrapper svg.category-icon path { fill: white !important; }
+                .category-pill.active .category-icon-wrapper .category-icon defs,
+                #comm-container.active .category-icon-wrapper .category-icon defs { display: none !important; }
                 .desktop-down-arrow { display: none !important; }
                 .bottom-row-inner { padding-top: 0; }
                 .bottom-row { margin-top: 0 !important; }
@@ -282,6 +287,23 @@ document.addEventListener('DOMContentLoaded', function() {
         initNavLogic();
         initHoverDropdowns();
         handleScrollLogic();
+        
+        // Watch for active class changes on mobile and update icon colors
+        if (window.innerWidth <= 990) {
+            const observer = new MutationObserver(() => {
+                updateActiveIconColors();
+            });
+            
+            // Observe all category pills and comm container for class changes
+            document.querySelectorAll('.category-pill, #comm-container').forEach(el => {
+                observer.observe(el, { attributes: true, attributeFilter: ['class'] });
+            });
+            
+            // Also update on window resize
+            window.addEventListener('resize', () => {
+                updateActiveIconColors();
+            });
+        }
         
         // Set underline width to match content width on desktop
         if (window.innerWidth > 990) {
@@ -385,6 +407,26 @@ document.addEventListener('DOMContentLoaded', function() {
         if (activeEl) container.scrollLeft = activeEl.offsetLeft - (container.offsetWidth / 2) + (activeEl.offsetWidth / 2);
     }
 
+    // Function to update icon colors for active pills on mobile
+    function updateActiveIconColors() {
+        if (window.innerWidth <= 990) {
+            // Set white fill for active pills
+            document.querySelectorAll('.category-pill.active .category-icon path, #comm-container.active .category-icon path').forEach(path => {
+                path.setAttribute('fill', 'white');
+            });
+            // Restore original gradient fill for inactive pills
+            document.querySelectorAll('.category-pill:not(.active) .category-icon path, #comm-container:not(.active) .category-icon path').forEach(path => {
+                const svg = path.closest('svg');
+                if (svg) {
+                    const gradientId = svg.querySelector('defs radialGradient')?.getAttribute('id');
+                    if (gradientId) {
+                        path.setAttribute('fill', `url(#${gradientId})`);
+                    }
+                }
+            });
+        }
+    }
+
     function initNavLogic() {
         const url = window.location.href.split('?')[0].replace(/\/$/, "");
         const topRow = document.getElementById('main-top-row'), commContainer = document.getElementById('comm-container');
@@ -416,6 +458,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
         }
+        
+        // Update icon colors for active pills on mobile
+        updateActiveIconColors();
 
         // Parent Click Handlers
         document.querySelectorAll('.category-pill:not(#mega-menu-trigger):not(#search-trigger)').forEach(pill => {
