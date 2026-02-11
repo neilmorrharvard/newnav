@@ -41,7 +41,7 @@
         'use strict';
 
         // Version identifier - check in console: window.navVersion
-        window.navVersion = '2024-12-19-d2e329c';
+        window.navVersion = '2024-12-19-bc61697';
         if (console && console.log) {
             console.log('%cNew Nav Script Loaded', 'color: #016A1B; font-weight: bold; font-size: 12px;', 'Version:', window.navVersion);
         }
@@ -208,6 +208,27 @@
                     .category-pill.active .category-icon-wrapper .category-icon defs,
                     #comm-container.active .category-icon-wrapper .category-icon defs { display: none !important; }
                     .desktop-down-arrow { display: none !important; }
+                    
+                    /* Fade effects for scrollable containers - using overlay divs */
+                    .scroll-fade-overlay {
+                        position: fixed;
+                        top: 0;
+                        bottom: 0;
+                        width: 20px;
+                        pointer-events: none;
+                        z-index: 100;
+                        opacity: 0;
+                        transition: opacity 0.3s ease;
+                    }
+                    .scroll-fade-overlay.fade-left {
+                        left: 0;
+                        background: linear-gradient(to right, var(--nav-bg), transparent);
+                    }
+                    .scroll-fade-overlay.fade-right {
+                        right: 0;
+                        background: linear-gradient(to left, var(--nav-bg), transparent);
+                    }
+                    .scroll-fade-overlay.visible { opacity: 1; }
                 }
 
                 .desktop-mega-menu { position: relative; left: 0; right: 0; width: 100%; background: var(--nav-bg); max-height: 0; overflow: hidden; z-index: 1000; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-top: 3px; }
@@ -397,8 +418,21 @@
         }
 
         // Function to update fade effects based on scroll position
+        // Function to update fade effects based on scroll position
+        // Uses fixed overlay divs that stay at viewport edges
+        const fadeOverlays = new Map(); // Store overlays for each element
+        
         function updateScrollFades(element) {
-            if (!element || window.innerWidth > 990) return;
+            if (!element || window.innerWidth > 990) {
+                // Clean up overlays on desktop
+                if (fadeOverlays.has(element)) {
+                    const overlays = fadeOverlays.get(element);
+                    if (overlays.left) overlays.left.remove();
+                    if (overlays.right) overlays.right.remove();
+                    fadeOverlays.delete(element);
+                }
+                return;
+            }
             
             const scrollLeft = element.scrollLeft;
             const scrollWidth = element.scrollWidth;
@@ -406,9 +440,29 @@
             const canScrollLeft = scrollLeft > 0;
             const canScrollRight = scrollLeft < scrollWidth - clientWidth - 1; // -1 for rounding
             
-            // Toggle fade classes
-            element.classList.toggle('fade-left', canScrollLeft);
-            element.classList.toggle('fade-right', canScrollRight);
+            // Get or create overlay divs
+            let overlays = fadeOverlays.get(element);
+            if (!overlays) {
+                const leftOverlay = document.createElement('div');
+                leftOverlay.className = 'scroll-fade-overlay fade-left';
+                const rightOverlay = document.createElement('div');
+                rightOverlay.className = 'scroll-fade-overlay fade-right';
+                document.body.appendChild(leftOverlay);
+                document.body.appendChild(rightOverlay);
+                overlays = { left: leftOverlay, right: rightOverlay };
+                fadeOverlays.set(element, overlays);
+            }
+            
+            // Update vertical position to match element's position
+            const rect = element.getBoundingClientRect();
+            overlays.left.style.top = `${rect.top}px`;
+            overlays.left.style.height = `${rect.height}px`;
+            overlays.right.style.top = `${rect.top}px`;
+            overlays.right.style.height = `${rect.height}px`;
+            
+            // Show/hide based on scroll position
+            overlays.left.classList.toggle('visible', canScrollLeft);
+            overlays.right.classList.toggle('visible', canScrollRight);
         }
 
         // Function to align bottom-row-inner with active parent pill on mobile

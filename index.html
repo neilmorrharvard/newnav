@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', function() {
     'use strict';
 
     // Version identifier - check in console: window.navVersion
-    window.navVersion = '2024-12-19-d2e329c';
+    window.navVersion = '2024-12-19-bc61697';
     if (console && console.log) {
         console.log('%cNew Nav Script Loaded', 'color: #016A1B; font-weight: bold; font-size: 12px;', 'Version:', window.navVersion);
     }
@@ -197,29 +197,26 @@ document.addEventListener('DOMContentLoaded', function() {
                 .bottom-row-inner { padding-top: 0; position: relative; }
                 .bottom-row { margin-top: 0 !important; }
                 
-                /* Fade effects for scrollable containers */
-                .top-row::before, .top-row::after,
-                .bottom-row-inner::before, .bottom-row-inner::after {
-                    content: "";
-                    position: absolute;
+                /* Fade effects for scrollable containers - using overlay divs */
+                .scroll-fade-overlay {
+                    position: fixed;
                     top: 0;
                     bottom: 0;
                     width: 20px;
                     pointer-events: none;
-                    z-index: 10;
+                    z-index: 100;
                     opacity: 0;
                     transition: opacity 0.3s ease;
                 }
-                .top-row::before, .bottom-row-inner::before {
+                .scroll-fade-overlay.fade-left {
                     left: 0;
                     background: linear-gradient(to right, var(--nav-bg), transparent);
                 }
-                .top-row::after, .bottom-row-inner::after {
+                .scroll-fade-overlay.fade-right {
                     right: 0;
                     background: linear-gradient(to left, var(--nav-bg), transparent);
                 }
-                .top-row.fade-left::before, .bottom-row-inner.fade-left::before { opacity: 1; }
-                .top-row.fade-right::after, .bottom-row-inner.fade-right::after { opacity: 1; }
+                .scroll-fade-overlay.visible { opacity: 1; }
             }
 
             .desktop-mega-menu { position: relative; left: 0; right: 0; width: 100%; background: var(--nav-bg); max-height: 0; overflow: hidden; z-index: 1000; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-top: 3px; }
@@ -483,8 +480,20 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Function to update fade effects based on scroll position
+    // Uses fixed overlay divs that stay at viewport edges
+    const fadeOverlays = new Map(); // Store overlays for each element
+    
     function updateScrollFades(element) {
-        if (!element || window.innerWidth > 990) return;
+        if (!element || window.innerWidth > 990) {
+            // Clean up overlays on desktop
+            if (fadeOverlays.has(element)) {
+                const overlays = fadeOverlays.get(element);
+                if (overlays.left) overlays.left.remove();
+                if (overlays.right) overlays.right.remove();
+                fadeOverlays.delete(element);
+            }
+            return;
+        }
         
         const scrollLeft = element.scrollLeft;
         const scrollWidth = element.scrollWidth;
@@ -492,9 +501,29 @@ document.addEventListener('DOMContentLoaded', function() {
         const canScrollLeft = scrollLeft > 0;
         const canScrollRight = scrollLeft < scrollWidth - clientWidth - 1; // -1 for rounding
         
-        // Toggle fade classes
-        element.classList.toggle('fade-left', canScrollLeft);
-        element.classList.toggle('fade-right', canScrollRight);
+        // Get or create overlay divs
+        let overlays = fadeOverlays.get(element);
+        if (!overlays) {
+            const leftOverlay = document.createElement('div');
+            leftOverlay.className = 'scroll-fade-overlay fade-left';
+            const rightOverlay = document.createElement('div');
+            rightOverlay.className = 'scroll-fade-overlay fade-right';
+            document.body.appendChild(leftOverlay);
+            document.body.appendChild(rightOverlay);
+            overlays = { left: leftOverlay, right: rightOverlay };
+            fadeOverlays.set(element, overlays);
+        }
+        
+        // Update vertical position to match element's position
+        const rect = element.getBoundingClientRect();
+        overlays.left.style.top = `${rect.top}px`;
+        overlays.left.style.height = `${rect.height}px`;
+        overlays.right.style.top = `${rect.top}px`;
+        overlays.right.style.height = `${rect.height}px`;
+        
+        // Show/hide based on scroll position
+        overlays.left.classList.toggle('visible', canScrollLeft);
+        overlays.right.classList.toggle('visible', canScrollRight);
     }
 
     // Function to align bottom-row-inner with active parent pill on mobile
@@ -667,6 +696,17 @@ document.addEventListener('DOMContentLoaded', function() {
                     updateScrollFades(childRow);
                 }, { passive: true });
             });
+            
+            // Update overlay positions when page scrolls (so they stay aligned with elements)
+            let pageScrollTimeout = null;
+            window.addEventListener('scroll', () => {
+                clearTimeout(pageScrollTimeout);
+                pageScrollTimeout = setTimeout(() => {
+                    fadeOverlays.forEach((overlays, element) => {
+                        updateScrollFades(element);
+                    });
+                }, 10);
+            }, { passive: true });
         }
 
         const megaMenuTrigger = document.getElementById('mega-menu-trigger'), siteBurgButton = document.querySelector('.navbt-burg');
