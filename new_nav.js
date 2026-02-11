@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', function() {
     'use strict';
 
     // Version identifier - check in console: window.navVersion
-    window.navVersion = '2024-12-19-f7d3610';
+    window.navVersion = '2024-12-19-6e149b7';
     if (console && console.log) {
         console.log('%cNew Nav Script Loaded', 'color: #016A1B; font-weight: bold; font-size: 12px;', 'Version:', window.navVersion);
     }
@@ -491,6 +491,21 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!container) return;
         const activeEl = container.querySelector(selector);
         if (activeEl) container.scrollLeft = activeEl.offsetLeft - (container.offsetWidth / 2) + (activeEl.offsetWidth / 2);
+    }
+
+    // Function to update fade effects based on scroll position
+    function updateScrollFades(element) {
+        if (!element || window.innerWidth > 990) return;
+        
+        const scrollLeft = element.scrollLeft;
+        const scrollWidth = element.scrollWidth;
+        const clientWidth = element.clientWidth;
+        const canScrollLeft = scrollLeft > 0;
+        const canScrollRight = scrollLeft < scrollWidth - clientWidth - 1; // -1 for rounding
+        
+        // Toggle fade classes
+        element.classList.toggle('fade-left', canScrollLeft);
+        element.classList.toggle('fade-right', canScrollRight);
     }
 
     // Function to align bottom-row-inner with active parent pill on mobile
