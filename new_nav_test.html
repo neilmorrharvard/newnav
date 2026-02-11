@@ -41,7 +41,7 @@
         'use strict';
 
         // Version identifier - check in console: window.navVersion
-        window.navVersion = '2024-12-19-7399561';
+        window.navVersion = '2024-12-19-e50fdc5';
         if (console && console.log) {
             console.log('%cNew Nav Script Loaded', 'color: #016A1B; font-weight: bold; font-size: 12px;', 'Version:', window.navVersion);
         }
@@ -1092,57 +1092,97 @@
                     megaMenu.appendChild(inner);
                     
                     // Reserve space for bold text to prevent layout shift BEFORE making visible
-                    // Calculate min-widths synchronously to ensure they're set before first hover
+                    // Calculate min-widths - wait for images to load if needed
                     const allLinks = inner.querySelectorAll('.desktop-mega-menu-links a, .desktop-mega-menu-newsletters a');
-                    allLinks.forEach(link => {
-                        const text = link.getAttribute('data-text') || link.textContent.trim();
-                        if (text) {
-                            // Check if this is a Communities link (has icon)
-                            const hasIcon = link.querySelector('.community-icon') !== null;
-                            
-                            if (hasIcon) {
-                                // For Communities links, measure the entire link width with bold text
-                                // Clone the link to measure without affecting the original
-                                const clone = link.cloneNode(true);
-                                clone.style.position = 'absolute';
-                                clone.style.visibility = 'hidden';
-                                clone.style.width = 'auto';
-                                clone.style.minWidth = 'auto';
-                                // Make text bold in clone
-                                const textSpan = clone.querySelector('span');
-                                if (textSpan) {
-                                    textSpan.style.fontWeight = 'bold';
+                    const measureLinks = () => {
+                        allLinks.forEach(link => {
+                            const text = link.getAttribute('data-text') || link.textContent.trim();
+                            if (text) {
+                                // Check if this is a Communities link (has icon)
+                                const hasIcon = link.querySelector('.community-icon') !== null;
+                                
+                                if (hasIcon) {
+                                    // For Communities links, measure the entire link width with bold text
+                                    // Clone the link to measure without affecting the original
+                                    const clone = link.cloneNode(true);
+                                    clone.style.position = 'absolute';
+                                    clone.style.visibility = 'hidden';
+                                    clone.style.width = 'auto';
+                                    clone.style.minWidth = 'auto';
+                                    clone.style.fontWeight = 'bold'; // Apply bold to entire link (matches CSS hover)
+                                    // Ensure image in clone has dimensions set
+                                    const cloneIcon = clone.querySelector('.community-icon');
+                                    if (cloneIcon) {
+                                        cloneIcon.style.width = '40px';
+                                        cloneIcon.style.height = '40px';
+                                        cloneIcon.style.display = 'block';
+                                        cloneIcon.style.flexShrink = '0';
+                                    }
+                                    // Make any text spans bold as well (for external links)
+                                    const textSpan = clone.querySelector('span');
+                                    if (textSpan && textSpan.textContent.trim() && !textSpan.querySelector('svg')) {
+                                        textSpan.style.fontWeight = 'bold';
+                                    }
+                                    document.body.appendChild(clone);
+                                    // Force layout calculation
+                                    void clone.offsetWidth;
+                                    const boldWidth = clone.offsetWidth;
+                                    document.body.removeChild(clone);
+                                    // Set min-width to prevent layout shift
+                                    link.style.minWidth = `${boldWidth}px`;
+                                } else {
+                                    // For regular links, just measure the bold text width
+                                    const temp = document.createElement('span');
+                                    temp.style.position = 'absolute';
+                                    temp.style.visibility = 'hidden';
+                                    temp.style.fontSize = '12px';
+                                    temp.style.fontWeight = 'bold';
+                                    temp.style.whiteSpace = 'nowrap';
+                                    temp.textContent = text;
+                                    document.body.appendChild(temp);
+                                    // Force layout calculation
+                                    void temp.offsetWidth;
+                                    const boldWidth = temp.offsetWidth;
+                                    document.body.removeChild(temp);
+                                    // Set min-width to prevent layout shift
+                                    link.style.minWidth = `${boldWidth}px`;
                                 }
-                                document.body.appendChild(clone);
-                                // Force layout calculation
-                                void clone.offsetWidth;
-                                const boldWidth = clone.offsetWidth;
-                                document.body.removeChild(clone);
-                                // Set min-width to prevent layout shift
-                                link.style.minWidth = `${boldWidth}px`;
-                            } else {
-                                // For regular links, just measure the bold text width
-                                const temp = document.createElement('span');
-                                temp.style.position = 'absolute';
-                                temp.style.visibility = 'hidden';
-                                temp.style.fontSize = '12px';
-                                temp.style.fontWeight = 'bold';
-                                temp.style.whiteSpace = 'nowrap';
-                                temp.textContent = text;
-                                document.body.appendChild(temp);
-                                // Force layout calculation
-                                void temp.offsetWidth;
-                                const boldWidth = temp.offsetWidth;
-                                document.body.removeChild(temp);
-                                // Set min-width to prevent layout shift
-                                link.style.minWidth = `${boldWidth}px`;
                             }
-                        }
-                    });
+                        });
+                        
+                        // Now make the menu visible after min-widths are set
+                        megaMenu.classList.add('visible');
+                        container.classList.add('mega-menu-open');
+                    };
                     
-                    // Now make the menu visible after min-widths are set
-                    megaMenu.classList.add('visible');
-                    container.classList.add('mega-menu-open');
+                    // Check if any Communities links have images that need to load
+                    const communityImages = inner.querySelectorAll('.community-icon');
+                    const imagesToLoad = Array.from(communityImages).filter(img => !img.complete);
+                    
+                    if (imagesToLoad.length > 0) {
+                        // Wait for all images to load before measuring
+                        let loadedCount = 0;
+                        const checkAllLoaded = () => {
+                            loadedCount++;
+                            if (loadedCount === imagesToLoad.length) {
+                                // All images loaded, now measure
+                                requestAnimationFrame(() => {
+                                    measureLinks();
+                                });
+                            }
+                        };
+                        imagesToLoad.forEach(img => {
+                            if (img.complete) {
+                                checkAllLoaded();
+                            } else {
+                                img.addEventListener('load', checkAllLoaded, { once: true });
+                                img.addEventListener('error', checkAllLoaded, { once: true }); // Also handle errors
+                            }
+                        });
+                    } else {
+                        // No images to wait for, measure immediately
+                        measureLinks();
+                    }
                 };
                 
                 const hide = () => { 
