@@ -41,7 +41,7 @@
         'use strict';
 
         // Version identifier - check in console: window.navVersion
-        window.navVersion = '2024-12-19-21b7b7b';
+        window.navVersion = '2024-12-19-cf1b877';
         if (console && console.log) {
             console.log('%cNew Nav Script Loaded', 'color: #016A1B; font-weight: bold; font-size: 12px;', 'Version:', window.navVersion);
         }
@@ -1099,19 +1099,42 @@
                         allLinks.forEach(link => {
                             const text = link.getAttribute('data-text') || link.textContent.trim();
                             if (text) {
-                                // Create a temporary element to measure bold text width
-                                const temp = document.createElement('span');
-                                temp.style.position = 'absolute';
-                                temp.style.visibility = 'hidden';
-                                temp.style.fontSize = '12px';
-                                temp.style.fontWeight = 'bold';
-                                temp.style.whiteSpace = 'nowrap';
-                                temp.textContent = text;
-                                document.body.appendChild(temp);
-                                const boldWidth = temp.offsetWidth;
-                                document.body.removeChild(temp);
-                                // Set min-width to prevent layout shift
-                                link.style.minWidth = `${boldWidth}px`;
+                                // Check if this is a Communities link (has icon)
+                                const hasIcon = link.querySelector('.community-icon') !== null;
+                                
+                                if (hasIcon) {
+                                    // For Communities links, measure the entire link width with bold text
+                                    // Clone the link to measure without affecting the original
+                                    const clone = link.cloneNode(true);
+                                    clone.style.position = 'absolute';
+                                    clone.style.visibility = 'hidden';
+                                    clone.style.width = 'auto';
+                                    clone.style.minWidth = 'auto';
+                                    // Make text bold in clone
+                                    const textSpan = clone.querySelector('span');
+                                    if (textSpan) {
+                                        textSpan.style.fontWeight = 'bold';
+                                    }
+                                    document.body.appendChild(clone);
+                                    const boldWidth = clone.offsetWidth;
+                                    document.body.removeChild(clone);
+                                    // Set min-width to prevent layout shift
+                                    link.style.minWidth = `${boldWidth}px`;
+                                } else {
+                                    // For regular links, just measure the bold text width
+                                    const temp = document.createElement('span');
+                                    temp.style.position = 'absolute';
+                                    temp.style.visibility = 'hidden';
+                                    temp.style.fontSize = '12px';
+                                    temp.style.fontWeight = 'bold';
+                                    temp.style.whiteSpace = 'nowrap';
+                                    temp.textContent = text;
+                                    document.body.appendChild(temp);
+                                    const boldWidth = temp.offsetWidth;
+                                    document.body.removeChild(temp);
+                                    // Set min-width to prevent layout shift
+                                    link.style.minWidth = `${boldWidth}px`;
+                                }
                             }
                         });
                     });
