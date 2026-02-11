@@ -166,7 +166,7 @@ document.addEventListener('DOMContentLoaded', function() {
             @media (max-width: 990px) {
                 .top-row { padding-left: 10px; }
                 .category-pill.active, #comm-container.active { background: var(--primary) !important; color: white !important; }
-                .category-pill.active .category-icon svg, #comm-container.active .category-icon svg { fill: white !important; }
+                .category-pill.active .category-icon svg path, #comm-container.active .category-icon svg path { fill: white !important; }
                 .desktop-down-arrow { display: none !important; }
                 .bottom-row-inner { padding-top: 0; }
                 .bottom-row { margin-top: 0 !important; }
