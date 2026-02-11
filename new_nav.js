@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', function() {
     'use strict';
 
     // Version identifier - check in console: window.navVersion
-    window.navVersion = '2024-12-19-04bb35c';
+    window.navVersion = '2024-12-19-626f2cd';
     if (console && console.log) {
         console.log('%cNew Nav Script Loaded', 'color: #016A1B; font-weight: bold; font-size: 12px;', 'Version:', window.navVersion);
     }
@@ -137,7 +137,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 #village-nav-container.suppress-active-underline .category-pill.active::after, #village-nav-container.suppress-active-underline #comm-container.active::after { transform: scaleX(0); }
                 .category-pill.hover-active.active::after, #comm-container.hover-active.active::after { transform: scaleX(1); background-color: var(--primary); z-index: 3; }
                 .bottom-row { height: auto !important; }
-                .bottom-row-inner { padding-top: 5px; padding-bottom: 5px; padding-left: 12px; }
+                .bottom-row-inner { padding-top: 0; padding-bottom: 0; padding-left: 12px; }
                 .text-link { font-size: 12px; }
                 .desktop-down-arrow { display: block !important; width: 15px; height: 15px; }
                 .external-icon { width: 10px !important; height: 10px !important; }
