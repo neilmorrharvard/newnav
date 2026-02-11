@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', function() {
     'use strict';
 
     // Version identifier - check in console: window.navVersion
-    window.navVersion = '2024-12-19-338359a';
+    window.navVersion = '2024-12-19-fcd71c4';
     if (console && console.log) {
         console.log('%cNew Nav Script Loaded', 'color: #016A1B; font-weight: bold; font-size: 12px;', 'Version:', window.navVersion);
     }
@@ -1356,34 +1356,27 @@ document.addEventListener('DOMContentLoaded', function() {
                             const hasIcon = link.querySelector('.community-icon') !== null;
                             
                             if (hasIcon) {
-                                // For Communities links, measure the entire link width with bold text
-                                // Clone the link to measure without affecting the original
-                                const clone = link.cloneNode(true);
-                                clone.style.position = 'absolute';
-                                clone.style.visibility = 'hidden';
-                                clone.style.width = 'auto';
-                                clone.style.minWidth = 'auto';
-                                clone.style.fontWeight = 'bold'; // Apply bold to entire link (matches CSS hover)
-                                // Ensure image in clone has dimensions set
-                                const cloneIcon = clone.querySelector('.community-icon');
-                                if (cloneIcon) {
-                                    cloneIcon.style.width = '40px';
-                                    cloneIcon.style.height = '40px';
-                                    cloneIcon.style.display = 'block';
-                                    cloneIcon.style.flexShrink = '0';
-                                }
-                                // Make any text spans bold as well (for external links)
-                                const textSpan = clone.querySelector('span');
-                                if (textSpan && textSpan.textContent.trim() && !textSpan.querySelector('svg')) {
-                                    textSpan.style.fontWeight = 'bold';
-                                }
-                                document.body.appendChild(clone);
-                                // Force layout calculation
-                                void clone.offsetWidth;
-                                const boldWidth = clone.offsetWidth;
-                                document.body.removeChild(clone);
-                                // Set min-width to prevent layout shift
-                                link.style.minWidth = `${boldWidth}px`;
+                                // For Communities links, calculate width = icon (40px) + gap (8px) + bold text width
+                                // Measure the bold text width separately
+                                const linkText = text;
+                                const tempText = document.createElement('span');
+                                tempText.style.position = 'absolute';
+                                tempText.style.visibility = 'hidden';
+                                tempText.style.fontSize = '12px';
+                                tempText.style.fontWeight = 'bold';
+                                tempText.style.whiteSpace = 'nowrap';
+                                tempText.textContent = linkText;
+                                document.body.appendChild(tempText);
+                                void tempText.offsetWidth;
+                                const boldTextWidth = tempText.offsetWidth;
+                                document.body.removeChild(tempText);
+                                
+                                // Total width = icon + gap + text
+                                const totalWidth = 40 + 8 + boldTextWidth;
+                                
+                                // Set both min-width and max-width to lock the size and prevent layout shift
+                                link.style.minWidth = `${totalWidth}px`;
+                                link.style.maxWidth = `${totalWidth}px`;
                             } else {
                                 // For regular links, just measure the bold text width
                                 const temp = document.createElement('span');
