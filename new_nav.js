@@ -221,7 +221,7 @@ document.addEventListener('DOMContentLoaded', function() {
             .desktop-mega-menu-links-items { display: flex; flex-direction: column; gap: 12px; width: 100%; }
             .desktop-mega-menu-links-items.multi-column { display: grid; grid-template-columns: repeat(2, 1fr); column-gap: 60px; }
             .desktop-mega-menu-links-items.multi-column.communities-columns { column-gap: 60px; }
-            .desktop-mega-menu-links a { color: var(--text-inactive); text-decoration: none; font-size: 12px; font-weight: 500; padding: 4px 0; transition: color 0.2s; text-align: left; }
+            .desktop-mega-menu-links a { color: var(--text-inactive); text-decoration: none; font-size: 12px; font-weight: 500; padding: 4px 0; transition: color 0.2s; text-align: left; position: relative; display: inline-block; }
             .desktop-mega-menu-links a:hover { color: var(--primary); font-weight: bold; }
             .desktop-mega-menu-links.communities-split a { display: flex; align-items: center; gap: 8px; }
             .desktop-mega-menu-links a .community-icon { width: 40px; height: 40px; border-radius: 4px; flex-shrink: 0; object-fit: cover; opacity: 0; transition: opacity 0.3s ease-in-out; background-color: #f1f3f5; }
@@ -232,7 +232,7 @@ document.addEventListener('DOMContentLoaded', function() {
             .desktop-mega-menu-newsletters-items { display: flex; flex-direction: column; gap: 12px; width: 100%; }
             .desktop-mega-menu-newsletters-items.multi-column { display: grid; grid-template-columns: repeat(2, 1fr); column-gap: 60px; }
             .desktop-mega-menu-newsletters-items.multi-column.communities-columns { column-gap: 60px; }
-            .desktop-mega-menu-newsletters a { color: var(--text-inactive); text-decoration: none; font-size: 12px; font-weight: 500; padding: 4px 0; transition: color 0.2s; text-align: left; }
+            .desktop-mega-menu-newsletters a { color: var(--text-inactive); text-decoration: none; font-size: 12px; font-weight: 500; padding: 4px 0; transition: color 0.2s; text-align: left; position: relative; display: inline-block; }
             .desktop-mega-menu-newsletters a:hover { color: var(--primary); font-weight: bold; }
             .desktop-mega-menu-newsletters p { font-size: 13px; color: #666; margin: 0; }
             .desktop-mega-menu-brand { flex: 0 0 auto; display: flex; flex-direction: column; gap: 12px; align-items: flex-start; max-width: 200px; }
@@ -1232,6 +1232,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         childLinks.forEach(link => {
                             const a = document.createElement('a');
                             a.href = link.url;
+                            a.setAttribute('data-text', link.text);
                             if (link.external) {
                                 a.target = '_blank';
                                 a.innerHTML = `${link.text} ${extIcon}`;
@@ -1259,6 +1260,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     links.forEach(link => {
                         const a = document.createElement('a');
                         a.href = link.url;
+                        a.setAttribute('data-text', link.text);
                         if (link.external) {
                             a.target = '_blank';
                             a.innerHTML = `${link.text} ${extIcon}`;
@@ -1344,6 +1346,29 @@ document.addEventListener('DOMContentLoaded', function() {
                 megaMenu.appendChild(inner);
                 megaMenu.classList.add('visible');
                 container.classList.add('mega-menu-open');
+                
+                // Reserve space for bold text to prevent layout shift
+                requestAnimationFrame(() => {
+                    const allLinks = inner.querySelectorAll('.desktop-mega-menu-links a, .desktop-mega-menu-newsletters a');
+                    allLinks.forEach(link => {
+                        const text = link.getAttribute('data-text') || link.textContent.trim();
+                        if (text) {
+                            // Create a temporary element to measure bold text width
+                            const temp = document.createElement('span');
+                            temp.style.position = 'absolute';
+                            temp.style.visibility = 'hidden';
+                            temp.style.fontSize = '12px';
+                            temp.style.fontWeight = 'bold';
+                            temp.style.whiteSpace = 'nowrap';
+                            temp.textContent = text;
+                            document.body.appendChild(temp);
+                            const boldWidth = temp.offsetWidth;
+                            document.body.removeChild(temp);
+                            // Set min-width to prevent layout shift
+                            link.style.minWidth = `${boldWidth}px`;
+                        }
+                    });
+                });
                 
                 // Trigger PostHog recording when mega menu appears (desktop)
                 if (window.innerWidth > 990) {

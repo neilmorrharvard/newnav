@@ -1076,6 +1076,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     links.forEach(link => {
                         const a = document.createElement('a');
                         a.href = link.url;
+                        a.setAttribute('data-text', link.text);
                         const icon = document.createElement('img');
                         icon.className = 'community-icon';
                         // Map community names to city image placeholders
@@ -1130,6 +1131,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         childLinks.forEach(link => {
                             const a = document.createElement('a');
                             a.href = link.url;
+                            a.setAttribute('data-text', link.text);
                             if (link.external) {
                                 a.target = '_blank';
                                 a.innerHTML = `${link.text} ${extIcon}`;
@@ -1157,6 +1159,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     links.forEach(link => {
                         const a = document.createElement('a');
                         a.href = link.url;
+                        a.setAttribute('data-text', link.text);
                         if (link.external) {
                             a.target = '_blank';
                             a.innerHTML = `${link.text} ${extIcon}`;
@@ -1242,6 +1245,29 @@ document.addEventListener('DOMContentLoaded', function() {
                 megaMenu.appendChild(inner);
                 megaMenu.classList.add('visible');
                 container.classList.add('mega-menu-open');
+                
+                // Reserve space for bold text to prevent layout shift
+                requestAnimationFrame(() => {
+                    const allLinks = inner.querySelectorAll('.desktop-mega-menu-links a, .desktop-mega-menu-newsletters a');
+                    allLinks.forEach(link => {
+                        const text = link.getAttribute('data-text') || link.textContent.trim();
+                        if (text) {
+                            // Create a temporary element to measure bold text width
+                            const temp = document.createElement('span');
+                            temp.style.position = 'absolute';
+                            temp.style.visibility = 'hidden';
+                            temp.style.fontSize = '12px';
+                            temp.style.fontWeight = 'bold';
+                            temp.style.whiteSpace = 'nowrap';
+                            temp.textContent = text;
+                            document.body.appendChild(temp);
+                            const boldWidth = temp.offsetWidth;
+                            document.body.removeChild(temp);
+                            // Set min-width to prevent layout shift
+                            link.style.minWidth = `${boldWidth}px`;
+                        }
+                    });
+                });
                 
                 // Trigger PostHog recording when mega menu appears (desktop)
                 if (window.innerWidth > 990) {
