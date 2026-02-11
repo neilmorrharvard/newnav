@@ -41,7 +41,7 @@
         'use strict';
 
         // Version identifier - check in console: window.navVersion
-        window.navVersion = '2024-12-19-146a3eb';
+        window.navVersion = '2024-12-19-d7a17b2';
         if (console && console.log) {
             console.log('%cNew Nav Script Loaded', 'color: #016A1B; font-weight: bold; font-size: 12px;', 'Version:', window.navVersion);
         }
@@ -923,6 +923,7 @@
                         links.forEach(link => {
                             const a = document.createElement('a');
                             a.href = link.url;
+                            a.setAttribute('data-text', link.text);
                             const icon = document.createElement('img');
                             icon.className = 'community-icon';
                             // Map community names to city image placeholders
