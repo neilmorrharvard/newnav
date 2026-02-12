@@ -1,0 +1,99 @@
+<!-- 
+    NAVIGATION SCRIPT LOADER - STAGING ENVIRONMENT (WITH DEBUGGING)
+    Use this on your STAGING site for testing
+    
+    This version includes extensive debugging to track why the script isn't loading.
+-->
+
+<!-- Step 1: DNS Prefetch - Resolves DNS early (non-blocking) -->
+<link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+<link rel="dns-prefetch" href="https://neilmorrharvard.github.io">
+
+<!-- Step 2: Preconnect - Establishes connection early (non-blocking) -->
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="preconnect" href="https://neilmorrharvard.github.io" crossorigin>
+
+<!-- Step 3: Preload - Downloads script early (non-blocking) -->
+<link rel="preload" href="https://cdn.jsdelivr.net/gh/neilmorrharvard/newnav@staging/new_nav.js?v=staging" as="script">
+
+<!-- Step 4: Load script with automatic fallback (STAGING BRANCH + CACHE-BUSTING) -->
+<script>
+console.log('[LOADER DEBUG] Loader script started at:', new Date().toISOString());
+console.log('[LOADER DEBUG] Document ready state:', document.readyState);
+console.log('[LOADER DEBUG] Head element exists:', !!document.head);
+
+(function() {
+    console.log('[LOADER DEBUG] IIFE executing');
+    
+    try {
+        // Generate cache-busting parameter (timestamp updates on each page load)
+        // For staging, we want to see updates immediately, so we use a timestamp
+        const cacheBuster = '?v=' + Date.now();
+        console.log('[LOADER DEBUG] Cache buster:', cacheBuster);
+        
+        // Try jsDelivr first (primary CDN - loads from @staging branch with cache-busting)
+        const script = document.createElement('script');
+        const scriptUrl = 'https://cdn.jsdelivr.net/gh/neilmorrharvard/newnav@staging/new_nav.js' + cacheBuster;
+        script.src = scriptUrl;
+        script.defer = true;
+        
+        console.log('[LOADER DEBUG] Created script element');
+        console.log('[LOADER DEBUG] Script URL:', scriptUrl);
+        console.log('[LOADER DEBUG] Script src:', script.src);
+        
+        // Add load event listener
+        script.onload = function() {
+            console.log('[LOADER DEBUG] Script loaded successfully from jsDelivr');
+        };
+        
+        // Fallback to GitHub Pages if jsDelivr fails (from staging branch, also with cache-busting)
+        script.onerror = function(e) {
+            console.warn('[LOADER DEBUG] jsDelivr failed, trying GitHub Pages fallback...', e);
+            const fallbackScript = document.createElement('script');
+            const fallbackUrl = 'https://neilmorrharvard.github.io/newnav/new_nav.js' + cacheBuster;
+            fallbackScript.src = fallbackUrl;
+            fallbackScript.defer = true;
+            
+            console.log('[LOADER DEBUG] Created fallback script');
+            console.log('[LOADER DEBUG] Fallback URL:', fallbackUrl);
+            
+            fallbackScript.onload = function() {
+                console.log('[LOADER DEBUG] Fallback script loaded successfully');
+            };
+            
+            fallbackScript.onerror = function(e2) {
+                console.error('[LOADER DEBUG] Both script sources failed to load. Navigation may not function.', e2);
+            };
+            
+            console.log('[LOADER DEBUG] Appending fallback script to head');
+            document.head.appendChild(fallbackScript);
+        };
+        
+        console.log('[LOADER DEBUG] Appending primary script to head');
+        console.log('[LOADER DEBUG] Head element:', document.head);
+        console.log('[LOADER DEBUG] Head children before:', document.head.children.length);
+        
+        document.head.appendChild(script);
+        
+        console.log('[LOADER DEBUG] Script appended to head');
+        console.log('[LOADER DEBUG] Head children after:', document.head.children.length);
+        console.log('[LOADER DEBUG] Script element in DOM:', !!document.querySelector('script[src*="new_nav.js"]'));
+        
+        // Verify script was added
+        setTimeout(function() {
+            const addedScript = document.querySelector('script[src*="new_nav.js"]');
+            console.log('[LOADER DEBUG] After 100ms - Script in DOM:', !!addedScript);
+            if (addedScript) {
+                console.log('[LOADER DEBUG] Script element src:', addedScript.src);
+            }
+        }, 100);
+        
+    } catch (error) {
+        console.error('[LOADER DEBUG] Error in loader script:', error);
+        console.error('[LOADER DEBUG] Error stack:', error.stack);
+    }
+})();
+
+console.log('[LOADER DEBUG] Loader script finished executing');
+</script>
+

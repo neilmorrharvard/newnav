@@ -20,29 +20,65 @@
 
 <!-- Step 4: Load script with automatic fallback (STAGING BRANCH + CACHE-BUSTING) -->
 <script>
+console.log('[NAV LOADER] Loader script executing at:', new Date().toISOString());
+console.log('[NAV LOADER] Document ready state:', document.readyState);
+console.log('[NAV LOADER] Head exists:', !!document.head);
+
 (function() {
-    // Cache-busting for staging: Add timestamp to ensure we see updates immediately
-    // This bypasses CDN caching, which is fine for testing/staging
-    const cacheBuster = '?v=' + Date.now();
-    
-    // Try jsDelivr first (primary CDN - loads from @staging branch with cache-busting)
-    const script = document.createElement('script');
-    script.src = 'https://cdn.jsdelivr.net/gh/neilmorrharvard/newnav@staging/new_nav.js' + cacheBuster;
-    script.defer = true;
-    
-    // Fallback to GitHub Pages if jsDelivr fails (from staging branch, also with cache-busting)
-    script.onerror = function() {
-        console.warn('Navigation: jsDelivr failed, trying GitHub Pages fallback (staging)...');
-        const fallbackScript = document.createElement('script');
-        fallbackScript.src = 'https://neilmorrharvard.github.io/newnav/new_nav.js' + cacheBuster;
-        fallbackScript.defer = true;
-        fallbackScript.onerror = function() {
-            console.error('Navigation: Both script sources failed to load. Navigation may not function.');
+    try {
+        console.log('[NAV LOADER] IIFE started');
+        
+        // Cache-busting for staging: Add timestamp to ensure we see updates immediately
+        // This bypasses CDN caching, which is fine for testing/staging
+        const cacheBuster = '?v=' + Date.now();
+        console.log('[NAV LOADER] Cache buster:', cacheBuster);
+        
+        // Try jsDelivr first (primary CDN - loads from @staging branch with cache-busting)
+        const script = document.createElement('script');
+        const scriptUrl = 'https://cdn.jsdelivr.net/gh/neilmorrharvard/newnav@staging/new_nav.js' + cacheBuster;
+        script.src = scriptUrl;
+        script.defer = true;
+        
+        console.log('[NAV LOADER] Created script element, URL:', scriptUrl);
+        
+        script.onload = function() {
+            console.log('[NAV LOADER] Script loaded successfully');
         };
-        document.head.appendChild(fallbackScript);
-    };
-    
-    document.head.appendChild(script);
+        
+        // Fallback to GitHub Pages if jsDelivr fails (from staging branch, also with cache-busting)
+        script.onerror = function(e) {
+            console.warn('[NAV LOADER] jsDelivr failed, trying GitHub Pages fallback (staging)...', e);
+            const fallbackScript = document.createElement('script');
+            fallbackScript.src = 'https://neilmorrharvard.github.io/newnav/new_nav.js' + cacheBuster;
+            fallbackScript.defer = true;
+            fallbackScript.onerror = function(e2) {
+                console.error('[NAV LOADER] Both script sources failed to load. Navigation may not function.', e2);
+            };
+            console.log('[NAV LOADER] Appending fallback script');
+            document.head.appendChild(fallbackScript);
+        };
+        
+        console.log('[NAV LOADER] Appending script to head');
+        document.head.appendChild(script);
+        console.log('[NAV LOADER] Script appended, checking DOM...');
+        
+        // Verify it was added
+        setTimeout(function() {
+            const checkScript = document.querySelector('script[src*="new_nav.js"]');
+            console.log('[NAV LOADER] Script in DOM after 100ms:', !!checkScript);
+            if (checkScript) {
+                console.log('[NAV LOADER] Script src:', checkScript.src);
+            } else {
+                console.error('[NAV LOADER] Script NOT found in DOM!');
+            }
+        }, 100);
+        
+    } catch (error) {
+        console.error('[NAV LOADER] ERROR in loader:', error);
+        console.error('[NAV LOADER] Error details:', error.message, error.stack);
+    }
 })();
+
+console.log('[NAV LOADER] Loader script finished');
 </script>
 
