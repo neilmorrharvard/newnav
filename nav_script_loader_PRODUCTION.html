@@ -1,14 +1,8 @@
 <!-- 
-    NAVIGATION SCRIPT LOADER WITH FALLBACK - PRODUCTION
-    Copy this code into your PRODUCTION site's <head> section
+    NAVIGATION SCRIPT LOADER - PRODUCTION ENVIRONMENT
+    Use this on your PRODUCTION site
     
-    For STAGING site, use: nav_script_loader_STAGING.html instead
-    
-    This implementation:
-    1. Tries jsDelivr CDN first (fast, global CDN)
-    2. Automatically falls back to GitHub Pages if jsDelivr fails
-    3. Includes resource hints for optimal performance
-    4. Loads from @main branch (production)
+    This loads from the @main branch, which is only updated after testing on staging.
 -->
 
 <!-- Step 1: DNS Prefetch - Resolves DNS early (non-blocking) -->
@@ -22,23 +16,23 @@
 <!-- Step 3: Preload - Downloads script early (non-blocking) -->
 <link rel="preload" href="https://cdn.jsdelivr.net/gh/neilmorrharvard/newnav@main/new_nav.js" as="script">
 
-<!-- Step 4: Load script with automatic fallback -->
+<!-- Step 4: Load script with automatic fallback (PRODUCTION/MAIN BRANCH) -->
 <script>
 (function() {
-    // Try jsDelivr first (primary CDN - fast, global distribution)
+    // Try jsDelivr first (primary CDN - loads from @main branch)
     const script = document.createElement('script');
     script.src = 'https://cdn.jsdelivr.net/gh/neilmorrharvard/newnav@main/new_nav.js';
     script.defer = true;
     
-    // Fallback to GitHub Pages if jsDelivr fails
+    // Fallback to GitHub Pages if jsDelivr fails (from main branch)
     script.onerror = function() {
-        console.warn('Navigation: jsDelivr failed, trying GitHub Pages fallback...');
+        console.warn('Navigation: jsDelivr failed, trying GitHub Pages fallback (production)...');
         const fallbackScript = document.createElement('script');
         fallbackScript.src = 'https://neilmorrharvard.github.io/newnav/new_nav.js';
         fallbackScript.defer = true;
         fallbackScript.onerror = function() {
             console.error('Navigation: Both script sources failed to load. Navigation may not function.');
-            // Optional: You could trigger an analytics event here to track failures
+            // Optional: Track failures in analytics
             // if (typeof posthog !== 'undefined') {
             //     posthog.capture('nav_script_load_failed');
             // }
