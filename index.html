@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', function() {
     'use strict';
 
     // Version identifier - check in console: window.navVersion
-    window.navVersion = '2024-12-19-1db4783';
+    window.navVersion = '2024-12-19-64b02db';
     if (console && console.log) {
         console.log('%cNew Nav Script Loaded', 'color: #016A1B; font-weight: bold; font-size: 12px;', 'Version:', window.navVersion);
     }
@@ -52,6 +52,16 @@ document.addEventListener('DOMContentLoaded', function() {
             estevan: "https://staging-www2.villagemedia.ca/southeast/estevanmercury",
             yorkton: "https://staging-www2.villagemedia.ca/central/yorktonthisweek",
             kamsack: "https://staging-www2.villagemedia.ca/central/kamsacktimes",
+            thebattlefords: "https://staging-www2.villagemedia.ca/north/thebattlefords",
+            canora: "https://staging-www2.villagemedia.ca/central/canora",
+            preeceville: "https://staging-www2.villagemedia.ca/central/preeceville",
+            carlyle: "https://staging-www2.villagemedia.ca/southeast/carlyle",
+            humboldt: "https://staging-www2.villagemedia.ca/central/humboldt",
+            moosejaw: "https://staging-www2.villagemedia.ca/southwest/moosejaw",
+            outlook: "https://staging-www2.villagemedia.ca/central/outlook",
+            princealbert: "https://staging-www2.villagemedia.ca/north/princealbert",
+            unitywilkie: "https://staging-www2.villagemedia.ca/north/unitywilkie",
+            weyburn: "https://staging-www2.villagemedia.ca/southeast/weyburn",
             all: "https://staging-www2.villagemedia.ca/" 
         },
         categories: {
@@ -102,7 +112,17 @@ document.addEventListener('DOMContentLoaded', function() {
                 { text: "Saskatoon", url: "https://staging-www2.villagemedia.ca/saskatoon-today" },
                 { text: "Estevan", url: "https://staging-www2.villagemedia.ca/southeast/estevanmercury" },
                 { text: "Yorkton", url: "https://staging-www2.villagemedia.ca/central/yorktonthisweek" },
-                { text: "Kamsack", url: "https://staging-www2.villagemedia.ca/central/kamsacktimes" }
+                { text: "Kamsack", url: "https://staging-www2.villagemedia.ca/central/kamsacktimes" },
+                { text: "The Battlefords", url: "https://staging-www2.villagemedia.ca/north/thebattlefords" },
+                { text: "Canora", url: "https://staging-www2.villagemedia.ca/central/canora" },
+                { text: "Preeceville", url: "https://staging-www2.villagemedia.ca/central/preeceville" },
+                { text: "Carlyle", url: "https://staging-www2.villagemedia.ca/southeast/carlyle" },
+                { text: "Humboldt", url: "https://staging-www2.villagemedia.ca/central/humboldt" },
+                { text: "Moose Jaw", url: "https://staging-www2.villagemedia.ca/southwest/moosejaw" },
+                { text: "Outlook", url: "https://staging-www2.villagemedia.ca/central/outlook" },
+                { text: "Prince Albert", url: "https://staging-www2.villagemedia.ca/north/princealbert" },
+                { text: "Unity-Wilkie", url: "https://staging-www2.villagemedia.ca/north/unitywilkie" },
+                { text: "Weyburn", url: "https://staging-www2.villagemedia.ca/southeast/weyburn" }
             ]
         }
     };
@@ -266,7 +286,7 @@ document.addEventListener('DOMContentLoaded', function() {
             .external-icon { width: 14px !important; height: 14px !important; margin-left: 6px; flex-shrink: 0; display: inline-block; vertical-align: middle; }
             .dropdown-arrow-icon { width: 15px; height: 15px; fill: currentColor; display: none; }
             @media (max-width: 990px) { .dropdown-arrow-icon { display: block; } }
-            #village-nav-dropdown-mobile { position: absolute; background: white; border: 1px solid #ddd; border-radius: 8px; z-index: 8; box-shadow: 0 4px 12px rgba(0,0,0,0.1); width: 200px; }
+            #village-nav-dropdown-mobile { position: absolute; background: white; border: 1px solid #ddd; border-radius: 8px; z-index: 8; box-shadow: 0 4px 12px rgba(0,0,0,0.1); width: 200px; max-height: calc(100vh - 120px); overflow-y: auto; }
         </style>
         <div class="nav-content-wrapper">
             <div id="village-nav-dropdown-mobile" style="display: none;">
@@ -275,7 +295,17 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="dropdown-option" style="padding: 12px 16px; cursor: pointer; font-size: 13px; font-weight: 600; border-bottom: 1px solid #eee;" data-community="saskatoon">Saskatoon</div>
                 <div class="dropdown-option" style="padding: 12px 16px; cursor: pointer; font-size: 13px; font-weight: 600; border-bottom: 1px solid #eee;" data-community="estevan">Estevan</div>
                 <div class="dropdown-option" style="padding: 12px 16px; cursor: pointer; font-size: 13px; font-weight: 600; border-bottom: 1px solid #eee;" data-community="yorkton">Yorkton</div>
-                <div class="dropdown-option" style="padding: 12px 16px; cursor: pointer; font-size: 13px; font-weight: 600;" data-community="kamsack">Kamsack</div>
+                <div class="dropdown-option" style="padding: 12px 16px; cursor: pointer; font-size: 13px; font-weight: 600; border-bottom: 1px solid #eee;" data-community="kamsack">Kamsack</div>
+                <div class="dropdown-option" style="padding: 12px 16px; cursor: pointer; font-size: 13px; font-weight: 600; border-bottom: 1px solid #eee;" data-community="thebattlefords">The Battlefords</div>
+                <div class="dropdown-option" style="padding: 12px 16px; cursor: pointer; font-size: 13px; font-weight: 600; border-bottom: 1px solid #eee;" data-community="canora">Canora</div>
+                <div class="dropdown-option" style="padding: 12px 16px; cursor: pointer; font-size: 13px; font-weight: 600; border-bottom: 1px solid #eee;" data-community="preeceville">Preeceville</div>
+                <div class="dropdown-option" style="padding: 12px 16px; cursor: pointer; font-size: 13px; font-weight: 600; border-bottom: 1px solid #eee;" data-community="carlyle">Carlyle</div>
+                <div class="dropdown-option" style="padding: 12px 16px; cursor: pointer; font-size: 13px; font-weight: 600; border-bottom: 1px solid #eee;" data-community="humboldt">Humboldt</div>
+                <div class="dropdown-option" style="padding: 12px 16px; cursor: pointer; font-size: 13px; font-weight: 600; border-bottom: 1px solid #eee;" data-community="moosejaw">Moose Jaw</div>
+                <div class="dropdown-option" style="padding: 12px 16px; cursor: pointer; font-size: 13px; font-weight: 600; border-bottom: 1px solid #eee;" data-community="outlook">Outlook</div>
+                <div class="dropdown-option" style="padding: 12px 16px; cursor: pointer; font-size: 13px; font-weight: 600; border-bottom: 1px solid #eee;" data-community="princealbert">Prince Albert</div>
+                <div class="dropdown-option" style="padding: 12px 16px; cursor: pointer; font-size: 13px; font-weight: 600; border-bottom: 1px solid #eee;" data-community="unitywilkie">Unity-Wilkie</div>
+                <div class="dropdown-option" style="padding: 12px 16px; cursor: pointer; font-size: 13px; font-weight: 600;" data-community="weyburn">Weyburn</div>
             </div>
 
             <div class="top-row hide-scrollbar" id="main-top-row">
@@ -1130,7 +1160,17 @@ document.addEventListener('DOMContentLoaded', function() {
                                 'Saskatoon': 'https://images.unsplash.com/photo-1514924013411-cbf25faa35bb?w=60&h=60&fit=crop&q=75',
                                 'Estevan': 'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=60&h=60&fit=crop&q=75',
                                 'Yorkton': 'https://images.unsplash.com/photo-1514565131-fce0801e5785?w=60&h=60&fit=crop&q=75',
-                                'Kamsack': 'https://images.unsplash.com/photo-1514924013411-cbf25faa35bb?w=60&h=60&fit=crop&q=75'
+                                'Kamsack': 'https://images.unsplash.com/photo-1514924013411-cbf25faa35bb?w=60&h=60&fit=crop&q=75',
+                                'The Battlefords': 'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=60&h=60&fit=crop&q=75',
+                                'Canora': 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=60&h=60&fit=crop&q=75',
+                                'Preeceville': 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=60&h=60&fit=crop&q=75',
+                                'Carlyle': 'https://images.unsplash.com/photo-1501594907352-04cda38ebc29?w=60&h=60&fit=crop&q=75',
+                                'Humboldt': 'https://images.unsplash.com/photo-1514565131-fce0801e5785?w=60&h=60&fit=crop&q=75',
+                                'Moose Jaw': 'https://images.unsplash.com/photo-1514924013411-cbf25faa35bb?w=60&h=60&fit=crop&q=75',
+                                'Outlook': 'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=60&h=60&fit=crop&q=75',
+                                'Prince Albert': 'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=60&h=60&fit=crop&q=75',
+                                'Unity-Wilkie': 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=60&h=60&fit=crop&q=75',
+                                'Weyburn': 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=60&h=60&fit=crop&q=75'
                             };
                             icon.src = cityMap[link.text] || 'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=60&h=60&fit=crop&q=75';
                         icon.alt = link.text;
