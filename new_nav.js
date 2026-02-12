@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', function() {
     'use strict';
 
     // Version identifier - check in console: window.navVersion
-    window.navVersion = '2024-12-19-fc62d67';
+    window.navVersion = '2024-12-19-aff0882';
     if (console && console.log) {
         console.log('%cNew Nav Script Loaded', 'color: #016A1B; font-weight: bold; font-size: 12px;', 'Version:', window.navVersion);
     }
@@ -271,7 +271,7 @@ document.addEventListener('DOMContentLoaded', function() {
             .text-link { color: var(--text-inactive); text-decoration: none; font-size: 12px; font-weight: 400; border-bottom: 2px solid transparent; padding-bottom: 2px; }
             .text-link.active { color: var(--primary); font-weight: 700; border-bottom: none; }
             
-            .external-icon { width: 14px !important; height: 14px !important; margin-left: 6px; flex-shrink: 0; display: inline-block; vertical-align: middle; }
+            .external-icon { width: 10px !important; height: 10px !important; margin-left: 6px; flex-shrink: 0; display: inline-block; vertical-align: middle; }
             .dropdown-arrow-icon { width: 15px; height: 15px; fill: currentColor; display: none; }
             @media (max-width: 990px) { .dropdown-arrow-icon { display: block; } }
             #village-nav-dropdown-mobile { position: absolute; background: white; border: 1px solid #ddd; border-radius: 8px; z-index: 8; box-shadow: 0 4px 12px rgba(0,0,0,0.1); width: 200px; max-height: calc(100vh - 120px); overflow-y: auto; }
