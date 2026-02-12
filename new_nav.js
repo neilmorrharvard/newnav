@@ -1148,52 +1148,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
             pill.insertAdjacentHTML('beforeend', downArrow);
 
-            const show = () => {
-                if (!userHasInteracted) return;
-                clearTimeout(hoverTimeout);
-                clearTimeout(showTimeout); // Clear any pending show timeout
-                
-                // Close search menu if open (it's a separate element)
-                const searchMenuToClose = container.querySelector('.desktop-mega-menu.search-menu');
-                if (searchMenuToClose) {
-                    searchMenuToClose.classList.remove('visible');
-                    searchMenuToClose.remove();
-                    // Don't remove mega-menu-open class here - it will be added back when showing this menu
-                    // Restore bottom-row visibility when search menu is closed
-                    const activeBottomRow = document.querySelector('.bottom-row.active');
-                    if (activeBottomRow) {
-                        activeBottomRow.style.display = 'flex';
-                    }
-                }
-                
-                // Set current pill
-                currentPill = pill;
-                
-                // If the current pill is NOT active, suppress the active underline on other items
-                if (!pill.classList.contains('active')) {
-                    container.classList.add('suppress-active-underline');
-                } else {
-                    container.classList.remove('suppress-active-underline');
-                }
-                
-                // Clear hover-active from all other pills
-                document.querySelectorAll('.category-pill, #comm-container').forEach(p => {
-                    if (p !== pill) p.classList.remove('hover-active');
-                });
-                
-                // Add hover-active class to show underline
-                pill.classList.add('hover-active');
-                
-                // Hide the bottom-row when mega menu is visible
-                document.querySelectorAll('.bottom-row').forEach(row => {
-                    row.style.display = 'none';
-                });
-                
-                // Remove JavaScript positioning - not needed with relative positioning
-                
-                    // Build the mega menu content
-                    const inner = document.createElement('div');
-                    inner.className = 'desktop-mega-menu-inner' + (isCommunities ? ' communities-menu' : '');
+            // Cache for pre-built menu content
+            let cachedMenuContent = null;
+            let lastCachedPill = null;
+
+            const buildMenuContent = () => {
+                // Build the mega menu content
+                const inner = document.createElement('div');
+                inner.className = 'desktop-mega-menu-inner' + (isCommunities ? ' communities-menu' : '');
                 
                 if (isCommunities) {
                     // Special handling for Communities
@@ -1249,30 +1211,31 @@ document.addEventListener('DOMContentLoaded', function() {
                         communitiesItems.style.gridTemplateColumns = `repeat(${numColumns}, 1fr)`;
                     }
                     
+                    // Map community names to city image placeholders (define once outside loop)
+                    const cityMap = {
+                        'All Communities': 'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=60&h=60&fit=crop&q=75',
+                        'Regina': 'https://images.unsplash.com/photo-1514565131-fce0801e5785?w=60&h=60&fit=crop&q=75',
+                        'Saskatoon': 'https://images.unsplash.com/photo-1514924013411-cbf25faa35bb?w=60&h=60&fit=crop&q=75',
+                        'Estevan': 'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=60&h=60&fit=crop&q=75',
+                        'Yorkton': 'https://images.unsplash.com/photo-1514565131-fce0801e5785?w=60&h=60&fit=crop&q=75',
+                        'Kamsack': 'https://images.unsplash.com/photo-1514924013411-cbf25faa35bb?w=60&h=60&fit=crop&q=75',
+                        'The Battlefords': 'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=60&h=60&fit=crop&q=75',
+                        'Canora': 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=60&h=60&fit=crop&q=75',
+                        'Preeceville': 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=60&h=60&fit=crop&q=75',
+                        'Carlyle': 'https://images.unsplash.com/photo-1501594907352-04cda38ebc29?w=60&h=60&fit=crop&q=75',
+                        'Humboldt': 'https://images.unsplash.com/photo-1514565131-fce0801e5785?w=60&h=60&fit=crop&q=75',
+                        'Moose Jaw': 'https://images.unsplash.com/photo-1514924013411-cbf25faa35bb?w=60&h=60&fit=crop&q=75',
+                        'Outlook': 'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=60&h=60&fit=crop&q=75',
+                        'Prince Albert': 'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=60&h=60&fit=crop&q=75',
+                        'Unity-Wilkie': 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=60&h=60&fit=crop&q=75',
+                        'Weyburn': 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=60&h=60&fit=crop&q=75'
+                    };
+                    
                     links.forEach(link => {
                         const a = document.createElement('a');
                         a.href = link.url;
                         const icon = document.createElement('img');
                         icon.className = 'community-icon';
-                        // Map community names to city image placeholders
-                        const cityMap = {
-                            'All Communities': 'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=60&h=60&fit=crop&q=75',
-                            'Regina': 'https://images.unsplash.com/photo-1514565131-fce0801e5785?w=60&h=60&fit=crop&q=75',
-                            'Saskatoon': 'https://images.unsplash.com/photo-1514924013411-cbf25faa35bb?w=60&h=60&fit=crop&q=75',
-                            'Estevan': 'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=60&h=60&fit=crop&q=75',
-                            'Yorkton': 'https://images.unsplash.com/photo-1514565131-fce0801e5785?w=60&h=60&fit=crop&q=75',
-                            'Kamsack': 'https://images.unsplash.com/photo-1514924013411-cbf25faa35bb?w=60&h=60&fit=crop&q=75',
-                            'The Battlefords': 'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=60&h=60&fit=crop&q=75',
-                            'Canora': 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=60&h=60&fit=crop&q=75',
-                            'Preeceville': 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=60&h=60&fit=crop&q=75',
-                            'Carlyle': 'https://images.unsplash.com/photo-1501594907352-04cda38ebc29?w=60&h=60&fit=crop&q=75',
-                            'Humboldt': 'https://images.unsplash.com/photo-1514565131-fce0801e5785?w=60&h=60&fit=crop&q=75',
-                            'Moose Jaw': 'https://images.unsplash.com/photo-1514924013411-cbf25faa35bb?w=60&h=60&fit=crop&q=75',
-                            'Outlook': 'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=60&h=60&fit=crop&q=75',
-                            'Prince Albert': 'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=60&h=60&fit=crop&q=75',
-                            'Unity-Wilkie': 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=60&h=60&fit=crop&q=75',
-                            'Weyburn': 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=60&h=60&fit=crop&q=75'
-                        };
                         icon.src = cityMap[link.text] || 'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=60&h=60&fit=crop&q=75';
                         icon.alt = link.text;
                         // Fade in image when loaded
@@ -1408,26 +1371,70 @@ document.addEventListener('DOMContentLoaded', function() {
                         
                         inner.appendChild(brandSection);
                     }
-                    
-                    // Right section - newsletters placeholder
-                    const newslettersSection = document.createElement('div');
-                    newslettersSection.className = 'desktop-mega-menu-newsletters';
-                    newslettersSection.innerHTML = '<h3>Newsletters</h3><p>Newsletter placeholder for this category</p>';
-                    
-                    inner.appendChild(newslettersSection);
                 }
                 
-                // Ensure search menu is closed and removed
-                const searchMenuToRemove = container.querySelector('.desktop-mega-menu.search-menu');
-                if (searchMenuToRemove) {
-                    searchMenuToRemove.classList.remove('visible');
-                    searchMenuToRemove.remove();
+                return inner;
+            };
+
+            const show = () => {
+                if (!userHasInteracted) return;
+                clearTimeout(hoverTimeout);
+                clearTimeout(showTimeout); // Clear any pending show timeout
+                
+                // Close search menu if open (it's a separate element)
+                const searchMenuToClose = container.querySelector('.desktop-mega-menu.search-menu');
+                if (searchMenuToClose) {
+                    searchMenuToClose.classList.remove('visible');
+                    searchMenuToClose.remove();
+                    // Don't remove mega-menu-open class here - it will be added back when showing this menu
+                    // Restore bottom-row visibility when search menu is closed
+                    const activeBottomRow = document.querySelector('.bottom-row.active');
+                    if (activeBottomRow) {
+                        activeBottomRow.style.display = 'flex';
+                    }
                 }
                 
-                // Clear and populate
+                // Set current pill
+                currentPill = pill;
+                
+                // If the current pill is NOT active, suppress the active underline on other items
+                if (!pill.classList.contains('active')) {
+                    container.classList.add('suppress-active-underline');
+                } else {
+                    container.classList.remove('suppress-active-underline');
+                }
+                
+                // Clear hover-active from all other pills
+                document.querySelectorAll('.category-pill, #comm-container').forEach(p => {
+                    if (p !== pill) p.classList.remove('hover-active');
+                });
+                
+                // Add hover-active class to show underline
+                pill.classList.add('hover-active');
+                
+                // Hide the bottom-row when mega menu is visible
+                document.querySelectorAll('.bottom-row').forEach(row => {
+                    row.style.display = 'none';
+                });
+                
+                // Remove JavaScript positioning - not needed with relative positioning
+                
+                // Use cached content if available and still valid, otherwise build it
+                let inner;
+                if (cachedMenuContent && lastCachedPill === pill) {
+                    inner = cachedMenuContent.cloneNode(true);
+                } else {
+                    inner = buildMenuContent();
+                    cachedMenuContent = inner.cloneNode(true);
+                    lastCachedPill = pill;
+                }
+                
+                // Clear existing content and add new
                 megaMenu.innerHTML = '';
-                megaMenu.classList.remove('search-menu'); // Ensure regular mega menu doesn't have search-menu class
                 megaMenu.appendChild(inner);
+                
+                // Reserve space for bold text to prevent layout shift BEFORE making visible
+                // Calculate min-widths - wait for images to load if needed
                 
                 // Reserve space for bold text to prevent layout shift BEFORE making visible
                 // Calculate min-widths - wait for images to load if needed
@@ -1548,9 +1555,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 clearTimeout(hoverTimeout); // Clear hide timeout from previous parent
                 
                 // If we're moving between parent items (mega menu already visible), use short delay
-                // Otherwise, use longer delay to prevent accidental activation
+                // Otherwise, use shorter delay for faster response (reduced from 250ms to 100ms)
                 const isMovingBetweenItems = currentPill !== null && megaMenu.classList.contains('visible');
-                const delay = isMovingBetweenItems ? 50 : 250;
+                const delay = isMovingBetweenItems ? 50 : 100;
+                
+                // Pre-build menu content during the delay to reduce perceived latency
+                if (!cachedMenuContent || lastCachedPill !== pill) {
+                    // Build content asynchronously during delay
+                    requestAnimationFrame(() => {
+                        cachedMenuContent = buildMenuContent();
+                        lastCachedPill = pill;
+                    });
+                }
                 
                 showTimeout = setTimeout(() => {
                     show();

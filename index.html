@@ -1447,9 +1447,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 clearTimeout(hoverTimeout); // Clear hide timeout from previous parent
                 
                 // If we're moving between parent items (mega menu already visible), use short delay
-                // Otherwise, use longer delay to prevent accidental activation
+                // Otherwise, use shorter delay for faster response (reduced from 250ms to 100ms)
                 const isMovingBetweenItems = currentPill !== null && megaMenu.classList.contains('visible');
-                const delay = isMovingBetweenItems ? 50 : 250;
+                const delay = isMovingBetweenItems ? 50 : 100;
                 
                 showTimeout = setTimeout(() => {
                     show();
