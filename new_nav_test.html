@@ -1193,10 +1193,14 @@
                     megaMenu.classList.remove('search-menu'); // Ensure regular mega menu doesn't have search-menu class
                     megaMenu.appendChild(inner);
                     
-                    // Reserve space for bold text to prevent layout shift BEFORE making visible
-                    // Calculate min-widths - wait for images to load if needed
-                    const allLinks = inner.querySelectorAll('.desktop-mega-menu-links a, .desktop-mega-menu-newsletters a');
-                    const measureLinks = () => {
+                    // Show menu immediately - don't wait for images to load
+                    megaMenu.classList.add('visible');
+                    container.classList.add('mega-menu-open');
+                    
+                    // Calculate min-widths asynchronously after showing menu to prevent layout shift
+                    // For Communities, we can calculate without waiting for images since icons are fixed-width
+                    requestAnimationFrame(() => {
+                        const allLinks = inner.querySelectorAll('.desktop-mega-menu-links a, .desktop-mega-menu-newsletters a');
                         allLinks.forEach(link => {
                             const text = link.getAttribute('data-text') || link.textContent.trim();
                             if (text) {
@@ -1244,40 +1248,7 @@
                                 }
                             }
                         });
-                        
-                        // Now make the menu visible after min-widths are set
-                        megaMenu.classList.add('visible');
-                        container.classList.add('mega-menu-open');
-                    };
-                    
-                    // Check if any Communities links have images that need to load
-                    const communityImages = inner.querySelectorAll('.community-icon');
-                    const imagesToLoad = Array.from(communityImages).filter(img => !img.complete);
-                    
-                    if (imagesToLoad.length > 0) {
-                        // Wait for all images to load before measuring
-                        let loadedCount = 0;
-                        const checkAllLoaded = () => {
-                            loadedCount++;
-                            if (loadedCount === imagesToLoad.length) {
-                                // All images loaded, now measure
-                                requestAnimationFrame(() => {
-                                    measureLinks();
-                                });
-                            }
-                        };
-                        imagesToLoad.forEach(img => {
-                            if (img.complete) {
-                                checkAllLoaded();
-                            } else {
-                                img.addEventListener('load', checkAllLoaded, { once: true });
-                                img.addEventListener('error', checkAllLoaded, { once: true }); // Also handle errors
-                            }
-                        });
-                    } else {
-                        // No images to wait for, measure immediately
-                        measureLinks();
-                    }
+                    });
                 };
                 
                 const hide = () => { 
