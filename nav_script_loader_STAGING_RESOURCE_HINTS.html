@@ -1,0 +1,18 @@
+<!-- 
+    NAVIGATION SCRIPT LOADER - STAGING ENVIRONMENT
+    RESOURCE HINTS (Steps 1-3) - Place these at the TOP of <head>
+    
+    Copy these lines right after <head> tag for best performance
+-->
+<!-- Step 1: DNS Prefetch - Resolves DNS early (non-blocking) -->
+<link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+<link rel="dns-prefetch" href="https://neilmorrharvard.github.io">
+
+<!-- Step 2: Preconnect - Establishes connection early (non-blocking) -->
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="preconnect" href="https://neilmorrharvard.github.io" crossorigin>
+
+<!-- Step 3: Preload - Downloads script early (non-blocking) -->
+<!-- Note: Update commit hash when you push new changes to staging -->
+<link rel="preload" href="https://cdn.jsdelivr.net/gh/neilmorrharvard/newnav@787064c/new_nav.js" as="script">
+

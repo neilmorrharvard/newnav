@@ -1,28 +1,9 @@
 <!-- 
     NAVIGATION SCRIPT LOADER - STAGING ENVIRONMENT
-    Use this on your STAGING site for testing
+    SCRIPT ONLY (Step 4) - Place this anywhere in <head>, but after resource hints
     
-    OPTIMAL PLACEMENT:
-    - Steps 1-3 (resource hints) should be at the TOP of <head> for best performance
-    - Step 4 (script) can be anywhere in <head>, but after hints is best
-    
-    This loads from a specific commit hash for immediate updates.
+    Copy this script after the resource hints (or anywhere in <head>)
 -->
-
-<!-- Step 1: DNS Prefetch - Resolves DNS early (non-blocking) -->
-<!-- PLACE THESE AT THE TOP OF <head> FOR BEST PERFORMANCE -->
-<link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
-<link rel="dns-prefetch" href="https://neilmorrharvard.github.io">
-
-<!-- Step 2: Preconnect - Establishes connection early (non-blocking) -->
-<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-<link rel="preconnect" href="https://neilmorrharvard.github.io" crossorigin>
-
-<!-- Step 3: Preload - Downloads script early (non-blocking) -->
-<!-- Note: Update commit hash in script below when you update this -->
-<link rel="preload" href="https://cdn.jsdelivr.net/gh/neilmorrharvard/newnav@787064c/new_nav.js" as="script">
-
-<!-- Step 4: Load script with automatic fallback (STAGING BRANCH + CACHE-BUSTING) -->
 <script>
 // Immediate execution - no IIFE wrapper to avoid any execution issues
 console.log('[NAV LOADER] Loader script executing at:', new Date().toISOString());
