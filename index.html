@@ -252,13 +252,13 @@ document.addEventListener('DOMContentLoaded', function() {
             .desktop-mega-menu-links h3 { font-size: 11px; font-weight: 500; margin: 0 0 12px 0; color: #999; width: 100%; text-transform: uppercase; }
             .desktop-mega-menu-links-items { display: flex; flex-direction: column; gap: 12px; width: 100%; }
             .desktop-mega-menu-links-items.multi-column { display: grid; grid-template-columns: repeat(2, 1fr); column-gap: 60px; }
-            .desktop-mega-menu-links-items.multi-column.communities-columns { column-gap: 60px; }
+            .desktop-mega-menu-links-items.multi-column.communities-columns { column-gap: 40px; }
             .desktop-mega-menu-links a { color: var(--text-inactive); text-decoration: none; font-size: 12px; font-weight: 500; padding: 4px 0; transition: color 0.2s; text-align: left; }
             .desktop-mega-menu-links a:hover { color: var(--primary); font-weight: bold; }
             .desktop-mega-menu-links.communities-split a { display: flex; align-items: center; gap: 8px; }
-            .desktop-mega-menu-links a .community-icon-wrapper { position: relative; width: 40px; height: 40px; flex-shrink: 0; }
-            .desktop-mega-menu-links a .community-icon-skeleton { position: absolute; top: 0; left: 0; width: 40px; height: 40px; border-radius: 4px; background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 200% 100%; animation: skeleton-loading 1.5s ease-in-out infinite; }
-            .desktop-mega-menu-links a .community-icon { width: 40px; height: 40px; border-radius: 4px; flex-shrink: 0; object-fit: cover; opacity: 0; transition: opacity 0.3s ease-in-out; position: relative; z-index: 1; }
+            .desktop-mega-menu-links a .community-icon-wrapper { position: relative; width: 32px; height: 32px; flex-shrink: 0; }
+            .desktop-mega-menu-links a .community-icon-skeleton { position: absolute; top: 0; left: 0; width: 32px; height: 32px; border-radius: 4px; background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 200% 100%; animation: skeleton-loading 1.5s ease-in-out infinite; }
+            .desktop-mega-menu-links a .community-icon { width: 32px; height: 32px; border-radius: 4px; flex-shrink: 0; object-fit: cover; opacity: 0; transition: opacity 0.3s ease-in-out; position: relative; z-index: 1; }
             .desktop-mega-menu-links a .community-icon.loaded { opacity: 1; }
             .desktop-mega-menu-links a .community-icon.loaded ~ .community-icon-skeleton { display: none; }
             .desktop-mega-menu-newsletters { flex: 0 0 auto; display: flex; flex-direction: column; gap: 12px; align-items: flex-start; }
@@ -1367,7 +1367,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             const hasIcon = link.querySelector('.community-icon') !== null;
                             
                             if (hasIcon) {
-                                // For Communities links, calculate width = icon (40px) + gap (8px) + bold text width
+                                // For Communities links, calculate width = icon (32px) + gap (8px) + bold text width
                                 // Measure the bold text width separately
                                 const linkText = text;
                                 const tempText = document.createElement('span');
@@ -1383,7 +1383,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 document.body.removeChild(tempText);
                                 
                                 // Total width = icon + gap + text
-                                const totalWidth = 40 + 8 + boldTextWidth;
+                                const totalWidth = 32 + 8 + boldTextWidth;
                                 
                                 // Set both min-width and max-width to lock the size and prevent layout shift
                                 link.style.minWidth = `${totalWidth}px`;
