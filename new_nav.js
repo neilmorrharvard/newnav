@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', function() {
     'use strict';
 
     // Version identifier - check in console: window.navVersion
-    window.navVersion = '2024-12-19-195ade1';
+    window.navVersion = '2024-12-19-c001150';
     if (console && console.log) {
         console.log('%cNew Nav Script Loaded', 'color: #016A1B; font-weight: bold; font-size: 12px;', 'Version:', window.navVersion);
     }
@@ -385,11 +385,71 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
         
-        // Debounced resize handler
+        // Cache for underline widths to avoid recalculation
+        const underlineWidthCache = new Map();
+        
+        // Set underline width to match content width on desktop (with caching)
+        const setUnderlineWidth = () => {
+            document.querySelectorAll('.category-pill, #comm-container').forEach(pill => {
+                // Create cache key from pill's content
+                const contentText = Array.from(pill.children).map(el => el.textContent || '').join('');
+                const cacheKey = `${pill.id || pill.className}-${contentText}`;
+                
+                // Check cache first
+                if (underlineWidthCache.has(cacheKey)) {
+                    pill.style.setProperty('--underline-width', `${underlineWidthCache.get(cacheKey)}px`);
+                    return;
+                }
+                
+                // Get all child elements (spans, SVGs) that are the content
+                const contentElements = Array.from(pill.children);
+                if (contentElements.length === 0) return;
+                
+                // Create a temporary container to measure content width
+                const tempContainer = document.createElement('div');
+                tempContainer.style.position = 'absolute';
+                tempContainer.style.visibility = 'hidden';
+                tempContainer.style.whiteSpace = 'nowrap';
+                tempContainer.style.display = 'inline-flex';
+                tempContainer.style.alignItems = 'center';
+                tempContainer.style.gap = '6px';
+                tempContainer.style.fontSize = '14px';
+                tempContainer.style.fontWeight = '550';
+                
+                // Clone all content elements, ensuring SVGs are properly cloned
+                contentElements.forEach(el => {
+                    const clone = el.cloneNode(true);
+                    // Ensure SVG elements maintain their dimensions
+                    if (clone.querySelector && clone.querySelector('svg')) {
+                        const svg = clone.querySelector('svg');
+                        if (svg) {
+                            svg.style.width = '18px';
+                            svg.style.height = '18px';
+                        }
+                    }
+                    tempContainer.appendChild(clone);
+                });
+                
+                document.body.appendChild(tempContainer);
+                // Force layout calculation
+                void tempContainer.offsetWidth;
+                const contentWidth = tempContainer.offsetWidth;
+                document.body.removeChild(tempContainer);
+                
+                // Cache the result
+                underlineWidthCache.set(cacheKey, contentWidth);
+                
+                // Set the width on the ::after pseudo-element via CSS variable
+                pill.style.setProperty('--underline-width', `${contentWidth}px`);
+            });
+        };
+        
+        // Combined debounced resize handler (optimization: single listener)
         window.addEventListener('resize', () => {
             clearTimeout(resizeTimeout);
             resizeTimeout = setTimeout(() => {
                 if (window.innerWidth <= 991) {
+                    // Mobile/tablet updates
                     updateActiveIconColors();
                     alignBottomRowWithActivePill();
                     // Update fade effects on resize (mobile and tablet)
@@ -399,80 +459,35 @@ document.addEventListener('DOMContentLoaded', function() {
                         updateScrollFades(row);
                     });
                 } else {
+                    // Desktop updates
                     // Reset padding on desktop
                     document.querySelectorAll('.bottom-row-inner').forEach(row => {
                         row.style.paddingLeft = '';
                     });
                     // Clean up fade overlays on desktop
+                    cleanupFadeOverlays();
                     fadeOverlays.forEach((overlays, element) => {
-                        if (overlays.left) overlays.left.remove();
-                        if (overlays.right) overlays.right.remove();
+                        if (overlays.left && overlays.left.parentNode) {
+                            overlays.left.remove();
+                        }
+                        if (overlays.right && overlays.right.parentNode) {
+                            overlays.right.remove();
+                        }
                     });
                     fadeOverlays.clear();
+                    // Update underline widths on desktop
+                    setUnderlineWidth();
                 }
             }, 150);
         });
         
-        // Set underline width to match content width on desktop
+        // Set underline width on initial load (desktop only)
         if (window.innerWidth > 990) {
-            let resizeTimeout = null;
-            const setUnderlineWidth = () => {
-                document.querySelectorAll('.category-pill, #comm-container').forEach(pill => {
-                    // Get all child elements (spans, SVGs) that are the content
-                    const contentElements = Array.from(pill.children);
-                    if (contentElements.length === 0) return;
-                    
-                    // Create a temporary container to measure content width
-                    const tempContainer = document.createElement('div');
-                    tempContainer.style.position = 'absolute';
-                    tempContainer.style.visibility = 'hidden';
-                    tempContainer.style.whiteSpace = 'nowrap';
-                    tempContainer.style.display = 'inline-flex';
-                    tempContainer.style.alignItems = 'center';
-                    tempContainer.style.gap = '6px';
-                    tempContainer.style.fontSize = '14px';
-                    tempContainer.style.fontWeight = '550';
-                    
-                    // Clone all content elements, ensuring SVGs are properly cloned
-                    contentElements.forEach(el => {
-                        const clone = el.cloneNode(true);
-                        // Ensure SVG elements maintain their dimensions
-                        if (clone.querySelector && clone.querySelector('svg')) {
-                            const svg = clone.querySelector('svg');
-                            if (svg) {
-                                svg.style.width = '18px';
-                                svg.style.height = '18px';
-                            }
-                        }
-                        tempContainer.appendChild(clone);
-                    });
-                    
-                    document.body.appendChild(tempContainer);
-                    // Force layout calculation
-                    void tempContainer.offsetWidth;
-                    const contentWidth = tempContainer.offsetWidth;
-                    document.body.removeChild(tempContainer);
-                    
-                    // Set the width on the ::after pseudo-element via CSS variable
-                    pill.style.setProperty('--underline-width', `${contentWidth}px`);
-                });
-            };
-            
             // Set on load with a small delay to ensure SVGs are rendered
             requestAnimationFrame(() => {
                 requestAnimationFrame(() => {
                     setUnderlineWidth();
                 });
-            });
-            
-            // Debounce resize events
-            window.addEventListener('resize', () => {
-                if (window.innerWidth > 990) {
-                    clearTimeout(resizeTimeout);
-                    resizeTimeout = setTimeout(() => {
-                        setUnderlineWidth();
-                    }, 100);
-                }
             });
         }
     }
@@ -524,6 +539,22 @@ document.addEventListener('DOMContentLoaded', function() {
     // Function to update fade effects based on scroll position
     // Uses fixed overlay divs that stay at viewport edges
     const fadeOverlays = new Map(); // Store overlays for each element
+    
+    // Cleanup function to remove overlays for elements no longer in DOM
+    function cleanupFadeOverlays() {
+        fadeOverlays.forEach((overlays, element) => {
+            if (!document.contains(element)) {
+                // Element was removed from DOM, clean up its overlays
+                if (overlays.left && overlays.left.parentNode) {
+                    overlays.left.remove();
+                }
+                if (overlays.right && overlays.right.parentNode) {
+                    overlays.right.remove();
+                }
+                fadeOverlays.delete(element);
+            }
+        });
+    }
     
     function updateScrollFades(element) {
         // Only apply fade effects on mobile and tablet (up to 991px), not desktop
@@ -741,11 +772,21 @@ document.addEventListener('DOMContentLoaded', function() {
             window.addEventListener('scroll', () => {
                 clearTimeout(pageScrollTimeout);
                 pageScrollTimeout = setTimeout(() => {
+                    // Clean up overlays for removed elements first
+                    cleanupFadeOverlays();
+                    // Then update remaining overlays
                     fadeOverlays.forEach((overlays, element) => {
                         updateScrollFades(element);
                     });
                 }, 10);
             }, { passive: true });
+            
+            // Periodic cleanup check (every 5 seconds) to catch removed elements
+            setInterval(() => {
+                if (window.innerWidth <= 991) {
+                    cleanupFadeOverlays();
+                }
+            }, 5000);
         }
 
         const megaMenuTrigger = document.getElementById('mega-menu-trigger'), siteBurgButton = document.querySelector('.navbt-burg');
@@ -1505,9 +1546,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 container.classList.add('mega-menu-open');
                 
                 // Calculate min-widths asynchronously after showing menu to prevent layout shift
-                // For Communities, we can calculate without waiting for images since icons are fixed-width
+                // Optimization: Batch all measurements first, then apply in one pass to reduce layout thrashing
                 requestAnimationFrame(() => {
                     const allLinks = inner.querySelectorAll('.desktop-mega-menu-links a, .desktop-mega-menu-newsletters a');
+                    const measurements = [];
+                    
+                    // Phase 1: Collect all measurements (batch DOM reads)
                     allLinks.forEach(link => {
                         const text = link.getAttribute('data-text') || link.textContent.trim();
                         if (text) {
@@ -1516,7 +1560,6 @@ document.addEventListener('DOMContentLoaded', function() {
                             
                             if (hasIcon) {
                                 // For Communities links, calculate width = icon (32px) + gap (8px) + bold text width
-                                // Measure the bold text width separately
                                 const linkText = text;
                                 const tempText = document.createElement('span');
                                 tempText.style.position = 'absolute';
@@ -1526,16 +1569,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 tempText.style.whiteSpace = 'nowrap';
                                 tempText.textContent = linkText;
                                 document.body.appendChild(tempText);
-                                void tempText.offsetWidth;
-                                const boldTextWidth = tempText.offsetWidth;
-                                document.body.removeChild(tempText);
-                                
-                                // Total width = icon + gap + text
-                                const totalWidth = 32 + 8 + boldTextWidth;
-                                
-                                // Set both min-width and max-width to lock the size and prevent layout shift
-                                link.style.minWidth = `${totalWidth}px`;
-                                link.style.maxWidth = `${totalWidth}px`;
+                                measurements.push({ element: tempText, link, hasIcon: true });
                             } else {
                                 // For regular links, just measure the bold text width
                                 const temp = document.createElement('span');
@@ -1546,14 +1580,35 @@ document.addEventListener('DOMContentLoaded', function() {
                                 temp.style.whiteSpace = 'nowrap';
                                 temp.textContent = text;
                                 document.body.appendChild(temp);
-                                // Force layout calculation
-                                void temp.offsetWidth;
-                                const boldWidth = temp.offsetWidth;
-                                document.body.removeChild(temp);
-                                // Set min-width to prevent layout shift
-                                link.style.minWidth = `${boldWidth}px`;
+                                measurements.push({ element: temp, link, hasIcon: false });
                             }
                         }
+                    });
+                    
+                    // Force layout calculation once for all measurements
+                    if (measurements.length > 0) {
+                        void measurements[0].element.offsetWidth;
+                    }
+                    
+                    // Phase 2: Read all widths and remove temp elements
+                    const widthData = measurements.map(({ element, link, hasIcon }) => {
+                        const width = element.offsetWidth;
+                        document.body.removeChild(element);
+                        return { link, width, hasIcon };
+                    });
+                    
+                    // Phase 3: Apply all widths in one pass (batch DOM writes)
+                    requestAnimationFrame(() => {
+                        widthData.forEach(({ link, width, hasIcon }) => {
+                            if (hasIcon) {
+                                // Total width = icon (32px) + gap (8px) + text width
+                                const totalWidth = 32 + 8 + width;
+                                link.style.minWidth = `${totalWidth}px`;
+                                link.style.maxWidth = `${totalWidth}px`;
+                            } else {
+                                link.style.minWidth = `${width}px`;
+                            }
+                        });
                     });
                 });
                 

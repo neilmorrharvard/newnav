@@ -41,7 +41,7 @@
         'use strict';
 
         // Version identifier - check in console: window.navVersion
-        window.navVersion = '2024-12-19-195ade1';
+        window.navVersion = '2024-12-19-c001150';
         if (console && console.log) {
             console.log('%cNew Nav Script Loaded', 'color: #016A1B; font-weight: bold; font-size: 12px;', 'Version:', window.navVersion);
         }
@@ -453,9 +453,24 @@
         }
 
         // Function to update fade effects based on scroll position
-        // Function to update fade effects based on scroll position
         // Uses fixed overlay divs that stay at viewport edges
         const fadeOverlays = new Map(); // Store overlays for each element
+        
+        // Cleanup function to remove overlays for elements no longer in DOM
+        function cleanupFadeOverlays() {
+            fadeOverlays.forEach((overlays, element) => {
+                if (!document.contains(element)) {
+                    // Element was removed from DOM, clean up its overlays
+                    if (overlays.left && overlays.left.parentNode) {
+                        overlays.left.remove();
+                    }
+                    if (overlays.right && overlays.right.parentNode) {
+                        overlays.right.remove();
+                    }
+                    fadeOverlays.delete(element);
+                }
+            });
+        }
         
         function updateScrollFades(element) {
             // Only apply fade effects on mobile and tablet (up to 991px), not desktop
@@ -1228,9 +1243,12 @@
                     container.classList.add('mega-menu-open');
                     
                     // Calculate min-widths asynchronously after showing menu to prevent layout shift
-                    // For Communities, we can calculate without waiting for images since icons are fixed-width
+                    // Optimization: Batch all measurements first, then apply in one pass to reduce layout thrashing
                     requestAnimationFrame(() => {
                         const allLinks = inner.querySelectorAll('.desktop-mega-menu-links a, .desktop-mega-menu-newsletters a');
+                        const measurements = [];
+                        
+                        // Phase 1: Collect all measurements (batch DOM reads)
                         allLinks.forEach(link => {
                             const text = link.getAttribute('data-text') || link.textContent.trim();
                             if (text) {
@@ -1239,7 +1257,6 @@
                                 
                                 if (hasIcon) {
                                     // For Communities links, calculate width = icon (32px) + gap (8px) + bold text width
-                                    // Measure the bold text width separately
                                     const linkText = text;
                                     const tempText = document.createElement('span');
                                     tempText.style.position = 'absolute';
@@ -1249,16 +1266,7 @@
                                     tempText.style.whiteSpace = 'nowrap';
                                     tempText.textContent = linkText;
                                     document.body.appendChild(tempText);
-                                    void tempText.offsetWidth;
-                                    const boldTextWidth = tempText.offsetWidth;
-                                    document.body.removeChild(tempText);
-                                    
-                                    // Total width = icon + gap + text
-                                    const totalWidth = 32 + 8 + boldTextWidth;
-                                    
-                                    // Set both min-width and max-width to lock the size and prevent layout shift
-                                    link.style.minWidth = `${totalWidth}px`;
-                                    link.style.maxWidth = `${totalWidth}px`;
+                                    measurements.push({ element: tempText, link, hasIcon: true });
                                 } else {
                                     // For regular links, just measure the bold text width
                                     const temp = document.createElement('span');
@@ -1269,14 +1277,35 @@
                                     temp.style.whiteSpace = 'nowrap';
                                     temp.textContent = text;
                                     document.body.appendChild(temp);
-                                    // Force layout calculation
-                                    void temp.offsetWidth;
-                                    const boldWidth = temp.offsetWidth;
-                                    document.body.removeChild(temp);
-                                    // Set min-width to prevent layout shift
-                                    link.style.minWidth = `${boldWidth}px`;
+                                    measurements.push({ element: temp, link, hasIcon: false });
                                 }
                             }
+                        });
+                        
+                        // Force layout calculation once for all measurements
+                        if (measurements.length > 0) {
+                            void measurements[0].element.offsetWidth;
+                        }
+                        
+                        // Phase 2: Read all widths and remove temp elements
+                        const widthData = measurements.map(({ element, link, hasIcon }) => {
+                            const width = element.offsetWidth;
+                            document.body.removeChild(element);
+                            return { link, width, hasIcon };
+                        });
+                        
+                        // Phase 3: Apply all widths in one pass (batch DOM writes)
+                        requestAnimationFrame(() => {
+                            widthData.forEach(({ link, width, hasIcon }) => {
+                                if (hasIcon) {
+                                    // Total width = icon (32px) + gap (8px) + text width
+                                    const totalWidth = 32 + 8 + width;
+                                    link.style.minWidth = `${totalWidth}px`;
+                                    link.style.maxWidth = `${totalWidth}px`;
+                                } else {
+                                    link.style.minWidth = `${width}px`;
+                                }
+                            });
                         });
                     });
                 };
