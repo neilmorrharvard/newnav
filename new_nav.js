@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', function() {
     'use strict';
 
     // Version identifier - check in console: window.navVersion
-    window.navVersion = '2024-12-19-8b1b05e';
+    window.navVersion = '2024-12-19-d0258e6';
     if (console && console.log) {
         console.log('%cNew Nav Script Loaded', 'color: #016A1B; font-weight: bold; font-size: 12px;', 'Version:', window.navVersion);
     }
@@ -322,8 +322,24 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
     </div>`;
 
-    const targetHeader = document.querySelector('header');
-    if (targetHeader) {
+    // Make nav initialization function available globally for re-initialization
+    window.initVillageNav = function() {
+        const targetHeader = document.querySelector('header');
+        if (!targetHeader) {
+            console.warn('Village Nav: No <header> element found. Navigation will not be inserted.');
+            return;
+        }
+        
+        // Check if nav already exists to avoid duplicates
+        if (document.getElementById('village-nav-container')) {
+            // Nav already exists, just re-initialize logic
+            initNavLogic();
+            initHoverDropdowns();
+            handleScrollLogic();
+            return;
+        }
+        
+        // Insert nav HTML
         targetHeader.insertAdjacentHTML('beforeend', navHTML);
         initNavLogic();
         initHoverDropdowns();
@@ -1668,6 +1684,38 @@ document.addEventListener('DOMContentLoaded', function() {
                 hide();
             });
         });
+    }
+    
+    // Initial initialization
+    window.initVillageNav();
+    
+    // Re-initialize on popstate (back/forward navigation)
+    window.addEventListener('popstate', function() {
+        setTimeout(window.initVillageNav, 100);
+    });
+    
+    // Watch for header element changes (for SPAs that replace content)
+    if (typeof MutationObserver !== 'undefined') {
+        const observer = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                if (mutation.type === 'childList') {
+                    const header = document.querySelector('header');
+                    const navExists = document.getElementById('village-nav-container');
+                    // If header exists but nav doesn't, initialize
+                    if (header && !navExists) {
+                        setTimeout(window.initVillageNav, 100);
+                    }
+                }
+            });
+        });
+        
+        // Observe body for header changes
+        if (document.body) {
+            observer.observe(document.body, {
+                childList: true,
+                subtree: true
+            });
+        }
     }
 });
 
