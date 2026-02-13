@@ -285,28 +285,35 @@ function initNavigationScript() {
             .external-icon { width: 10px !important; height: 10px !important; margin-left: 6px; flex-shrink: 0; display: inline-block; vertical-align: middle; }
             .dropdown-arrow-icon { width: 15px; height: 15px; fill: currentColor; display: none; }
             @media (max-width: 990px) { .dropdown-arrow-icon { display: block; } }
-            #village-nav-dropdown-mobile { position: absolute; background: white; border: 1px solid #ddd; border-radius: 8px; z-index: 8; box-shadow: 0 4px 12px rgba(0,0,0,0.1); width: 200px; max-height: 60vh; overflow-y: auto; overflow-x: hidden; }
-            #village-nav-dropdown-mobile .dropdown-scroll-fade-bottom { position: absolute; bottom: 0; left: 0; right: 0; height: 30px; background: linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0.95) 50%, rgba(255,255,255,1) 100%); pointer-events: none; border-radius: 0 0 8px 8px; opacity: 0; transition: opacity 0.2s ease; }
+            #village-nav-dropdown-mobile { position: absolute; background: white; border: 1px solid #ddd; border-radius: 8px; z-index: 8; box-shadow: 0 4px 12px rgba(0,0,0,0.1); width: 200px; max-height: 75vh; overflow: hidden; }
+            #village-nav-dropdown-mobile .dropdown-content { max-height: 75vh; overflow-y: scroll; overflow-x: hidden; scrollbar-gutter: stable; scrollbar-width: thin; scrollbar-color: #888 #f1f1f1; }
+            #village-nav-dropdown-mobile .dropdown-content::-webkit-scrollbar { width: 8px; }
+            #village-nav-dropdown-mobile .dropdown-content::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 0 8px 8px 0; }
+            #village-nav-dropdown-mobile .dropdown-content::-webkit-scrollbar-thumb { background: #888; border-radius: 4px; }
+            #village-nav-dropdown-mobile .dropdown-content::-webkit-scrollbar-thumb:hover { background: #555; }
+            #village-nav-dropdown-mobile .dropdown-scroll-fade-bottom { position: absolute; bottom: 0; left: 0; right: 0; height: 30px; background: linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0.95) 50%, rgba(255,255,255,1) 100%); pointer-events: none; border-radius: 0 0 8px 8px; opacity: 0; transition: opacity 0.2s ease; z-index: 2; }
             #village-nav-dropdown-mobile .dropdown-scroll-fade-bottom.visible { opacity: 1; }
         </style>
         <div class="nav-content-wrapper">
             <div id="village-nav-dropdown-mobile" style="display: none;">
-                <div class="dropdown-option" style="padding: 12px 16px; cursor: pointer; font-size: 13px; font-weight: 600; border-bottom: 1px solid #eee;" data-community="all">All Communities</div>
-                <div class="dropdown-option" style="padding: 12px 16px; cursor: pointer; font-size: 13px; font-weight: 600; border-bottom: 1px solid #eee;" data-community="regina">Regina</div>
-                <div class="dropdown-option" style="padding: 12px 16px; cursor: pointer; font-size: 13px; font-weight: 600; border-bottom: 1px solid #eee;" data-community="saskatoon">Saskatoon</div>
-                <div class="dropdown-option" style="padding: 12px 16px; cursor: pointer; font-size: 13px; font-weight: 600; border-bottom: 1px solid #eee;" data-community="estevan">Estevan</div>
-                <div class="dropdown-option" style="padding: 12px 16px; cursor: pointer; font-size: 13px; font-weight: 600; border-bottom: 1px solid #eee;" data-community="yorkton">Yorkton</div>
-                <div class="dropdown-option" style="padding: 12px 16px; cursor: pointer; font-size: 13px; font-weight: 600; border-bottom: 1px solid #eee;" data-community="kamsack">Kamsack</div>
-                <div class="dropdown-option" style="padding: 12px 16px; cursor: pointer; font-size: 13px; font-weight: 600; border-bottom: 1px solid #eee;" data-community="thebattlefords">The Battlefords</div>
-                <div class="dropdown-option" style="padding: 12px 16px; cursor: pointer; font-size: 13px; font-weight: 600; border-bottom: 1px solid #eee;" data-community="canora">Canora</div>
-                <div class="dropdown-option" style="padding: 12px 16px; cursor: pointer; font-size: 13px; font-weight: 600; border-bottom: 1px solid #eee;" data-community="preeceville">Preeceville</div>
-                <div class="dropdown-option" style="padding: 12px 16px; cursor: pointer; font-size: 13px; font-weight: 600; border-bottom: 1px solid #eee;" data-community="carlyle">Carlyle</div>
-                <div class="dropdown-option" style="padding: 12px 16px; cursor: pointer; font-size: 13px; font-weight: 600; border-bottom: 1px solid #eee;" data-community="humboldt">Humboldt</div>
-                <div class="dropdown-option" style="padding: 12px 16px; cursor: pointer; font-size: 13px; font-weight: 600; border-bottom: 1px solid #eee;" data-community="moosejaw">Moose Jaw</div>
-                <div class="dropdown-option" style="padding: 12px 16px; cursor: pointer; font-size: 13px; font-weight: 600; border-bottom: 1px solid #eee;" data-community="outlook">Outlook</div>
-                <div class="dropdown-option" style="padding: 12px 16px; cursor: pointer; font-size: 13px; font-weight: 600; border-bottom: 1px solid #eee;" data-community="princealbert">Prince Albert</div>
-                <div class="dropdown-option" style="padding: 12px 16px; cursor: pointer; font-size: 13px; font-weight: 600; border-bottom: 1px solid #eee;" data-community="unitywilkie">Unity-Wilkie</div>
-                <div class="dropdown-option" style="padding: 12px 16px; cursor: pointer; font-size: 13px; font-weight: 600;" data-community="weyburn">Weyburn</div>
+                <div class="dropdown-content">
+                    <div class="dropdown-option" style="padding: 12px 16px; cursor: pointer; font-size: 13px; font-weight: 600; border-bottom: 1px solid #eee;" data-community="all">All Communities</div>
+                    <div class="dropdown-option" style="padding: 12px 16px; cursor: pointer; font-size: 13px; font-weight: 600; border-bottom: 1px solid #eee;" data-community="regina">Regina</div>
+                    <div class="dropdown-option" style="padding: 12px 16px; cursor: pointer; font-size: 13px; font-weight: 600; border-bottom: 1px solid #eee;" data-community="saskatoon">Saskatoon</div>
+                    <div class="dropdown-option" style="padding: 12px 16px; cursor: pointer; font-size: 13px; font-weight: 600; border-bottom: 1px solid #eee;" data-community="estevan">Estevan</div>
+                    <div class="dropdown-option" style="padding: 12px 16px; cursor: pointer; font-size: 13px; font-weight: 600; border-bottom: 1px solid #eee;" data-community="yorkton">Yorkton</div>
+                    <div class="dropdown-option" style="padding: 12px 16px; cursor: pointer; font-size: 13px; font-weight: 600; border-bottom: 1px solid #eee;" data-community="kamsack">Kamsack</div>
+                    <div class="dropdown-option" style="padding: 12px 16px; cursor: pointer; font-size: 13px; font-weight: 600; border-bottom: 1px solid #eee;" data-community="thebattlefords">The Battlefords</div>
+                    <div class="dropdown-option" style="padding: 12px 16px; cursor: pointer; font-size: 13px; font-weight: 600; border-bottom: 1px solid #eee;" data-community="canora">Canora</div>
+                    <div class="dropdown-option" style="padding: 12px 16px; cursor: pointer; font-size: 13px; font-weight: 600; border-bottom: 1px solid #eee;" data-community="preeceville">Preeceville</div>
+                    <div class="dropdown-option" style="padding: 12px 16px; cursor: pointer; font-size: 13px; font-weight: 600; border-bottom: 1px solid #eee;" data-community="carlyle">Carlyle</div>
+                    <div class="dropdown-option" style="padding: 12px 16px; cursor: pointer; font-size: 13px; font-weight: 600; border-bottom: 1px solid #eee;" data-community="humboldt">Humboldt</div>
+                    <div class="dropdown-option" style="padding: 12px 16px; cursor: pointer; font-size: 13px; font-weight: 600; border-bottom: 1px solid #eee;" data-community="moosejaw">Moose Jaw</div>
+                    <div class="dropdown-option" style="padding: 12px 16px; cursor: pointer; font-size: 13px; font-weight: 600; border-bottom: 1px solid #eee;" data-community="outlook">Outlook</div>
+                    <div class="dropdown-option" style="padding: 12px 16px; cursor: pointer; font-size: 13px; font-weight: 600; border-bottom: 1px solid #eee;" data-community="princealbert">Prince Albert</div>
+                    <div class="dropdown-option" style="padding: 12px 16px; cursor: pointer; font-size: 13px; font-weight: 600; border-bottom: 1px solid #eee;" data-community="unitywilkie">Unity-Wilkie</div>
+                    <div class="dropdown-option" style="padding: 12px 16px; cursor: pointer; font-size: 13px; font-weight: 600;" data-community="weyburn">Weyburn</div>
+                </div>
             </div>
 
             <div class="top-row hide-scrollbar" id="main-top-row">
@@ -832,10 +839,14 @@ function initNavigationScript() {
             const viewportHeight = window.innerHeight;
             const dropdownTop = rect.bottom + 4;
             const availableHeight = viewportHeight - dropdownTop - 20; // 20px padding from bottom
-            const maxHeight = Math.min(availableHeight, viewportHeight * 0.6); // Cap at 60vh or available space
+            const maxHeight = Math.min(availableHeight, viewportHeight * 0.75); // Cap at 75vh or available space
+            
+            // Get content div for height calculations
+            const content = drop.querySelector('.dropdown-content');
+            const contentHeight = content ? content.scrollHeight : drop.scrollHeight;
             
             // If dropdown would go off-screen, position it above instead
-            const estimatedDropdownHeight = Math.min(maxHeight, drop.scrollHeight);
+            const estimatedDropdownHeight = Math.min(maxHeight, contentHeight);
             if (dropdownTop + estimatedDropdownHeight > viewportHeight - 20) {
                 // Position above the trigger
                 const topAbove = (rect.top - wrapperRect.top - estimatedDropdownHeight - 4) + 'px';
@@ -847,6 +858,9 @@ function initNavigationScript() {
             drop.style.left = left;
             drop.style.top = top;
             drop.style.maxHeight = maxHeight + 'px';
+            if (content) {
+                content.style.maxHeight = maxHeight + 'px';
+            }
             drop.style.display = (drop.style.display === 'block') ? 'none' : 'block';
             
             // Update scroll fade after showing
@@ -861,9 +875,12 @@ function initNavigationScript() {
         function updateDropdownScrollFade(dropdown) {
             if (!dropdown || window.innerWidth > 990) return;
             
-            const scrollTop = dropdown.scrollTop;
-            const scrollHeight = dropdown.scrollHeight;
-            const clientHeight = dropdown.clientHeight;
+            const content = dropdown.querySelector('.dropdown-content');
+            if (!content) return;
+            
+            const scrollTop = content.scrollTop;
+            const scrollHeight = content.scrollHeight;
+            const clientHeight = content.clientHeight;
             const canScrollDown = scrollTop < scrollHeight - clientHeight - 1;
             
             // Get or create fade overlay
@@ -882,12 +899,15 @@ function initNavigationScript() {
             }
         }
         
-        // Add scroll listener to dropdown
+        // Add scroll listener to dropdown content
         const mobileDropdown = document.getElementById('village-nav-dropdown-mobile');
         if (mobileDropdown) {
-            mobileDropdown.addEventListener('scroll', () => {
-                updateDropdownScrollFade(mobileDropdown);
-            }, { passive: true });
+            const content = mobileDropdown.querySelector('.dropdown-content');
+            if (content) {
+                content.addEventListener('scroll', () => {
+                    updateDropdownScrollFade(mobileDropdown);
+                }, { passive: true });
+            }
         }
 
         document.querySelectorAll('.dropdown-option').forEach(opt => {
