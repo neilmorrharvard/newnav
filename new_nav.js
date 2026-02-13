@@ -286,12 +286,12 @@ function initNavigationScript() {
             .dropdown-arrow-icon { width: 15px; height: 15px; fill: currentColor; display: none; }
             @media (max-width: 990px) { .dropdown-arrow-icon { display: block; } }
             #village-nav-dropdown-mobile { position: absolute; background: white; border: 1px solid #ddd; border-radius: 8px; z-index: 8; box-shadow: 0 4px 12px rgba(0,0,0,0.1); width: 200px; max-height: 75vh; overflow: hidden; }
-            #village-nav-dropdown-mobile .dropdown-content { max-height: 75vh; overflow-y: scroll !important; overflow-x: hidden; scrollbar-gutter: stable; scrollbar-width: thin; scrollbar-color: #888 #f1f1f1; -webkit-overflow-scrolling: touch; }
-            #village-nav-dropdown-mobile .dropdown-content::-webkit-scrollbar { width: 8px !important; display: block !important; -webkit-appearance: none; }
-            #village-nav-dropdown-mobile .dropdown-content::-webkit-scrollbar-track { background: #f1f1f1 !important; border-radius: 0 8px 8px 0; -webkit-box-shadow: inset 0 0 1px rgba(0,0,0,0.1); display: block !important; }
-            #village-nav-dropdown-mobile .dropdown-content::-webkit-scrollbar-thumb { background: #888 !important; border-radius: 4px; -webkit-box-shadow: inset 0 0 1px rgba(0,0,0,0.2); display: block !important; min-height: 20px; }
-            #village-nav-dropdown-mobile .dropdown-content::-webkit-scrollbar-thumb:hover { background: #555 !important; }
-            #village-nav-dropdown-mobile .dropdown-scroll-fade-bottom { position: absolute; bottom: 0; left: 0; right: 0; height: 30px; background: linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0.95) 50%, rgba(255,255,255,1) 100%); pointer-events: none; border-radius: 0 0 8px 8px; opacity: 0; transition: opacity 0.2s ease; z-index: 2; }
+            #village-nav-dropdown-mobile .dropdown-content { max-height: 75vh; overflow-y: scroll; overflow-x: hidden; scrollbar-gutter: stable; scrollbar-width: thin; scrollbar-color: #888 #f1f1f1; -webkit-overflow-scrolling: touch; }
+            #village-nav-dropdown-mobile .dropdown-content::-webkit-scrollbar { width: 8px; }
+            #village-nav-dropdown-mobile .dropdown-content::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 0 8px 8px 0; }
+            #village-nav-dropdown-mobile .dropdown-content::-webkit-scrollbar-thumb { background: #888; border-radius: 4px; }
+            #village-nav-dropdown-mobile .dropdown-content::-webkit-scrollbar-thumb:hover { background: #555; }
+            #village-nav-dropdown-mobile .dropdown-scroll-fade-bottom { position: absolute; bottom: 0; left: 0; right: 0; height: 50px; background: linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0.7) 30%, rgba(255,255,255,0.9) 60%, rgba(255,255,255,1) 100%); pointer-events: none; border-radius: 0 0 8px 8px; opacity: 0; transition: opacity 0.2s ease; z-index: 2; }
             #village-nav-dropdown-mobile .dropdown-scroll-fade-bottom.visible { opacity: 1; }
         </style>
         <div class="nav-content-wrapper">
@@ -860,18 +860,6 @@ function initNavigationScript() {
             drop.style.maxHeight = maxHeight + 'px';
             if (content) {
                 content.style.maxHeight = maxHeight + 'px';
-                // Force scrollbar to always be visible
-                // Add a tiny invisible spacer at the bottom to ensure overflow
-                let spacer = content.querySelector('.scrollbar-spacer');
-                if (!spacer) {
-                    spacer = document.createElement('div');
-                    spacer.className = 'scrollbar-spacer';
-                    spacer.style.height = '1px';
-                    spacer.style.width = '1px';
-                    spacer.style.opacity = '0';
-                    spacer.style.pointerEvents = 'none';
-                    content.appendChild(spacer);
-                }
             }
             drop.style.display = (drop.style.display === 'block') ? 'none' : 'block';
             
