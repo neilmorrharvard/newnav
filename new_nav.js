@@ -237,16 +237,16 @@ function initNavigationScript() {
                     padding: 0;
                 }
                 .scroll-fade-overlay.fade-left {
-                    background: linear-gradient(to right, rgba(255,255,255,1) 0%, rgba(255,255,255,0.98) 15%, rgba(255,255,255,0.9) 35%, rgba(255,255,255,0.7) 55%, rgba(255,255,255,0.4) 75%, rgba(255,255,255,0.1) 90%, transparent 100%);
+                    background: linear-gradient(to right, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.85) 20%, rgba(255,255,255,0.6) 45%, rgba(255,255,255,0.3) 70%, transparent 100%);
                     box-shadow: none;
-                    mask-image: linear-gradient(to right, black 0%, black 85%, transparent 100%);
-                    -webkit-mask-image: linear-gradient(to right, black 0%, black 85%, transparent 100%);
+                    mask-image: linear-gradient(to right, black 0%, black 80%, transparent 100%);
+                    -webkit-mask-image: linear-gradient(to right, black 0%, black 80%, transparent 100%);
                 }
                 .scroll-fade-overlay.fade-right {
-                    background: linear-gradient(to left, rgba(255,255,255,1) 0%, rgba(255,255,255,0.98) 15%, rgba(255,255,255,0.9) 35%, rgba(255,255,255,0.7) 55%, rgba(255,255,255,0.4) 75%, rgba(255,255,255,0.1) 90%, transparent 100%);
+                    background: linear-gradient(to left, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.85) 20%, rgba(255,255,255,0.6) 45%, rgba(255,255,255,0.3) 70%, transparent 100%);
                     box-shadow: none;
-                    mask-image: linear-gradient(to left, black 0%, black 85%, transparent 100%);
-                    -webkit-mask-image: linear-gradient(to left, black 0%, black 85%, transparent 100%);
+                    mask-image: linear-gradient(to left, black 0%, black 80%, transparent 100%);
+                    -webkit-mask-image: linear-gradient(to left, black 0%, black 80%, transparent 100%);
                 }
                 .scroll-fade-overlay.visible { opacity: 1; }
             }
