@@ -20,7 +20,7 @@ function initNavigationScript() {
     window.navScriptLoaded = true;
 
     // Version identifier - check in console: window.navVersion
-    window.navVersion = '2026-02-13-0adecf9';
+    window.navVersion = '2026-02-13-REPLACE_WITH_HASH';
     if (console && console.log) {
         console.log('%cNew Nav Script Loaded', 'color: #016A1B; font-weight: bold; font-size: 12px;', 'Version:', window.navVersion);
     }
@@ -224,8 +224,6 @@ function initNavigationScript() {
                 /* Fade effects for scrollable containers - using overlay divs (mobile and tablet) */
                 .scroll-fade-overlay {
                     position: fixed;
-                    top: 0;
-                    bottom: 0;
                     width: 40px;
                     pointer-events: none;
                     z-index: 18;
@@ -235,13 +233,14 @@ function initNavigationScript() {
                     outline: none;
                     margin: 0;
                     padding: 0;
+                    height: 0;
                 }
                 .scroll-fade-overlay.fade-left {
-                    background: linear-gradient(to right, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.85) 15%, rgba(255,255,255,0.65) 35%, rgba(255,255,255,0.4) 55%, rgba(255,255,255,0.15) 75%, transparent 100%);
+                    background: linear-gradient(to right, rgba(255,255,255,1) 0%, rgba(255,255,255,0.9) 20%, rgba(255,255,255,0.7) 40%, rgba(255,255,255,0.4) 60%, rgba(255,255,255,0.15) 80%, transparent 100%);
                     box-shadow: none;
                 }
                 .scroll-fade-overlay.fade-right {
-                    background: linear-gradient(to left, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.85) 15%, rgba(255,255,255,0.65) 35%, rgba(255,255,255,0.4) 55%, rgba(255,255,255,0.15) 75%, transparent 100%);
+                    background: linear-gradient(to left, rgba(255,255,255,1) 0%, rgba(255,255,255,0.9) 20%, rgba(255,255,255,0.7) 40%, rgba(255,255,255,0.4) 60%, rgba(255,255,255,0.15) 80%, transparent 100%);
                     box-shadow: none;
                 }
                 .scroll-fade-overlay.visible { opacity: 1; }
@@ -735,16 +734,45 @@ function initNavigationScript() {
         overlays.left.classList.toggle('visible', canScrollLeft);
         overlays.right.classList.toggle('visible', canScrollRight);
         
-        if (window.DEBUG_FADES) {
-            console.log('[FADE DEBUG] Overlay visibility:', {
-                left: overlays.left.classList.contains('visible'),
-                right: overlays.right.classList.contains('visible'),
-                leftOpacity: window.getComputedStyle(overlays.left).opacity,
-                rightOpacity: window.getComputedStyle(overlays.right).opacity,
-                leftRect: overlays.left.getBoundingClientRect(),
-                rightRect: overlays.right.getBoundingClientRect()
-            });
-        }
+        // Always log for debugging
+        const leftComputed = window.getComputedStyle(overlays.left);
+        const rightComputed = window.getComputedStyle(overlays.right);
+        const leftRect = overlays.left.getBoundingClientRect();
+        const rightRect = overlays.right.getBoundingClientRect();
+        
+        console.log('[FADE DEBUG]', {
+            element: element.className || element.id || 'unknown',
+            scrollLeft,
+            scrollWidth,
+            clientWidth,
+            canScrollLeft,
+            canScrollRight,
+            elementRect: rect,
+            leftOverlay: {
+                visible: overlays.left.classList.contains('visible'),
+                opacity: leftComputed.opacity,
+                zIndex: leftComputed.zIndex,
+                position: leftComputed.position,
+                top: leftComputed.top,
+                left: leftComputed.left,
+                height: leftComputed.height,
+                width: leftComputed.width,
+                rect: leftRect,
+                inDOM: document.body.contains(overlays.left)
+            },
+            rightOverlay: {
+                visible: overlays.right.classList.contains('visible'),
+                opacity: rightComputed.opacity,
+                zIndex: rightComputed.zIndex,
+                position: rightComputed.position,
+                top: rightComputed.top,
+                right: rightComputed.right,
+                height: rightComputed.height,
+                width: rightComputed.width,
+                rect: rightRect,
+                inDOM: document.body.contains(overlays.right)
+            }
+        });
     }
 
     // Function to align bottom-row-inner with active parent pill on mobile and tablet
