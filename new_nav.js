@@ -1416,7 +1416,11 @@ function initNavigationScript() {
                         sectionsSection.appendChild(sectionsHeading);
                         
                         const sectionsItems = document.createElement('div');
-                        sectionsItems.className = 'desktop-mega-menu-newsletters-items' + (childLinks.length > 5 ? ' multi-column communities-columns' : '');
+                        const childLinkColumns = Math.ceil(childLinks.length / 4);
+                        sectionsItems.className = 'desktop-mega-menu-newsletters-items' + (childLinks.length > 4 ? ' multi-column communities-columns' : '');
+                        if (childLinks.length > 4) {
+                            sectionsItems.style.gridTemplateColumns = `repeat(${childLinkColumns}, 1fr)`;
+                        }
                         
                         childLinks.forEach(link => {
                             const a = document.createElement('a');
@@ -1444,7 +1448,11 @@ function initNavigationScript() {
                     linksSection.appendChild(sectionsHeading);
                     
                     const linksItems = document.createElement('div');
-                    linksItems.className = 'desktop-mega-menu-links-items' + (links.length > 5 ? ' multi-column' : '');
+                    const linkColumns = Math.ceil(links.length / 4);
+                    linksItems.className = 'desktop-mega-menu-links-items' + (links.length > 4 ? ' multi-column' : '');
+                    if (links.length > 4) {
+                        linksItems.style.gridTemplateColumns = `repeat(${linkColumns}, 1fr)`;
+                    }
                     
                     links.forEach(link => {
                         const a = document.createElement('a');
