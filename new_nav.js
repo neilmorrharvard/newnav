@@ -62,10 +62,9 @@ function initNavigationScript() {
         },
         categories: {
             sports: "https://staging-www2.villagemedia.ca/sports",
-            agriculture: "https://staging-www2.villagemedia.ca/agriculture",
             obituaries: "https://staging-www2.villagemedia.ca/obituaries",
-            politics: "https://staging-www2.villagemedia.ca/politics",
-            weather: "https://staging-www2.villagemedia.ca/weather",
+            agriculture: "https://staging-www2.villagemedia.ca/agriculture",
+            opinions: "https://staging-www2.villagemedia.ca/opinion",
             crime: "https://staging-www2.villagemedia.ca/crime-cops-court"
         },
         categoryLinks: {
@@ -88,9 +87,8 @@ function initNavigationScript() {
                 { text: "Assiniboia Obituaries", url: "https://staging-www2.villagemedia.ca/obituaries/assiniboia-obituaries" },
                 { text: "Estevan Obituaries", url: "https://staging-www2.villagemedia.ca/obituaries/estevan-obituaries" }
             ],
-            politics: [{ text: "All Politics", url: "https://staging-www2.villagemedia.ca/politics" }],
-            weather: [{ text: "All Weather", url: "https://staging-www2.villagemedia.ca/weather" }],
-            crime: [{ text: "All Crime & Safety", url: "https://staging-www2.villagemedia.ca/crime-cops-court" }],
+            opinions: [{ text: "All Opinions", url: "https://staging-www2.villagemedia.ca/opinion" }],
+            crime: [{ text: "All Crime", url: "https://staging-www2.villagemedia.ca/crime-cops-court" }],
             more: [
                 { text: "Business & Energy", url: "https://staging-www2.villagemedia.ca/business" },
                 { text: "Opinion", url: "https://staging-www2.villagemedia.ca/opinion" },
@@ -98,7 +96,10 @@ function initNavigationScript() {
                 { text: "Politics", url: "https://staging-www2.villagemedia.ca/politics" },
                 { text: "Local Arts", url: "https://staging-www2.villagemedia.ca/local-arts" },
                 { text: "Everybody Has a Story", url: "https://staging-www2.villagemedia.ca/everybody-has-a-story" },
-                { text: "Videos", url: "https://staging-www2.villagemedia.ca/video" }
+                { text: "Videos", url: "https://staging-www2.villagemedia.ca/video" },
+                { text: "Classifieds", url: "https://staging-www2.villagemedia.ca/classifieds" },
+                { text: "Newsletters", url: "https://staging-www2.villagemedia.ca/newsletters" },
+                { text: "Contact Us", url: "https://staging-www2.villagemedia.ca/contact" }
             ]
         },
         communityLinks: {
@@ -131,8 +132,7 @@ function initNavigationScript() {
     const iconSports = `<svg class="category-icon" viewBox="0 -960 960 960" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="gradient-sports" cx="50%" cy="50%" r="50%"><stop offset="0%" style="stop-color:#7a5f3f;stop-opacity:1" /><stop offset="50%" style="stop-color:#815337;stop-opacity:1" /><stop offset="100%" style="stop-color:#5c3a26;stop-opacity:1" /></radialGradient></defs><path d="M363-121q-47 5-113.5-2.5T148-148q-14-32-23.5-100T120-364l243 243Zm95-16L136-459q17-75 49.5-136.5T261-701q43-43 104.5-74.5T498-823l324 324q-16 74-47 136t-74 105q-45 44-107.5 75.5T458-137Zm-82-183 264-264-56-56-264 264 56 56Zm462-274L595-839q48-6 118 2t99 25q18 40 25 103.5t1 114.5Z" fill="url(#gradient-sports)"/></svg>`;
     const iconAgriculture = `<svg class="category-icon" viewBox="0 -960 960 960" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="gradient-agriculture" cx="50%" cy="50%" r="50%"><stop offset="0%" style="stop-color:#d4a574;stop-opacity:1" /><stop offset="50%" style="stop-color:#b8860b;stop-opacity:1" /><stop offset="100%" style="stop-color:#8b6914;stop-opacity:1" /></radialGradient></defs><path d="m137-79-56-56 96-97q-32-32-53-61t-21-79q0-32 12-61t35-52l46-45 45 45q29 28 41 68t1 79l63-63q-32-33-53-62t-21-79q0-32 11.5-61t34.5-52l46-45 45 45q29 29 41 69.5t1 79.5l52-52q-30-33-53-62.5T427-698q0-32 13-62.5t36-53.5l99-99 56 56-56 57q23 28 32.5 65.5T606-662l218-218 56 57-220 220q36-11 74-2.5t67 31.5l56-57 58 58-100 101q-23 23-52.5 35T701-425q-42 0-77-23t-65-53l-55 55q40-13 82-1t72 41l45 46-45 45q-23 23-52.5 35T544-268q-42 0-76.5-23.5T402-344l-69 69q41-14 83.5-2t72.5 41l46 46-45 45q-23 23-52.5 35T376-98q-43 0-77.5-23.5T233-175l-96 96Z" fill="url(#gradient-agriculture)"/></svg>`;
     const iconObituaries = `<svg class="category-icon" viewBox="0 -960 960 960" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="gradient-obituaries" cx="50%" cy="50%" r="50%"><stop offset="0%" style="stop-color:#e99fc4;stop-opacity:1" /><stop offset="50%" style="stop-color:#f472b6;stop-opacity:1" /><stop offset="100%" style="stop-color:#ec4899;stop-opacity:1" /></radialGradient></defs><path d="M440-80q-100 0-170-70t-70-170v-80q71-1 134 29t106 81v-153q-86-14-143-80.5T240-680v-136q0-26 23-36.5t43 6.5l74 64 69-84q12-14 31-14t31 14l69 84 74-64q20-17 43-6.5t23 36.5v136q0 90-57 156.5T520-443v153q43-51 106-81t134-29v80q0 100-70 170T520-80h-80Z" fill="url(#gradient-obituaries)"/></svg>`;
-    const iconPolitics = `<svg class="category-icon" viewBox="0 -960 960 960" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="gradient-politics" cx="50%" cy="50%" r="50%"><stop offset="0%" style="stop-color:#7a85d6;stop-opacity:1" /><stop offset="50%" style="stop-color:#818cf8;stop-opacity:1" /><stop offset="100%" style="stop-color:#6366f1;stop-opacity:1" /></radialGradient></defs><path d="M200-80q-33 0-56.5-23.5T120-160v-182l110-125 57 57-80 90h546l-78-88 57-57 108 123v182q0 33-23.5 56.5T760-80H200Zm224-304L285-525q-23-23-23-57t23-57l196-196q23-23 57-23t57 23l141 139q23 23 23.5 56.5T737-583L537-383q-23 23-56.5 22.5T424-384Zm256-256L538-780 340-582l142 140 198-198Z" fill="url(#gradient-politics)"/></svg>`;
-    const iconWeather = `<svg class="category-icon" viewBox="0 -960 960 960" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="gradient-weather" cx="50%" cy="50%" r="50%"><stop offset="0%" style="stop-color:#f5d88a;stop-opacity:1" /><stop offset="50%" style="stop-color:#fbd38d;stop-opacity:1" /><stop offset="100%" style="stop-color:#fbbf24;stop-opacity:1" /></radialGradient></defs><path d="M440-760v-160h80v160h-80Zm266 110-55-55 112-115 56 57-113 113Zm54 210v-80h160v80H760ZM440-40v-160h80v160h-80ZM254-652 140-763l57-56 113 113-56 54Zm508 512L651-255l54-54 114 110-57 59ZM40-440v-80h160v80H40Zm157 300-56-57 112-112 29 27 29 28-114 114Zm113-170q-70-70-70-170t70-170q70-70 170-70t170 70q70 70 70 170t-70 170q-70 70-170 70t-170-70Z" fill="url(#gradient-weather)"/></svg>`;
+    const iconOpinions = `<svg class="category-icon" viewBox="0 -960 960 960" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="gradient-opinions" cx="50%" cy="50%" r="50%"><stop offset="0%" style="stop-color:#8b9dc3;stop-opacity:1" /><stop offset="50%" style="stop-color:#6b7fa8;stop-opacity:1" /><stop offset="100%" style="stop-color:#4a5d8a;stop-opacity:1" /></radialGradient></defs><path d="M611-461 461-612l111-110-29-29-219 219-56-56 218-219q24-24 56.5-24t56.5 24l29 29 50-50q12-12 28.5-12t28.5 12l93 93q12 12 12 28.5T828-678L611-461ZM270-120H120v-150l284-285 151 150-285 285Z" fill="url(#gradient-opinions)"/></svg>`;
     const iconCrime = `<svg class="category-icon" viewBox="0 -960 960 960" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="gradient-crime" cx="50%" cy="50%" r="50%"><stop offset="0%" style="stop-color:#3a66d9;stop-opacity:1" /><stop offset="50%" style="stop-color:#2563eb;stop-opacity:1" /><stop offset="100%" style="stop-color:#1e40af;stop-opacity:1" /></radialGradient></defs><path d="m368-336 112-84 110 84-42-136 112-88H524l-44-136-44 136H300l110 88-42 136ZM480-80q-139-35-229.5-159.5T160-516v-244l320-120 320 120v244q0 152-90.5 276.5T480-80Z" fill="url(#gradient-crime)"/></svg>`;
     const iconMore = `<svg class="category-icon more-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z" fill="#9ca3af"/></svg>`;
 
@@ -325,11 +325,10 @@ function initNavigationScript() {
                     <svg class="dropdown-arrow-icon" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
                 </div>
                 <button class="category-pill" data-category="sports"><span class="category-icon-wrapper">${iconSports}</span><span>Sports</span></button>
-                <button class="category-pill" data-category="agriculture"><span class="category-icon-wrapper">${iconAgriculture}</span><span>Agriculture</span></button>
                 <button class="category-pill" data-category="obituaries"><span class="category-icon-wrapper">${iconObituaries}</span><span>Obituaries</span></button>
-                <button class="category-pill" data-category="politics"><span class="category-icon-wrapper">${iconPolitics}</span><span>Politics</span></button>
-                <button class="category-pill" data-category="weather"><span class="category-icon-wrapper">${iconWeather}</span><span>Weather</span></button>
-                <button class="category-pill" data-category="crime"><span class="category-icon-wrapper">${iconCrime}</span><span>Crime & Safety</span></button>
+                <button class="category-pill" data-category="agriculture"><span class="category-icon-wrapper">${iconAgriculture}</span><span>Agriculture</span></button>
+                <button class="category-pill" data-category="opinions"><span class="category-icon-wrapper">${iconOpinions}</span><span>Opinions</span></button>
+                <button class="category-pill" data-category="crime"><span class="category-icon-wrapper">${iconCrime}</span><span>Crime</span></button>
                 <button class="category-pill" id="mega-menu-trigger" data-category="more"><span class="category-icon-wrapper more-icon">${iconMore}</span><span>More</span></button>
                 <button class="category-pill search-trigger" id="search-trigger" type="button" style="display: none;"><span class="search-icon"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"/></svg></span></button>
             </div>
@@ -339,9 +338,8 @@ function initNavigationScript() {
             <div class="bottom-row" id="category-sports"><div class="bottom-row-inner hide-scrollbar"><a href="https://www.sportscage.com" target="_blank" class="text-link">Go to SportsCage ${extIcon}</a><a href="https://staging-www2.villagemedia.ca/sports" class="text-link">All Sports</a><a href="https://staging-www2.villagemedia.ca/north/local-sports" class="text-link">North Sask Sports</a><a href="https://staging-www2.villagemedia.ca/central/local-sports" class="text-link">Central Sask Sports</a><a href="https://staging-www2.villagemedia.ca/southwest/local-sports" class="text-link">Southwest Sask Sports</a></div></div>
             <div class="bottom-row" id="category-agriculture"><div class="bottom-row-inner hide-scrollbar"><a href="https://www.saskagtoday.com" target="_blank" class="text-link">Go to SaskAgToday ${extIcon}</a><a href="https://staging-www2.villagemedia.ca/agriculture" class="text-link">All Agriculture</a><a href="https://staging-www2.villagemedia.ca/north/agriculture" class="text-link">North Sask Agriculture</a><a href="https://staging-www2.villagemedia.ca/central/agriculture" class="text-link">Central Sask Agriculture</a></div></div>
             <div class="bottom-row" id="category-obituaries"><div class="bottom-row-inner hide-scrollbar"><a href="https://staging-www2.villagemedia.ca/obituaries" class="text-link">All Obituaries</a><a href="https://staging-www2.villagemedia.ca/obituaries/regina-obituaries" class="text-link">Regina Obituaries</a><a href="https://staging-www2.villagemedia.ca/obituaries/saskatoon-obituaries" class="text-link">Saskatoon Obituaries</a><a href="https://staging-www2.villagemedia.ca/obituaries/yorkton-obituaries" class="text-link">Yorkton Obituaries</a><a href="https://staging-www2.villagemedia.ca/obituaries/assiniboia-obituaries" class="text-link">Assiniboia Obituaries</a><a href="https://staging-www2.villagemedia.ca/obituaries/estevan-obituaries" class="text-link">Estevan Obituaries</a></div></div>
-            <div class="bottom-row" id="category-politics"><div class="bottom-row-inner hide-scrollbar"><a href="https://staging-www2.villagemedia.ca/politics" class="text-link">All Politics</a></div></div>
-            <div class="bottom-row" id="category-weather"><div class="bottom-row-inner hide-scrollbar"><a href="https://staging-www2.villagemedia.ca/weather" class="text-link">All Weather</a></div></div>
-            <div class="bottom-row" id="category-crime"><div class="bottom-row-inner hide-scrollbar"><a href="https://staging-www2.villagemedia.ca/crime-cops-court" class="text-link">All Crime & Safety</a></div></div>
+            <div class="bottom-row" id="category-opinions"><div class="bottom-row-inner hide-scrollbar"><a href="https://staging-www2.villagemedia.ca/opinion" class="text-link">All Opinions</a></div></div>
+            <div class="bottom-row" id="category-crime"><div class="bottom-row-inner hide-scrollbar"><a href="https://staging-www2.villagemedia.ca/crime-cops-court" class="text-link">All Crime</a></div></div>
         </div>
     </div>`;
 
