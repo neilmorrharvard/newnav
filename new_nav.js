@@ -228,15 +228,17 @@ function initNavigationScript() {
                     bottom: 0;
                     width: 40px;
                     pointer-events: none;
-                    z-index: 8;
+                    z-index: 100;
                     opacity: 0;
                     transition: opacity 0.3s ease;
                 }
                 .scroll-fade-overlay.fade-left {
-                    background: linear-gradient(to right, rgba(255,255,255,1) 0%, rgba(255,255,255,1) 40%, rgba(255,255,255,0.95) 60%, rgba(255,255,255,0.7) 80%, transparent 100%);
+                    background: linear-gradient(to right, rgba(255,255,255,1) 0%, rgba(255,255,255,0.95) 25%, rgba(255,255,255,0.8) 50%, rgba(255,255,255,0.5) 75%, transparent 100%);
+                    box-shadow: -8px 0 20px -8px rgba(0,0,0,0.2);
                 }
                 .scroll-fade-overlay.fade-right {
-                    background: linear-gradient(to left, rgba(255,255,255,1) 0%, rgba(255,255,255,1) 40%, rgba(255,255,255,0.95) 60%, rgba(255,255,255,0.7) 80%, transparent 100%);
+                    background: linear-gradient(to left, rgba(255,255,255,1) 0%, rgba(255,255,255,0.95) 25%, rgba(255,255,255,0.8) 50%, rgba(255,255,255,0.5) 75%, transparent 100%);
+                    box-shadow: 8px 0 20px -8px rgba(0,0,0,0.2);
                 }
                 .scroll-fade-overlay.visible { opacity: 1; }
             }
