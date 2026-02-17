@@ -189,7 +189,8 @@ function initNavigationScript() {
                 .external-icon { width: 10px !important; height: 10px !important; }
                 #category-sports .bottom-row-inner a[href*="sportscage.com"], #category-agriculture .bottom-row-inner a[href*="saskagtoday.com"] { display: none; }
                 #search-trigger { display: inline-flex !important; }
-                #search-trigger .search-icon { display: inline-flex; align-items: center; width: 15px; height: 15px; }
+                #search-trigger.hover-active { padding-bottom: 10px; }
+                #search-trigger .search-icon { display: inline-flex; align-items: center; width: 17px; height: 17px; }
                 #search-trigger .search-icon svg { width: 100%; height: 100%; }
                 #search-trigger:hover .search-icon { color: var(--primary); }
                 .desktop-mega-menu.search-menu .desktop-mega-menu-inner { gap: 40px; }
