@@ -1044,9 +1044,6 @@ function initNavigationScript() {
             let searchMegaMenu = container ? container.querySelector('.desktop-mega-menu.search-menu') : null;
             let searchHoverTimeout = null;
             let searchShowTimeout = null;
-            let trendingStoriesCache = null;
-            let trendingStoriesCacheTime = null;
-            const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
             
             // Function to show search menu
             const showSearchMenu = () => {
@@ -1104,35 +1101,30 @@ function initNavigationScript() {
                 `;
                 inner.appendChild(searchSection);
                 
-                // Right section - Trending Stories
-                const trendingSection = document.createElement('div');
-                trendingSection.className = 'desktop-mega-menu-trending';
-                const trendingHeading = document.createElement('h3');
-                trendingHeading.textContent = 'Trending Stories';
-                trendingSection.appendChild(trendingHeading);
+                // Right section - Find Your Community
+                const communitySection = document.createElement('div');
+                communitySection.className = 'desktop-mega-menu-links';
+                const communityHeading = document.createElement('h3');
+                communityHeading.textContent = 'Find Your Community';
+                communitySection.appendChild(communityHeading);
                 
-                const trendingItems = document.createElement('div');
-                trendingItems.className = 'desktop-mega-menu-trending-items';
-                
-                // Create 5 skeleton loader items to pre-allocate space and prevent height jump
-                const skeletonWidths = ['short', 'medium', 'long', 'medium', 'short'];
-                for (let i = 0; i < 5; i++) {
-                    const skeleton = document.createElement('div');
-                    skeleton.className = 'trending-skeleton';
-                    
-                    const iconDiv = document.createElement('div');
-                    iconDiv.className = 'trending-skeleton-icon';
-                    skeleton.appendChild(iconDiv);
-                    
-                    const titleDiv = document.createElement('div');
-                    titleDiv.className = `trending-skeleton-title ${skeletonWidths[i]}`;
-                    skeleton.appendChild(titleDiv);
-                    
-                    trendingItems.appendChild(skeleton);
+                const communityItems = document.createElement('div');
+                const communityLinks = routes.communityLinks.communities;
+                const numColumns = Math.ceil(communityLinks.length / 4); // Limit to 4 items per column
+                communityItems.className = 'desktop-mega-menu-links-items' + (communityLinks.length > 4 ? ' multi-column communities-columns' : '');
+                if (communityLinks.length > 4) {
+                    communityItems.style.gridTemplateColumns = `repeat(${numColumns}, 1fr)`;
                 }
                 
-                trendingSection.appendChild(trendingItems);
-                inner.appendChild(trendingSection);
+                communityLinks.forEach(link => {
+                    const a = document.createElement('a');
+                    a.href = link.url;
+                    a.textContent = link.text;
+                    communityItems.appendChild(a);
+                });
+                
+                communitySection.appendChild(communityItems);
+                inner.appendChild(communitySection);
                 
                 searchMegaMenu.innerHTML = '';
                 searchMegaMenu.classList.add('search-menu');
@@ -1152,87 +1144,6 @@ function initNavigationScript() {
                 const activeBottomRow = document.querySelector('.bottom-row.active');
                 if (activeBottomRow) {
                     activeBottomRow.style.display = 'none';
-                }
-                
-                // Function to render trending stories
-                const renderTrendingStories = (stories) => {
-                    trendingItems.innerHTML = '';
-                    if (stories && stories.length > 0) {
-                        stories.forEach((story, index) => {
-                            const a = document.createElement('a');
-                            a.href = story.link;
-                            a.className = 'trending-story-item';
-                            
-                            // Add trending icon
-                            const iconDiv = document.createElement('div');
-                            iconDiv.className = 'trending-story-icon';
-                            iconDiv.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#22c55e"><path d="m136-240-56-56 296-298 160 160 208-206H640v-80h240v240h-80v-104L536-320 376-480 136-240Z"/></svg>';
-                            a.appendChild(iconDiv);
-                            
-                            const titleSpan = document.createElement('span');
-                            titleSpan.textContent = story.title;
-                            titleSpan.className = 'trending-story-title';
-                            a.appendChild(titleSpan);
-                            
-                            trendingItems.appendChild(a);
-                            
-                            // Cascading fade-in effect - each item fades in with a delay
-                            setTimeout(() => {
-                                a.classList.add('visible');
-                            }, index * 30); // Reduced from 50ms to 30ms for faster appearance
-                        });
-                    } else {
-                        trendingItems.innerHTML = '<div style="color: #999; font-size: 12px;">No trending stories available</div>';
-                    }
-                };
-
-                // Check cache first
-                const now = Date.now();
-                if (trendingStoriesCache && trendingStoriesCacheTime && (now - trendingStoriesCacheTime) < CACHE_DURATION) {
-                    // Use cached data
-                    renderTrendingStories(trendingStoriesCache);
-                } else {
-                    // Fetch trending stories
-                    fetch('https://staging-www2.villagemedia.ca/rss/agriculture', { mode: 'cors' })
-                        .then(response => {
-                            if (!response.ok) throw new Error('Network response was not ok');
-                            return response.text();
-                        })
-                        .then(str => {
-                            const parser = new DOMParser();
-                            const xml = parser.parseFromString(str, 'text/xml');
-                            
-                            // Check for parsing errors
-                            const parseError = xml.querySelector('parsererror');
-                            if (parseError) {
-                                throw new Error('XML parsing error');
-                            }
-                            
-                            const items = xml.querySelectorAll('item');
-                            const trendingStories = [];
-                            
-                            for (let i = 0; i < Math.min(5, items.length); i++) {
-                                const item = items[i];
-                                const titleEl = item.querySelector('title');
-                                const linkEl = item.querySelector('link');
-                                const title = titleEl ? titleEl.textContent.trim() : '';
-                                const link = linkEl ? linkEl.textContent.trim() : '';
-                                if (title && link) {
-                                    trendingStories.push({ title, link });
-                                }
-                            }
-                            
-                            // Cache the results
-                            trendingStoriesCache = trendingStories;
-                            trendingStoriesCacheTime = now;
-                            
-                            // Render the stories
-                            renderTrendingStories(trendingStories);
-                        })
-                        .catch(error => {
-                            console.error('Error fetching trending stories:', error);
-                            trendingItems.innerHTML = '<div style="color: #999; font-size: 12px;">Unable to load trending stories</div>';
-                        });
                 }
                 
                 // Handle search input
@@ -1281,53 +1192,10 @@ function initNavigationScript() {
                     showSearchMenu();
                 });
                 
-                // Prefetch trending stories on hover (before menu opens)
-                const prefetchTrendingStories = () => {
-                    const now = Date.now();
-                    // Only prefetch if cache is empty or expired
-                    if (!trendingStoriesCache || !trendingStoriesCacheTime || (now - trendingStoriesCacheTime) >= CACHE_DURATION) {
-                        fetch('https://staging-www2.villagemedia.ca/rss/agriculture', { mode: 'cors' })
-                            .then(response => {
-                                if (!response.ok) return;
-                                return response.text();
-                            })
-                            .then(str => {
-                                if (!str) return;
-                                const parser = new DOMParser();
-                                const xml = parser.parseFromString(str, 'text/xml');
-                                const parseError = xml.querySelector('parsererror');
-                                if (parseError) return;
-                                
-                                const items = xml.querySelectorAll('item');
-                                const trendingStories = [];
-                                
-                                for (let i = 0; i < Math.min(5, items.length); i++) {
-                                    const item = items[i];
-                                    const titleEl = item.querySelector('title');
-                                    const linkEl = item.querySelector('link');
-                                    const title = titleEl ? titleEl.textContent.trim() : '';
-                                    const link = linkEl ? linkEl.textContent.trim() : '';
-                                    if (title && link) {
-                                        trendingStories.push({ title, link });
-                                    }
-                                }
-                                
-                                // Cache the results
-                                trendingStoriesCache = trendingStories;
-                                trendingStoriesCacheTime = Date.now();
-                            })
-                            .catch(() => {
-                                // Silently fail on prefetch
-                            });
-                    }
-                };
-
                 // Hover handlers
                 searchTrigger.addEventListener('mouseenter', () => {
                     clearTimeout(searchHoverTimeout);
                     clearTimeout(searchShowTimeout);
-                    // Prefetch on hover to reduce delay when menu opens
-                    prefetchTrendingStories();
                     searchShowTimeout = setTimeout(() => {
                         showSearchMenu();
                     }, 250);
