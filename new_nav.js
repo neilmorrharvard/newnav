@@ -228,7 +228,7 @@ function initNavigationScript() {
                     bottom: 0;
                     width: 40px;
                     pointer-events: none;
-                    z-index: 100;
+                    z-index: 15;
                     opacity: 0;
                     transition: opacity 0.3s ease;
                     border: none;
