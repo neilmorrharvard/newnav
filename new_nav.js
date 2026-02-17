@@ -96,6 +96,8 @@ function initNavigationScript() {
             crime: [{ text: "All Crime", url: "https://staging-www2.villagemedia.ca/crime-cops-court" }],
             more: [
                 { text: "Business & Energy", url: "https://staging-www2.villagemedia.ca/business" },
+                { text: "Provincial News", url: "https://staging-www2.villagemedia.ca/provincial-news" },
+                { text: "National News", url: "https://staging-www2.villagemedia.ca/national-news" },
                 { text: "Opinion", url: "https://staging-www2.villagemedia.ca/opinion" },
                 { text: "Gas Prices", url: "https://staging-www2.villagemedia.ca/gas-prices" },
                 { text: "Politics", url: "https://staging-www2.villagemedia.ca/politics" },
