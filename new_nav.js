@@ -329,8 +329,8 @@ function initNavigationScript() {
                     <span class="category-icon-wrapper">${iconLocation}</span><span id="community-label">Communities</span>
                     <svg class="dropdown-arrow-icon" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
                 </div>
-                <button class="category-pill" data-category="sports"><span class="category-icon-wrapper">${iconSports}</span><span>Sports</span></button>
                 <button class="category-pill" data-category="obituaries"><span class="category-icon-wrapper">${iconObituaries}</span><span>Obituaries</span></button>
+                <button class="category-pill" data-category="sports"><span class="category-icon-wrapper">${iconSports}</span><span>Sports</span></button>
                 <button class="category-pill" data-category="agriculture"><span class="category-icon-wrapper">${iconAgriculture}</span><span>Agriculture</span></button>
                 <button class="category-pill" data-category="opinions"><span class="category-icon-wrapper">${iconOpinions}</span><span>Opinion</span></button>
                 <button class="category-pill" data-category="crime"><span class="category-icon-wrapper">${iconCrime}</span><span>Crime</span></button>
