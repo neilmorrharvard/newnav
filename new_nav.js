@@ -87,7 +87,12 @@ function initNavigationScript() {
                 { text: "Assiniboia Obituaries", url: "https://staging-www2.villagemedia.ca/obituaries/assiniboia-obituaries" },
                 { text: "Estevan Obituaries", url: "https://staging-www2.villagemedia.ca/obituaries/estevan-obituaries" }
             ],
-            opinions: [{ text: "All Opinions", url: "https://staging-www2.villagemedia.ca/opinion" }],
+            opinions: [
+                { text: "All Opinion", url: "https://staging-www2.villagemedia.ca/opinion" },
+                { text: "North Opinion", url: "https://staging-www2.villagemedia.ca/north/opinion" },
+                { text: "Central Opinion", url: "https://staging-www2.villagemedia.ca/central/opinion" },
+                { text: "South Opinion", url: "https://staging-www2.villagemedia.ca/south/opinion" }
+            ],
             crime: [{ text: "All Crime", url: "https://staging-www2.villagemedia.ca/crime-cops-court" }],
             more: [
                 { text: "Business & Energy", url: "https://staging-www2.villagemedia.ca/business" },
@@ -327,7 +332,7 @@ function initNavigationScript() {
                 <button class="category-pill" data-category="sports"><span class="category-icon-wrapper">${iconSports}</span><span>Sports</span></button>
                 <button class="category-pill" data-category="obituaries"><span class="category-icon-wrapper">${iconObituaries}</span><span>Obituaries</span></button>
                 <button class="category-pill" data-category="agriculture"><span class="category-icon-wrapper">${iconAgriculture}</span><span>Agriculture</span></button>
-                <button class="category-pill" data-category="opinions"><span class="category-icon-wrapper">${iconOpinions}</span><span>Opinions</span></button>
+                <button class="category-pill" data-category="opinions"><span class="category-icon-wrapper">${iconOpinions}</span><span>Opinion</span></button>
                 <button class="category-pill" data-category="crime"><span class="category-icon-wrapper">${iconCrime}</span><span>Crime</span></button>
                 <button class="category-pill" id="mega-menu-trigger" data-category="more"><span class="category-icon-wrapper more-icon">${iconMore}</span><span>More</span></button>
                 <button class="category-pill search-trigger" id="search-trigger" type="button" style="display: none;"><span class="search-icon"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"/></svg></span></button>
@@ -338,7 +343,7 @@ function initNavigationScript() {
             <div class="bottom-row" id="category-sports"><div class="bottom-row-inner hide-scrollbar"><a href="https://www.sportscage.com" target="_blank" class="text-link">Go to SportsCage ${extIcon}</a><a href="https://staging-www2.villagemedia.ca/sports" class="text-link">All Sports</a><a href="https://staging-www2.villagemedia.ca/north/local-sports" class="text-link">North Sask Sports</a><a href="https://staging-www2.villagemedia.ca/central/local-sports" class="text-link">Central Sask Sports</a><a href="https://staging-www2.villagemedia.ca/southwest/local-sports" class="text-link">Southwest Sask Sports</a></div></div>
             <div class="bottom-row" id="category-agriculture"><div class="bottom-row-inner hide-scrollbar"><a href="https://www.saskagtoday.com" target="_blank" class="text-link">Go to SaskAgToday ${extIcon}</a><a href="https://staging-www2.villagemedia.ca/agriculture" class="text-link">All Agriculture</a><a href="https://staging-www2.villagemedia.ca/north/agriculture" class="text-link">North Sask Agriculture</a><a href="https://staging-www2.villagemedia.ca/central/agriculture" class="text-link">Central Sask Agriculture</a></div></div>
             <div class="bottom-row" id="category-obituaries"><div class="bottom-row-inner hide-scrollbar"><a href="https://staging-www2.villagemedia.ca/obituaries" class="text-link">All Obituaries</a><a href="https://staging-www2.villagemedia.ca/obituaries/regina-obituaries" class="text-link">Regina Obituaries</a><a href="https://staging-www2.villagemedia.ca/obituaries/saskatoon-obituaries" class="text-link">Saskatoon Obituaries</a><a href="https://staging-www2.villagemedia.ca/obituaries/yorkton-obituaries" class="text-link">Yorkton Obituaries</a><a href="https://staging-www2.villagemedia.ca/obituaries/assiniboia-obituaries" class="text-link">Assiniboia Obituaries</a><a href="https://staging-www2.villagemedia.ca/obituaries/estevan-obituaries" class="text-link">Estevan Obituaries</a></div></div>
-            <div class="bottom-row" id="category-opinions"><div class="bottom-row-inner hide-scrollbar"><a href="https://staging-www2.villagemedia.ca/opinion" class="text-link">All Opinions</a></div></div>
+            <div class="bottom-row" id="category-opinions"><div class="bottom-row-inner hide-scrollbar"><a href="https://staging-www2.villagemedia.ca/opinion" class="text-link">All Opinion</a><a href="https://staging-www2.villagemedia.ca/north/opinion" class="text-link">North Opinion</a><a href="https://staging-www2.villagemedia.ca/central/opinion" class="text-link">Central Opinion</a><a href="https://staging-www2.villagemedia.ca/south/opinion" class="text-link">South Opinion</a></div></div>
             <div class="bottom-row" id="category-crime"><div class="bottom-row-inner hide-scrollbar"><a href="https://staging-www2.villagemedia.ca/crime-cops-court" class="text-link">All Crime</a></div></div>
         </div>
     </div>`;
