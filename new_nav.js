@@ -834,12 +834,16 @@ function initNavigationScript() {
     }
 
     let desktopChildControlsRaf = null;
+    let desktopChildControlsTimeout = null;
     function requestDesktopChildScrollControlsUpdate() {
         // Immediate pass for already-settled layouts
         updateAllDesktopChildScrollControls();
 
         if (desktopChildControlsRaf) {
             cancelAnimationFrame(desktopChildControlsRaf);
+        }
+        if (desktopChildControlsTimeout) {
+            clearTimeout(desktopChildControlsTimeout);
         }
         // Follow-up pass for show/hide and reflow transitions
         desktopChildControlsRaf = requestAnimationFrame(() => {
@@ -848,6 +852,12 @@ function initNavigationScript() {
                 desktopChildControlsRaf = null;
             });
         });
+
+        // Safety retry after transition/paint timing edge-cases (menu hide/show)
+        desktopChildControlsTimeout = setTimeout(() => {
+            updateAllDesktopChildScrollControls();
+            desktopChildControlsTimeout = null;
+        }, 180);
     }
 
     // Function to align bottom-row-inner with active parent pill on mobile and tablet
