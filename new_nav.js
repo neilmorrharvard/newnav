@@ -815,11 +815,9 @@ function initNavigationScript() {
         const activeBottomInner = document.querySelector('.bottom-row.active .bottom-row-inner');
         const savedScroll = sessionStorage.getItem('nav_bottom_scroll');
         const lastCat = sessionStorage.getItem('nav_last_category');
-        const url = window.location.href.split('?')[0].replace(/\/$/, "");
-        
-        let currentCat = 'home';
-        for (let cat in routes.categories) { if (url.includes(cat)) currentCat = cat; }
-        for (let comm in routes.communities) { if (url.includes(comm)) currentCat = comm; }
+        const currentPath = normalizePath(window.location.pathname);
+        const activeParent = resolveActiveParentFromPath(currentPath);
+        const currentCat = activeParent ? activeParent.key : 'home';
 
         if (activeBottomInner) {
             if (currentCat === lastCat && savedScroll) { 
@@ -846,6 +844,48 @@ function initNavigationScript() {
         if (!container) return;
         const activeEl = container.querySelector(selector);
         if (activeEl) container.scrollLeft = activeEl.offsetLeft - (container.offsetWidth / 2) + (activeEl.offsetWidth / 2);
+    }
+
+    function normalizePath(path) {
+        if (!path) return '/';
+        const normalized = path.replace(/\/+$/, '');
+        return normalized || '/';
+    }
+
+    function isPathMatch(currentPath, routePath) {
+        if (!currentPath || !routePath) return false;
+        return currentPath === routePath || currentPath.startsWith(`${routePath}/`);
+    }
+
+    function resolveActiveParentFromPath(currentPath) {
+        const candidates = [];
+
+        // Category routes (e.g., /obituaries/*)
+        Object.entries(routes.categories).forEach(([key, url]) => {
+            try {
+                const routePath = normalizePath(new URL(url).pathname);
+                if (isPathMatch(currentPath, routePath)) {
+                    candidates.push({ type: 'category', key, routePath });
+                }
+            } catch (_) { /* ignore malformed URLs */ }
+        });
+
+        // Community routes (e.g., /regina-today/*)
+        Object.entries(routes.communities).forEach(([key, url]) => {
+            if (key === 'all') return;
+            try {
+                const routePath = normalizePath(new URL(url).pathname);
+                if (isPathMatch(currentPath, routePath)) {
+                    candidates.push({ type: 'community', key, routePath });
+                }
+            } catch (_) { /* ignore malformed URLs */ }
+        });
+
+        if (!candidates.length) return null;
+
+        // Longest matching route path wins (most specific mapping)
+        candidates.sort((a, b) => b.routePath.length - a.routePath.length);
+        return candidates[0];
     }
 
     // Function to update fade effects based on scroll position
@@ -1133,33 +1173,23 @@ function initNavigationScript() {
     }
 
     function initNavLogic() {
-        const url = window.location.href.split('?')[0].replace(/\/$/, "");
+        const currentPath = normalizePath(window.location.pathname);
         const topRow = document.getElementById('main-top-row'), commContainer = document.getElementById('comm-container');
         const container = document.getElementById('village-nav-container');
-        let matched = false;
+        const activeParent = resolveActiveParentFromPath(currentPath);
 
-        // Parent Selection and Prepend for Mobile
-        for (let cat in routes.categories) {
-            if (url.includes(cat)) {
-                const pill = document.querySelector(`[data-category="${cat}"]`);
-                pill?.classList.add('active');
-                const bottomRow = document.getElementById(`category-${cat}`);
-                bottomRow?.classList.add('active');
-                if (bottomRow) container.classList.add('mega-menu-open');
-                matched = true; break;
-            }
-        }
-        if (!matched) {
-            for (let commKey in routes.communities) {
-                if (commKey !== 'all' && url.includes(commKey)) {
-                    commContainer.classList.add('active');
-                    document.getElementById('community-label').textContent = commKey.charAt(0).toUpperCase() + commKey.slice(1) + ', SK';
-                    const bottomRow = document.getElementById(`community-${commKey}`);
-                    bottomRow?.classList.add('active');
-                    if (bottomRow) container.classList.add('mega-menu-open');
-                    break;
-                }
-            }
+        if (activeParent?.type === 'category') {
+            const pill = document.querySelector(`[data-category="${activeParent.key}"]`);
+            pill?.classList.add('active');
+            const bottomRow = document.getElementById(`category-${activeParent.key}`);
+            bottomRow?.classList.add('active');
+            if (bottomRow) container.classList.add('mega-menu-open');
+        } else if (activeParent?.type === 'community') {
+            commContainer.classList.add('active');
+            document.getElementById('community-label').textContent = activeParent.key.charAt(0).toUpperCase() + activeParent.key.slice(1) + ', SK';
+            const bottomRow = document.getElementById(`community-${activeParent.key}`);
+            bottomRow?.classList.add('active');
+            if (bottomRow) container.classList.add('mega-menu-open');
         }
 
         // If no parent/community matched, show a default child row with all community links
@@ -1294,8 +1324,9 @@ function initNavigationScript() {
         });
 
         // Child Active States
+        const currentUrlNoTrailingSlash = window.location.href.split('?')[0].replace(/\/$/, "");
         document.querySelectorAll('.bottom-row.active .text-link').forEach(link => {
-            if (url === link.href.replace(/\/$/, "")) link.classList.add('active');
+            if (currentUrlNoTrailingSlash === link.href.replace(/\/$/, "")) link.classList.add('active');
         });
 
         // Desktop child-row overflow cues (fade + arrows)
