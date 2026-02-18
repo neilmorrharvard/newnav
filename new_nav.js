@@ -196,12 +196,12 @@ function initNavigationScript() {
                 .desktop-child-scroll-fade.fade-left { left: 0; background: linear-gradient(to right, rgba(255,255,255,1) 0px, rgba(255,255,255,1) 24px, rgba(255,255,255,0.78) 40px, rgba(255,255,255,0.4) 50px, transparent 58px); }
                 .desktop-child-scroll-fade.fade-right { right: 0; background: linear-gradient(to left, rgba(255,255,255,1) 0px, rgba(255,255,255,1) 24px, rgba(255,255,255,0.78) 40px, rgba(255,255,255,0.4) 50px, transparent 58px); }
                 .desktop-child-scroll-fade.visible { opacity: 1; }
-                .desktop-child-scroll-arrow { position: absolute; top: calc(50% - 1px); transform: translateY(-50%); width: 22px; height: 22px; border: 1px solid #e5e7eb; border-radius: 999px; background: #fff; color: #666; display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 0; pointer-events: none; transition: opacity 0.2s ease, border-color 0.2s ease, color 0.2s ease; z-index: 7; padding: 0; }
+                .desktop-child-scroll-arrow { position: absolute; top: calc(50% - 1px); transform: translateY(-50%); width: 22px; height: 22px; border: 1px solid #9ca3af; border-radius: 999px; background: #fff; color: #374151; display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 0; pointer-events: none; transition: opacity 0.2s ease, border-color 0.2s ease, color 0.2s ease; z-index: 7; padding: 0; }
                 .desktop-child-scroll-arrow svg { width: 10px; height: 10px; fill: currentColor; }
                 .desktop-child-scroll-arrow.scroll-left { left: 0; }
                 .desktop-child-scroll-arrow.scroll-right { right: 0; }
                 .desktop-child-scroll-arrow.visible { opacity: 1; pointer-events: auto; }
-                .desktop-child-scroll-arrow:hover { border-color: #cbd5e1; color: #111; }
+                .desktop-child-scroll-arrow:hover { border-color: #6b7280; color: #111827; }
                 .desktop-down-arrow { display: block !important; width: 15px; height: 15px; }
                 .external-icon { width: 10px !important; height: 10px !important; }
                 #category-sports .bottom-row-inner a[href*="sportscage.com"], #category-agriculture .bottom-row-inner a[href*="saskagtoday.com"] { display: none; }
