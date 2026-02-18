@@ -835,13 +835,17 @@ function initNavigationScript() {
 
     let desktopChildControlsRaf = null;
     function requestDesktopChildScrollControlsUpdate() {
+        // Immediate pass for already-settled layouts
+        updateAllDesktopChildScrollControls();
+
         if (desktopChildControlsRaf) {
             cancelAnimationFrame(desktopChildControlsRaf);
         }
-        // Defer to the next paint cycle so display/layout changes settle first
+        // Follow-up pass for show/hide and reflow transitions
         desktopChildControlsRaf = requestAnimationFrame(() => {
             requestAnimationFrame(() => {
-                requestDesktopChildScrollControlsUpdate();
+                updateAllDesktopChildScrollControls();
+                desktopChildControlsRaf = null;
             });
         });
     }
