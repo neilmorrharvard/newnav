@@ -1323,11 +1323,22 @@ function initNavigationScript() {
             });
         });
 
-        // Child Active States
-        const currentUrlNoTrailingSlash = window.location.href.split('?')[0].replace(/\/$/, "");
+        // Child Active States (longest path-prefix match so deep pages still map correctly)
+        const currentPathForChildMatch = normalizePath(window.location.pathname);
+        let bestChildLink = null;
+        let bestChildMatchLength = -1;
         document.querySelectorAll('.bottom-row.active .text-link').forEach(link => {
-            if (currentUrlNoTrailingSlash === link.href.replace(/\/$/, "")) link.classList.add('active');
+            try {
+                const linkPath = normalizePath(new URL(link.href).pathname);
+                if (isPathMatch(currentPathForChildMatch, linkPath) && linkPath.length > bestChildMatchLength) {
+                    bestChildLink = link;
+                    bestChildMatchLength = linkPath.length;
+                }
+            } catch (_) {
+                // Ignore malformed URLs
+            }
         });
+        if (bestChildLink) bestChildLink.classList.add('active');
 
         // Desktop child-row overflow cues (fade + arrows)
         if (window.innerWidth > 990) {
