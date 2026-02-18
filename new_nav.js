@@ -391,6 +391,7 @@ function initNavigationScript() {
             <div class="bottom-row" id="category-obituaries"><div class="bottom-row-inner hide-scrollbar"><a href="https://staging-www2.villagemedia.ca/obituaries" class="text-link">All Obituaries</a><a href="https://staging-www2.villagemedia.ca/obituaries/regina-obituaries" class="text-link">Regina Obituaries</a><a href="https://staging-www2.villagemedia.ca/obituaries/saskatoon-obituaries" class="text-link">Saskatoon Obituaries</a><a href="https://staging-www2.villagemedia.ca/obituaries/yorkton-obituaries" class="text-link">Yorkton Obituaries</a><a href="https://staging-www2.villagemedia.ca/obituaries/assiniboia-obituaries" class="text-link">Assiniboia Obituaries</a><a href="https://staging-www2.villagemedia.ca/obituaries/estevan-obituaries" class="text-link">Estevan Obituaries</a><a href="https://staging-www2.villagemedia.ca/obituaries/humboldt-obituaries" class="text-link">Humboldt Obituaries</a><a href="https://staging-www2.villagemedia.ca/obituaries/canora-obituaries" class="text-link">Canora Obituaries</a><a href="https://staging-www2.villagemedia.ca/obituaries/unitywilkie-obituaries" class="text-link">Unity-Wilkie Obituaries</a><a href="https://staging-www2.villagemedia.ca/obituaries/moosejaw-obituaries" class="text-link">Moose Jaw Obituaries</a><a href="https://staging-www2.villagemedia.ca/obituaries/outlook-obituaries" class="text-link">Outlook Obituaries</a><a href="https://staging-www2.villagemedia.ca/obituaries/preeceville-obituaries" class="text-link">Preeceville Obituaries</a><a href="https://staging-www2.villagemedia.ca/obituaries/princealbert-obituaries" class="text-link">Prince Albert Obituaries</a></div></div>
             <div class="bottom-row" id="category-opinions"><div class="bottom-row-inner hide-scrollbar"><a href="https://staging-www2.villagemedia.ca/opinion" class="text-link">All Opinion</a><a href="https://staging-www2.villagemedia.ca/north/opinion" class="text-link">North Opinion</a><a href="https://staging-www2.villagemedia.ca/central/opinion" class="text-link">Central Opinion</a><a href="https://staging-www2.villagemedia.ca/south/opinion" class="text-link">South Opinion</a></div></div>
             <div class="bottom-row" id="category-crime"><div class="bottom-row-inner hide-scrollbar"><a href="https://staging-www2.villagemedia.ca/crime-cops-court" class="text-link">All Crime</a></div></div>
+            <div class="bottom-row" id="category-default"><div class="bottom-row-inner hide-scrollbar">${routes.communityLinks.communities.map(link => `<a href="${link.url}" class="text-link">${link.text}</a>`).join('')}</div></div>
         </div>
     </div>`;
 
@@ -1141,6 +1142,13 @@ function initNavigationScript() {
                     break;
                 }
             }
+        }
+
+        // If no parent/community matched, show a default child row with all community links
+        if (!document.querySelector('.category-pill.active, #comm-container.active')) {
+            const defaultBottomRow = document.getElementById('category-default');
+            defaultBottomRow?.classList.add('active');
+            if (defaultBottomRow) container.classList.add('mega-menu-open');
         }
         
         // Update icon colors for active pills on mobile
