@@ -30,7 +30,7 @@ function initNavigationScript() {
     const BOTTOM_STICKY_AD_HEIGHT = Number(window.NAV_STICKY_AD_HEIGHT || 70);
     const TRENDING_RSS_URL = window.NAV_TRENDING_RSS_URL || 'https://www.sasktoday.ca/rss/trending';
     const TRENDING_RSS_SOURCES = Array.from(new Set([
-        `${window.location.origin}/rss/trending`,
+        `${window.location.origin}/rss/agriculture`,
         TRENDING_RSS_URL,
         'https://www.sasktoday.ca/rss/trending'
     ].filter(Boolean)));
