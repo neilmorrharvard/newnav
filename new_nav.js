@@ -28,6 +28,7 @@ function initNavigationScript() {
     // Bottom trending story feature flags (easy on/off + positioning override)
     const ENABLE_BOTTOM_TRENDING_STORY = window.NAV_ENABLE_BOTTOM_TRENDING_STORY !== false;
     const BOTTOM_STICKY_AD_HEIGHT = Number(window.NAV_STICKY_AD_HEIGHT || 70);
+    const BOTTOM_TRENDING_BAR_GAP = Number(window.NAV_BOTTOM_TRENDING_BAR_GAP || 8);
     const ENABLE_FAKE_BOTTOM_AD_UNIT = window.NAV_ENABLE_FAKE_BOTTOM_AD_UNIT !== false;
     const TRENDING_RSS_URL = window.NAV_TRENDING_RSS_URL || 'https://www.sasktoday.ca/rss/trending';
     const TRENDING_RSS_SOURCES = Array.from(new Set([
@@ -716,11 +717,11 @@ function initNavigationScript() {
 
                 const bar = document.createElement('div');
                 bar.id = 'bottom-trending-story-bar';
-                bar.style.bottom = `${BOTTOM_STICKY_AD_HEIGHT}px`;
+                bar.style.bottom = `${BOTTOM_STICKY_AD_HEIGHT + BOTTOM_TRENDING_BAR_GAP}px`;
 
                 const label = document.createElement('span');
                 label.className = 'label';
-                label.textContent = 'Trending';
+                label.textContent = 'For You';
 
                 const storyLink = document.createElement('a');
                 storyLink.className = 'story-link';
