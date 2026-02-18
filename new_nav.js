@@ -334,6 +334,8 @@ function initNavigationScript() {
             #village-nav-dropdown-mobile .dropdown-scroll-fade-bottom { position: absolute; bottom: 0; left: 0; right: 0; height: 70px; background: linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0.6) 25%, rgba(255,255,255,0.8) 50%, rgba(255,255,255,0.95) 75%, rgba(255,255,255,1) 100%); pointer-events: none; border-radius: 0 0 8px 8px; opacity: 0; transition: opacity 0.2s ease; z-index: 2; }
             #village-nav-dropdown-mobile .dropdown-scroll-fade-bottom.visible { opacity: 1; }
             #bottom-trending-story-bar { position: fixed; left: 10px; right: 10px; bottom: 70px; z-index: 1000; background: #ffffff; border: 1px solid #e5e7eb; border-radius: 8px; box-shadow: 0 4px 14px rgba(0,0,0,0.14); padding: 10px 12px; display: flex; align-items: center; gap: 10px; }
+            #bottom-trending-story-bar { opacity: 0; pointer-events: none; transition: opacity 0.25s ease; }
+            #bottom-trending-story-bar.visible { opacity: 1; pointer-events: auto; }
             #bottom-trending-story-bar .label { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #6b7280; flex-shrink: 0; }
             #bottom-trending-story-bar .story-link { font-size: 13px; font-weight: 600; color: #111827; text-decoration: none; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
             #bottom-trending-story-bar .story-link:hover { color: #000; text-decoration: underline; }
@@ -741,6 +743,8 @@ function initNavigationScript() {
                 bar.appendChild(storyLink);
                 bar.appendChild(closeBtn);
                 document.body.appendChild(bar);
+                updateBottomTrendingBarVisibility();
+                bindBottomTrendingBarVisibilityHandlers();
 
                 console.log('[NAV DEBUG] Bottom trending story loaded from:', rssUrl);
                 return;
@@ -751,6 +755,33 @@ function initNavigationScript() {
         }
 
         console.error('[NAV DEBUG] Failed to initialize bottom trending story bar:', lastError);
+    }
+
+    let bottomTrendingVisibilityHandlersBound = false;
+    let bottomTrendingVisibilityTimeout = null;
+    function updateBottomTrendingBarVisibility() {
+        const bar = document.getElementById('bottom-trending-story-bar');
+        if (!bar) return;
+
+        const scrollableHeight = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+        const threshold = scrollableHeight * 0.2;
+        const passedThreshold = scrollableHeight <= 0 ? true : window.scrollY >= threshold;
+        bar.classList.toggle('visible', passedThreshold);
+    }
+
+    function bindBottomTrendingBarVisibilityHandlers() {
+        if (bottomTrendingVisibilityHandlersBound) return;
+        bottomTrendingVisibilityHandlersBound = true;
+
+        const onScrollOrResize = () => {
+            clearTimeout(bottomTrendingVisibilityTimeout);
+            bottomTrendingVisibilityTimeout = setTimeout(() => {
+                updateBottomTrendingBarVisibility();
+            }, 10);
+        };
+
+        window.addEventListener('scroll', onScrollOrResize, { passive: true });
+        window.addEventListener('resize', onScrollOrResize, { passive: true });
     }
 
     function handleScrollLogic() {
