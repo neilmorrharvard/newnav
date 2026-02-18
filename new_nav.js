@@ -594,7 +594,7 @@ function initNavigationScript() {
                     document.querySelectorAll('.bottom-row-inner').forEach(row => {
                         updateScrollFades(row);
                     });
-                    updateAllDesktopChildScrollControls();
+                    requestDesktopChildScrollControlsUpdate();
                 } else {
                     // Desktop updates
                     // Reset padding on desktop
@@ -614,7 +614,7 @@ function initNavigationScript() {
                     fadeOverlays.clear();
                     // Update underline widths on desktop
                     setUnderlineWidth();
-                    updateAllDesktopChildScrollControls();
+                    requestDesktopChildScrollControlsUpdate();
                 }
             }, 150);
         });
@@ -830,6 +830,19 @@ function initNavigationScript() {
     function updateAllDesktopChildScrollControls() {
         document.querySelectorAll('.bottom-row-inner.hide-scrollbar').forEach(row => {
             updateDesktopChildScrollControls(row);
+        });
+    }
+
+    let desktopChildControlsRaf = null;
+    function requestDesktopChildScrollControlsUpdate() {
+        if (desktopChildControlsRaf) {
+            cancelAnimationFrame(desktopChildControlsRaf);
+        }
+        // Defer to the next paint cycle so display/layout changes settle first
+        desktopChildControlsRaf = requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                requestDesktopChildScrollControlsUpdate();
+            });
         });
     }
 
@@ -1060,7 +1073,7 @@ function initNavigationScript() {
         // Desktop child-row overflow cues (fade + arrows)
         if (window.innerWidth > 990) {
             requestAnimationFrame(() => {
-                updateAllDesktopChildScrollControls();
+                requestDesktopChildScrollControlsUpdate();
             });
         }
 
@@ -1284,7 +1297,7 @@ function initNavigationScript() {
                 if (activeBottomRow) {
                     activeBottomRow.style.display = 'none';
                 }
-                updateAllDesktopChildScrollControls();
+                requestDesktopChildScrollControlsUpdate();
                 
                 // Handle search input
                 const searchInput = document.getElementById('search-input');
@@ -1318,7 +1331,7 @@ function initNavigationScript() {
                     if (activeBottomRow) {
                         activeBottomRow.style.display = 'flex';
                     }
-                    updateAllDesktopChildScrollControls();
+                    requestDesktopChildScrollControlsUpdate();
                 }
             };
             
@@ -1678,7 +1691,7 @@ function initNavigationScript() {
                 document.querySelectorAll('.bottom-row').forEach(row => {
                     row.style.display = 'none';
                 });
-                updateAllDesktopChildScrollControls();
+                requestDesktopChildScrollControlsUpdate();
                 
                 // Remove JavaScript positioning - not needed with relative positioning
                 
@@ -1785,7 +1798,7 @@ function initNavigationScript() {
                     if (activeBottomRow) {
                         activeBottomRow.style.display = 'flex';
                     }
-                    updateAllDesktopChildScrollControls();
+                    requestDesktopChildScrollControlsUpdate();
                 }, 300); // 300ms delay - longer than show delay to prevent flicker when moving between parents
             };
 
