@@ -20,7 +20,7 @@ function initNavigationScript() {
     window.navScriptLoaded = true;
 
     // Version identifier - check in console: window.navVersion
-    window.navVersion = '2026-02-18-fc0a901';
+    window.navVersion = '2026-02-18-a280f8a';
     if (console && console.log) {
         console.log('%cNew Nav Script Loaded', 'color: #016A1B; font-weight: bold; font-size: 12px;', 'Version:', window.navVersion);
     }
