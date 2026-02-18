@@ -29,6 +29,7 @@ function initNavigationScript() {
     const ENABLE_BOTTOM_TRENDING_STORY = window.NAV_ENABLE_BOTTOM_TRENDING_STORY !== false;
     const BOTTOM_STICKY_AD_HEIGHT = Number(window.NAV_STICKY_AD_HEIGHT || 70);
     const BOTTOM_TRENDING_BAR_GAP = Number(window.NAV_BOTTOM_TRENDING_BAR_GAP || 8);
+    const BOTTOM_TRENDING_FALLBACK_SCROLL_PX = Number(window.NAV_BOTTOM_TRENDING_FALLBACK_SCROLL_PX || 300);
     const ENABLE_FAKE_BOTTOM_AD_UNIT = window.NAV_ENABLE_FAKE_BOTTOM_AD_UNIT !== false;
     const TRENDING_RSS_URL = window.NAV_TRENDING_RSS_URL || 'https://www.sasktoday.ca/rss/trending';
     const TRENDING_RSS_SOURCES = Array.from(new Set([
@@ -759,11 +760,29 @@ function initNavigationScript() {
 
     let bottomTrendingVisibilityHandlersBound = false;
     let bottomTrendingVisibilityTimeout = null;
+    function getFirstParagraphScrollThreshold() {
+        const paragraphs = document.querySelectorAll('main p, article p, .entry-content p, .post-content p, p');
+        for (const p of paragraphs) {
+            if (!p || !p.isConnected) continue;
+            if (p.closest('#village-nav-container, #bottom-trending-story-bar, #bottom-sticky-ad-sim, header, footer, nav')) continue;
+            const text = (p.textContent || '').trim();
+            if (text.length < 30) continue;
+            const style = window.getComputedStyle(p);
+            if (style.display === 'none' || style.visibility === 'hidden') continue;
+            const rect = p.getBoundingClientRect();
+            if (rect.height < 8) continue;
+            // Trigger when user has passed the end of the first real paragraph.
+            return Math.max(0, window.scrollY + rect.bottom);
+        }
+        return BOTTOM_TRENDING_FALLBACK_SCROLL_PX;
+    }
+
     function updateBottomTrendingBarVisibility() {
         const bar = document.getElementById('bottom-trending-story-bar');
         if (!bar) return;
 
-        const passedThreshold = window.scrollY >= 300;
+        const threshold = getFirstParagraphScrollThreshold();
+        const passedThreshold = window.scrollY >= threshold;
         bar.classList.toggle('visible', passedThreshold);
     }
 
