@@ -1440,6 +1440,7 @@ function initNavigationScript() {
                 if (activeBottomRow) {
                     activeBottomRow.style.display = 'flex';
                 }
+                requestDesktopChildScrollControlsUpdate();
             }, 150);
         });
 
