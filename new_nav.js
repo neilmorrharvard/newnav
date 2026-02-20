@@ -20,7 +20,7 @@ function initNavigationScript() {
     window.navScriptLoaded = true;
 
     // Version identifier - check in console: window.navVersion
-    window.navVersion = '2026-02-20-community-overlay-v3';
+    window.navVersion = '2026-02-20-no-default-child-row';
     if (console && console.log) {
         console.log('%cNew Nav Script Loaded', 'color: #016A1B; font-weight: bold; font-size: 12px;', 'Version:', window.navVersion);
     }
@@ -1319,17 +1319,11 @@ function initNavigationScript() {
             if (bottomRow) container.classList.add('mega-menu-open');
         }
 
-        // If no parent/community matched, show default row or overlay cue.
+        // If no parent/community matched, do not show a default child row.
         if (!document.querySelector('.category-pill.active, #comm-container.active')) {
             const defaultBottomRow = document.getElementById('category-default');
-            const shouldUseOverlay = !isCommunityOverlayDismissed() && (!isCommunityOverlaySeenInSession() || communityOverlayShownThisPage);
-            if (shouldUseOverlay) {
-                defaultBottomRow?.classList.remove('active');
-                container.classList.remove('mega-menu-open');
-            } else {
-                defaultBottomRow?.classList.add('active');
-                if (defaultBottomRow) container.classList.add('mega-menu-open');
-            }
+            defaultBottomRow?.classList.remove('active');
+            container.classList.remove('mega-menu-open');
         }
 
         pinMobilePillOrder();
