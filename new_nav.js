@@ -302,10 +302,12 @@ function initNavigationScript() {
                 padding: 8px 10px;
                 border-radius: 8px;
                 background: rgba(30, 58, 138, 0.9);
+                backdrop-filter: blur(4px);
+                -webkit-backdrop-filter: blur(4px);
                 color: #fff;
                 box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-                font-size: 10px;
-                font-weight: 700;
+                font-size: 11px;
+                font-weight: 600;
                 opacity: 0;
                 transform: translateY(-4px);
                 pointer-events: auto;
