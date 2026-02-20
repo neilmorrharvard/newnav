@@ -20,7 +20,7 @@ function initNavigationScript() {
     window.navScriptLoaded = true;
 
     // Version identifier - check in console: window.navVersion
-    window.navVersion = '2026-02-20-community-overlay';
+    window.navVersion = '2026-02-20-community-overlay-v2';
     if (console && console.log) {
         console.log('%cNew Nav Script Loaded', 'color: #016A1B; font-weight: bold; font-size: 12px;', 'Version:', window.navVersion);
     }
@@ -55,7 +55,9 @@ function initNavigationScript() {
     };
 
     const COMMUNITY_OVERLAY_DISMISS_KEY = 'vm.nav.community.overlay.dismissed.v1';
+    const COMMUNITY_OVERLAY_SEEN_SESSION_KEY = 'vm.nav.community.overlay.seen.session.v1';
     let communityOverlayEl = null;
+    let communityOverlayShownThisPage = false;
 
     const routes = {
         communities: {
@@ -291,14 +293,14 @@ function initNavigationScript() {
                 z-index: 20;
                 display: flex;
                 align-items: center;
-                gap: 8px;
+                gap: 14px;
                 padding: 8px 10px;
                 border-radius: 8px;
-                background: #111827;
+                background: rgb(0, 69, 17);
                 color: #fff;
                 box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
                 font-size: 12px;
-                font-weight: 700;
+                font-weight: 500;
                 opacity: 0;
                 transform: translateY(-4px);
                 pointer-events: auto;
@@ -314,7 +316,20 @@ function initNavigationScript() {
                 height: 0;
                 border-left: 6px solid transparent;
                 border-right: 6px solid transparent;
-                border-bottom: 6px solid #111827;
+                border-bottom: 6px solid rgb(0, 69, 17);
+            }
+            .community-tip-overlay-action {
+                border: 0;
+                background: transparent;
+                color: #fff;
+                font: inherit;
+                font-size: 12px;
+                font-weight: 500;
+                line-height: 1.2;
+                padding: 0;
+                margin: 0;
+                cursor: pointer;
+                text-align: left;
             }
             .community-tip-overlay-close {
                 border: 0;
@@ -323,6 +338,7 @@ function initNavigationScript() {
                 font-size: 14px;
                 line-height: 1;
                 padding: 0;
+                margin-left: 6px;
                 cursor: pointer;
             }
 
@@ -1164,6 +1180,22 @@ function initNavigationScript() {
         }
     }
 
+    function isCommunityOverlaySeenInSession() {
+        try {
+            return sessionStorage.getItem(COMMUNITY_OVERLAY_SEEN_SESSION_KEY) === '1';
+        } catch (error) {
+            return false;
+        }
+    }
+
+    function markCommunityOverlaySeenInSession() {
+        try {
+            sessionStorage.setItem(COMMUNITY_OVERLAY_SEEN_SESSION_KEY, '1');
+        } catch (error) {
+            // Ignore session storage failures.
+        }
+    }
+
     function dismissCommunityOverlay() {
         try {
             localStorage.setItem(COMMUNITY_OVERLAY_DISMISS_KEY, '1');
@@ -1177,7 +1209,14 @@ function initNavigationScript() {
         if (communityOverlayEl) return communityOverlayEl;
         communityOverlayEl = document.createElement('div');
         communityOverlayEl.className = 'community-tip-overlay';
-        communityOverlayEl.innerHTML = '<span>Find your community</span><button type="button" class="community-tip-overlay-close" aria-label="Dismiss community tip">×</button>';
+        communityOverlayEl.innerHTML = '<button type="button" class="community-tip-overlay-action">Find updates from your community</button><button type="button" class="community-tip-overlay-close" aria-label="Dismiss community tip">×</button>';
+        const actionBtn = communityOverlayEl.querySelector('.community-tip-overlay-action');
+        if (actionBtn) {
+            actionBtn.addEventListener('click', () => {
+                if (communityOverlayEl) communityOverlayEl.classList.remove('visible');
+                openCommunitiesMenuFromOverlay();
+            });
+        }
         const closeBtn = communityOverlayEl.querySelector('.community-tip-overlay-close');
         if (closeBtn) {
             closeBtn.addEventListener('click', (event) => {
@@ -1189,9 +1228,25 @@ function initNavigationScript() {
         return communityOverlayEl;
     }
 
+    function openCommunitiesMenuFromOverlay() {
+        const commContainer = document.getElementById('comm-container');
+        if (!commContainer) return;
+
+        if (window.innerWidth <= 990) {
+            commContainer.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
+            return;
+        }
+
+        // Desktop communities uses hover-driven mega menu.
+        document.dispatchEvent(new MouseEvent('mousemove', { bubbles: true, cancelable: true }));
+        commContainer.dispatchEvent(new MouseEvent('mouseenter', { bubbles: true, cancelable: true }));
+    }
+
     function updateCommunityOverlayVisibility() {
         const hasActiveParent = !!document.querySelector('.category-pill.active, #comm-container.active');
-        const shouldShow = window.innerWidth <= 990 && !hasActiveParent && !isCommunityOverlayDismissed();
+        const dismissed = isCommunityOverlayDismissed();
+        const seenInSession = isCommunityOverlaySeenInSession();
+        const shouldShow = !hasActiveParent && !dismissed && (!seenInSession || communityOverlayShownThisPage);
 
         if (!shouldShow) {
             if (communityOverlayEl) communityOverlayEl.classList.remove('visible');
@@ -1209,6 +1264,10 @@ function initNavigationScript() {
         overlay.style.top = `${rect.bottom + 10}px`;
         overlay.style.left = `${Math.max(8, rect.left)}px`;
         overlay.classList.add('visible');
+        if (!communityOverlayShownThisPage) {
+            communityOverlayShownThisPage = true;
+            markCommunityOverlaySeenInSession();
+        }
     }
 
     // Function to update icon colors for active pills on mobile (optimized)
@@ -1285,11 +1344,11 @@ function initNavigationScript() {
             if (bottomRow) container.classList.add('mega-menu-open');
         }
 
-        // If no parent/community matched, show default row (desktop) or overlay cue (mobile).
+        // If no parent/community matched, show default row or overlay cue.
         if (!document.querySelector('.category-pill.active, #comm-container.active')) {
             const defaultBottomRow = document.getElementById('category-default');
-            const shouldUseMobileOverlay = window.innerWidth <= 990 && !isCommunityOverlayDismissed();
-            if (shouldUseMobileOverlay) {
+            const shouldUseOverlay = !isCommunityOverlayDismissed() && (!isCommunityOverlaySeenInSession() || communityOverlayShownThisPage);
+            if (shouldUseOverlay) {
                 defaultBottomRow?.classList.remove('active');
                 container.classList.remove('mega-menu-open');
             } else {
