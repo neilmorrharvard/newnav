@@ -1775,14 +1775,21 @@ function initNavigationScript() {
         let hoverTimeout = null;
         let showTimeout = null; // Timeout for showing the mega menu
         let currentPill = null; // Track which pill is currently showing the mega menu
-        let userHasInteracted = false;
+        let desktopHoverArmed = false;
 
-        // Prevent mega menu from showing immediately on load until user moves mouse
-        const enableInteractions = () => {
-            userHasInteracted = true;
-            document.removeEventListener('mousemove', enableInteractions);
+        // Prevent mega menu from opening from the initial post-navigation cursor position.
+        // Arm hover only after the mouse moves outside nav/mega-menu at least once.
+        const armDesktopHover = (event) => {
+            const target = event.target;
+            const isWithinNav = !!(target && target.closest && (
+                target.closest('#main-top-row') ||
+                target.closest('.desktop-mega-menu')
+            ));
+            if (isWithinNav) return;
+            desktopHoverArmed = true;
+            document.removeEventListener('mousemove', armDesktopHover);
         };
-        document.addEventListener('mousemove', enableInteractions);
+        document.addEventListener('mousemove', armDesktopHover);
 
         // Create a single mega menu container - append to container for full width
         // First, remove any search menu element if it exists
@@ -2051,7 +2058,7 @@ function initNavigationScript() {
             };
 
             const show = () => {
-                if (!userHasInteracted) return;
+                if (!desktopHoverArmed) return;
                 clearTimeout(hoverTimeout);
                 clearTimeout(showTimeout); // Clear any pending show timeout
                 
