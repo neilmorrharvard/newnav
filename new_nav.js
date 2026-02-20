@@ -20,7 +20,7 @@ function initNavigationScript() {
     window.navScriptLoaded = true;
 
     // Version identifier - check in console: window.navVersion
-    window.navVersion = '2026-02-20-community-route-updates';
+    window.navVersion = '2026-02-20-564457a';
     if (console && console.log) {
         console.log('%cNew Nav Script Loaded', 'color: #016A1B; font-weight: bold; font-size: 12px;', 'Version:', window.navVersion);
     }
@@ -386,7 +386,7 @@ function initNavigationScript() {
             .desktop-mega-menu-newsletters a { color: var(--text-inactive); text-decoration: none; font-size: 12px; font-weight: 500; padding: 4px 0; transition: color 0.2s; text-align: left; position: relative; display: inline-block; white-space: nowrap; }
             .desktop-mega-menu-newsletters a:hover { color: var(--primary); font-weight: bold; }
             .desktop-mega-menu-newsletters p { font-size: 13px; color: #666; margin: 0; }
-            .desktop-mega-menu-brand { flex: 0 0 auto; display: flex; flex-direction: column; gap: 12px; align-items: flex-start; max-width: 200px; }
+            .desktop-mega-menu-brand { flex: 0 0 auto; display: flex; flex-direction: column; gap: 12px; align-items: flex-start; max-width: 260px; }
             .desktop-mega-menu-brand h3 { font-size: 11px; font-weight: 500; margin: 0 0 12px 0; color: #999; width: 100%; text-transform: uppercase; }
             .desktop-mega-menu-brand a { text-decoration: none; color: inherit; display: flex; flex-direction: column; gap: 12px; width: 100%; cursor: pointer; transition: opacity 0.2s; }
             .desktop-mega-menu-brand a:hover { opacity: 0.7; }
