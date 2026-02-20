@@ -57,7 +57,21 @@ function initNavigationScript() {
     const COMMUNITY_OVERLAY_DISMISS_KEY = 'vm.nav.community.overlay.dismissed.v1';
     const COMMUNITY_OVERLAY_SEEN_SESSION_KEY = 'vm.nav.community.overlay.seen.session.v1';
     const COMMUNITY_DISPLAY_NAMES = {
-        unitywilkie: 'Unity-Wilkie'
+        regina: 'Regina',
+        saskatoon: 'Saskatoon',
+        estevan: 'Estevan',
+        yorkton: 'Yorkton',
+        kamsack: 'Kamsack',
+        thebattlefords: 'The Battlefords',
+        canora: 'Canora',
+        preeceville: 'Preeceville',
+        carlyle: 'Carlyle',
+        humboldt: 'Humboldt',
+        moosejaw: 'Moose Jaw',
+        outlook: 'Outlook',
+        princealbert: 'Prince Albert',
+        unitywilkie: 'Unity-Wilkie',
+        weyburn: 'Weyburn'
     };
     const OBITUARY_COMMUNITY_PARENT_OVERRIDES = [
         { path: '/obituaries/regina-obituaries', communityKey: 'regina' },
