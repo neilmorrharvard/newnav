@@ -1218,10 +1218,13 @@ function initNavigationScript() {
 
     function updateCommunityOverlayVisibility() {
         const hasActiveParent = !!document.querySelector('.category-pill.active, #comm-container.active');
+        const communitiesDropdown = document.getElementById('village-nav-dropdown-mobile');
+        const isCommunitiesDropdownOpen = !!(communitiesDropdown && communitiesDropdown.style.display === 'block');
+        const isDesktopMegaVisible = !!document.querySelector('.desktop-mega-menu.visible');
         const dismissed = isCommunityOverlayDismissed();
         const seenInSession = isCommunityOverlaySeenInSession();
         const delaySatisfied = communityOverlayAllowedAt > 0 && Date.now() >= communityOverlayAllowedAt;
-        const shouldShow = !hasActiveParent && !dismissed && delaySatisfied && (!seenInSession || communityOverlayShownThisPage);
+        const shouldShow = !hasActiveParent && !isCommunitiesDropdownOpen && !isDesktopMegaVisible && !dismissed && delaySatisfied && (!seenInSession || communityOverlayShownThisPage);
 
         if (!shouldShow) {
             if (communityOverlayEl) communityOverlayEl.classList.remove('visible');
@@ -1393,6 +1396,7 @@ function initNavigationScript() {
                 content.style.maxHeight = maxHeight + 'px';
             }
             drop.style.display = (drop.style.display === 'block') ? 'none' : 'block';
+            updateCommunityOverlayVisibility();
             
             // Update scroll fade after showing
             if (drop.style.display === 'block') {
@@ -1644,6 +1648,7 @@ function initNavigationScript() {
                 searchMegaMenu.appendChild(inner);
                 searchMegaMenu.classList.add('visible');
                 if (container) container.classList.add('mega-menu-open');
+                updateCommunityOverlayVisibility();
 
                 // Prevent column shift on hover by reserving bold-text width (same approach as Communities menu)
                 requestAnimationFrame(() => {
@@ -1729,6 +1734,7 @@ function initNavigationScript() {
                     // Remove hover-active class from search trigger
                     searchTrigger.classList.remove('hover-active');
                     requestDesktopChildScrollControlsUpdate();
+                    updateCommunityOverlayVisibility();
                 }
             };
             
@@ -1763,7 +1769,10 @@ function initNavigationScript() {
             console.error('Error initializing search:', error);
         }
         
-        document.addEventListener('click', () => { document.getElementById('village-nav-dropdown-mobile').style.display = 'none'; });
+        document.addEventListener('click', () => {
+            document.getElementById('village-nav-dropdown-mobile').style.display = 'none';
+            updateCommunityOverlayVisibility();
+        });
     }
 
     function initHoverDropdowns() {
@@ -2135,6 +2144,7 @@ function initNavigationScript() {
                 // Show menu immediately - don't wait for images to load
                 megaMenu.classList.add('visible');
                 container.classList.add('mega-menu-open');
+                updateCommunityOverlayVisibility();
                 
                 // Calculate min-widths asynchronously after showing menu to prevent layout shift
                 // Optimization: Batch all measurements first, then apply in one pass to reduce layout thrashing
@@ -2204,6 +2214,7 @@ function initNavigationScript() {
                         activeBottomRow.style.display = 'flex';
                     }
                     requestDesktopChildScrollControlsUpdate();
+                    updateCommunityOverlayVisibility();
                 }, 300); // 300ms delay - longer than show delay to prevent flicker when moving between parents
             };
 
