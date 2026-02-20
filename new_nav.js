@@ -1719,16 +1719,15 @@ function initNavigationScript() {
                     const otherMegaMenu = container.querySelector('.desktop-mega-menu:not(.search-menu).visible');
                     if (!otherMegaMenu) {
                         container.classList.remove('mega-menu-open');
+                        // Restore bottom-row visibility only when no mega menu is visible
+                        const activeBottomRow = document.querySelector('.bottom-row.active');
+                        if (activeBottomRow) {
+                            activeBottomRow.style.display = 'flex';
+                        }
                     }
                     
                     // Remove hover-active class from search trigger
                     searchTrigger.classList.remove('hover-active');
-                    
-                    // Restore bottom-row visibility when search menu is closed
-                    const activeBottomRow = document.querySelector('.bottom-row.active');
-                    if (activeBottomRow) {
-                        activeBottomRow.style.display = 'flex';
-                    }
                     requestDesktopChildScrollControlsUpdate();
                 }
             };
