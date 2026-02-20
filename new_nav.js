@@ -977,6 +977,19 @@ function initNavigationScript() {
             } catch (_) { /* ignore malformed URLs */ }
         });
 
+        // Category child-link routes (e.g., /north/local-sports should still activate Sports)
+        Object.entries(routes.categoryLinks).forEach(([key, links]) => {
+            if (!routes.categories[key] || !Array.isArray(links)) return;
+            links.forEach(link => {
+                try {
+                    const routePath = normalizePath(new URL(link.url).pathname);
+                    if (isPathMatch(currentPath, routePath)) {
+                        candidates.push({ type: 'category', key, routePath });
+                    }
+                } catch (_) { /* ignore malformed URLs */ }
+            });
+        });
+
         // Community routes (e.g., /regina-today/*)
         Object.entries(routes.communities).forEach(([key, url]) => {
             if (key === 'all') return;
