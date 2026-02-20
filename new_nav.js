@@ -508,7 +508,7 @@ function initNavigationScript() {
             }, 150);
         });
         
-        // Align bottom-row with active pill on mobile and tablet (after initial render)
+        // Align bottom-row with leftmost pill on mobile and tablet (after initial render)
         if (window.innerWidth <= 991) {
             requestAnimationFrame(() => {
                 requestAnimationFrame(() => {
@@ -543,7 +543,7 @@ function initNavigationScript() {
             
             if (hasActiveChange && window.innerWidth <= 991) {
                 updateActiveIconColors();
-                // Re-align bottom row when active pill changes
+                // Re-align bottom row to leftmost pill when parent selection changes
                 requestAnimationFrame(() => {
                     pinMobilePillOrder();
                     alignBottomRowWithActivePill();
@@ -1089,32 +1089,18 @@ function initNavigationScript() {
         }, 180);
     }
 
-    // Function to align bottom-row-inner with active parent pill on mobile and tablet
+    // Function to align bottom-row-inner with the leftmost parent pill on mobile and tablet
     function alignBottomRowWithActivePill() {
         if (window.innerWidth > 990) return; // Only run on mobile and tablet
         
-        const activePill = document.querySelector('.category-pill.active, #comm-container.active');
+        const topRow = document.getElementById('main-top-row');
+        const leftmostPill = topRow?.firstElementChild;
         const activeBottomRow = document.querySelector('.bottom-row.active .bottom-row-inner');
         
-        if (activePill && activeBottomRow) {
-            // Get the left position of the active pill relative to the top-row
-            const topRow = document.querySelector('.top-row');
-            const pillRect = activePill.getBoundingClientRect();
-            const topRowRect = topRow ? topRow.getBoundingClientRect() : null;
-            
-            if (topRowRect) {
-                // Calculate pill position relative to top-row's left edge
-                const pillLeft = pillRect.left - topRowRect.left;
-                
-                // Set the bottom-row-inner padding-left to match the pill's left position
-                activeBottomRow.style.paddingLeft = `${pillLeft}px`;
-            } else {
-                // Fallback: use container if top-row not found
-                const navContainer = document.getElementById('village-nav-container');
-                const containerRect = navContainer.getBoundingClientRect();
-                const pillLeft = pillRect.left - containerRect.left;
-                activeBottomRow.style.paddingLeft = `${pillLeft}px`;
-            }
+        if (leftmostPill && activeBottomRow) {
+            // Keep child row anchored to the first pill's content start, independent of active-pill order.
+            const pillLeft = Math.max(0, leftmostPill.offsetLeft || 0);
+            activeBottomRow.style.paddingLeft = `${pillLeft}px`;
         }
     }
 
@@ -1204,7 +1190,7 @@ function initNavigationScript() {
         // Update icon colors for active pills on mobile
         updateActiveIconColors();
         
-        // Align bottom-row-inner with active parent pill on mobile
+        // Align bottom-row-inner with leftmost parent pill on mobile
         alignBottomRowWithActivePill();
         
         // Update fade effects when active bottom row changes (mobile and tablet)
