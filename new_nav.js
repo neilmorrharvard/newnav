@@ -35,6 +35,7 @@ function initNavigationScript() {
     const NEXT_READ_FALLBACK_RSS_URL = window.NAV_NEXT_READ_FALLBACK_RSS_URL || 'https://www.sasktoday.ca/rss';
     const NEXT_READ_VISITED_PATHS_KEY = 'nav_next_read_visited_paths_v1';
     const NEXT_READ_FEED_CACHE_TTL_MS = Number(window.NAV_NEXT_READ_FEED_CACHE_TTL_MS || 300000);
+    const NEXT_READ_FEED_TIMEOUT_MS = Number(window.NAV_NEXT_READ_FEED_TIMEOUT_MS || 2000);
     const NEXT_READ_FEED_CACHE_PREFIX = 'nav_next_read_feed_cache_v1:';
 
     // PostHog session recording helper
@@ -865,7 +866,14 @@ function initNavigationScript() {
         const cachedItems = getCachedNextReadFeedItems(rssUrl);
         if (cachedItems) return cachedItems;
 
-        const response = await fetch(rssUrl);
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), NEXT_READ_FEED_TIMEOUT_MS);
+        let response;
+        try {
+            response = await fetch(rssUrl, { signal: controller.signal });
+        } finally {
+            clearTimeout(timeout);
+        }
         if (!response.ok) throw new Error(`RSS request failed: ${response.status}`);
         const xmlText = await response.text();
         const parser = new DOMParser();
