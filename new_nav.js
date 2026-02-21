@@ -794,7 +794,7 @@ function initNavigationScript() {
     function buildParentRssUrl(path) {
         const parentPath = getParentPath(path);
         if (!parentPath) return null;
-        return new URL(`/rss${parentPath}/`, window.location.origin).toString();
+        return new URL(`/rss${parentPath}`, window.location.origin).toString();
     }
 
     function getNextReadVisitedPaths() {
