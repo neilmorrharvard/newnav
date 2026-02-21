@@ -20,7 +20,7 @@ function initNavigationScript() {
     window.navScriptLoaded = true;
 
     // Version identifier - check in console: window.navVersion
-    window.navVersion = '2026-02-21-next-read-article-mode';
+    window.navVersion = '2026-02-21-next-read-stability-pass';
     if (console && console.log) {
         console.log('%cNew Nav Script Loaded', 'color: #016A1B; font-weight: bold; font-size: 12px;', 'Version:', window.navVersion);
     }
@@ -30,6 +30,7 @@ function initNavigationScript() {
     const BOTTOM_STICKY_AD_HEIGHT = Number(window.NAV_STICKY_AD_HEIGHT || 70);
     const BOTTOM_TRENDING_BOTTOM_OFFSET = Number(window.NAV_BOTTOM_TRENDING_BOTTOM_OFFSET || 100);
     const NEXT_READ_SHOW_PROGRESS = Number(window.NAV_NEXT_READ_SHOW_PROGRESS ?? 0.25);
+    const NEXT_READ_HIDE_PROGRESS = Number(window.NAV_NEXT_READ_HIDE_PROGRESS ?? -1);
     const NEXT_READ_MIN_SHOW_SCROLL_PX = Number(window.NAV_NEXT_READ_MIN_SHOW_SCROLL_PX || 200);
     const ENABLE_FAKE_BOTTOM_AD_UNIT = window.NAV_ENABLE_FAKE_BOTTOM_AD_UNIT !== false;
     const NEXT_READ_FALLBACK_RSS_URL = window.NAV_NEXT_READ_FALLBACK_RSS_URL || 'https://www.sasktoday.ca/rss';
@@ -414,7 +415,7 @@ function initNavigationScript() {
             #village-nav-dropdown-mobile .dropdown-content::-webkit-scrollbar-thumb:hover { background: #555; }
             #village-nav-dropdown-mobile .dropdown-scroll-fade-bottom { position: absolute; bottom: 0; left: 0; right: 0; height: 70px; background: linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0.6) 25%, rgba(255,255,255,0.8) 50%, rgba(255,255,255,0.95) 75%, rgba(255,255,255,1) 100%); pointer-events: none; border-radius: 0 0 8px 8px; opacity: 0; transition: opacity 0.2s ease; z-index: 2; }
             #village-nav-dropdown-mobile .dropdown-scroll-fade-bottom.visible { opacity: 1; }
-            #bottom-trending-story-bar { position: fixed; left: 50%; transform: translateX(-50%); width: min(990px, calc(100% - 20px)); bottom: 100px; z-index: 1000; background: var(--pill-bg); border: 1px solid #94a3b8; border-radius: 8px; box-shadow: 0 4px 14px rgba(0,0,0,0.14); padding: 12px 14px; min-height: 48px; display: flex; align-items: center; gap: 10px; }
+            #bottom-trending-story-bar { position: fixed; left: 10px; right: 10px; transform: none; width: auto; bottom: 100px; z-index: 1000; background: var(--pill-bg); border: 1px solid #94a3b8; border-radius: 8px; box-shadow: 0 4px 14px rgba(0,0,0,0.14); padding: 12px 14px; min-height: 48px; display: flex; align-items: center; gap: 10px; }
             #bottom-trending-story-bar { opacity: 0; pointer-events: none; transition: opacity 0.25s ease; }
             #bottom-trending-story-bar.visible { opacity: 1; pointer-events: auto; }
             #bottom-trending-story-bar .label { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #830d16; flex-shrink: 0; }
@@ -1000,16 +1001,19 @@ function initNavigationScript() {
         if (!existing) {
             document.body.appendChild(bar);
         }
-        scheduleBottomTrendingFrameUpdate({ invalidateCaches: true });
+        scheduleBottomTrendingFrameUpdate({ invalidateCaches: true, updateLayout: true });
         bindBottomTrendingBarVisibilityHandlers();
     }
 
     let bottomTrendingVisibilityHandlersBound = false;
     let bottomTrendingParagraphCache = null;
     let bottomTrendingLayoutRaf = null;
+    let bottomTrendingRafNeedsLayout = false;
+    let bottomTrendingRafNeedsInvalidate = false;
     let bottomTrendingLayoutMode = '';
     let bottomTrendingLayoutLeft = '';
     let bottomTrendingLayoutWidth = '';
+    let bottomTrendingVisibleState = false;
 
     function invalidateBottomTrendingCaches() {
         bottomTrendingParagraphCache = null;
@@ -1076,31 +1080,50 @@ function initNavigationScript() {
         }
     }
 
-    function getNextReadScrollThreshold() {
+    function getNextReadScrollThresholds() {
         const maxScrollable = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
-        const clampedProgress = Math.min(0.95, Math.max(0, NEXT_READ_SHOW_PROGRESS));
-        const progressThreshold = maxScrollable * clampedProgress;
-        return Math.max(NEXT_READ_MIN_SHOW_SCROLL_PX, progressThreshold);
+        const clampedShowProgress = Math.min(0.95, Math.max(0, NEXT_READ_SHOW_PROGRESS));
+        const defaultHideProgress = Math.max(0, clampedShowProgress - 0.03);
+        const clampedHideProgress = Math.min(clampedShowProgress, Math.max(0, NEXT_READ_HIDE_PROGRESS >= 0 ? NEXT_READ_HIDE_PROGRESS : defaultHideProgress));
+        const showPx = Math.max(NEXT_READ_MIN_SHOW_SCROLL_PX, maxScrollable * clampedShowProgress);
+        const hidePx = Math.max(0, maxScrollable * clampedHideProgress);
+        return { showPx, hidePx };
     }
 
     function updateBottomTrendingBarVisibility() {
         const bar = document.getElementById('bottom-trending-story-bar');
-        if (!bar) return;
+        if (!bar) {
+            bottomTrendingVisibleState = false;
+            return;
+        }
 
-        const threshold = getNextReadScrollThreshold();
-        const passedThreshold = window.scrollY >= threshold;
-        bar.classList.toggle('visible', passedThreshold);
+        const { showPx, hidePx } = getNextReadScrollThresholds();
+        const currentY = window.scrollY;
+
+        if (!bottomTrendingVisibleState && currentY >= showPx) {
+            bottomTrendingVisibleState = true;
+        } else if (bottomTrendingVisibleState && currentY <= hidePx) {
+            bottomTrendingVisibleState = false;
+        }
+
+        bar.classList.toggle('visible', bottomTrendingVisibleState);
     }
 
-    function scheduleBottomTrendingFrameUpdate({ invalidateCaches = false } = {}) {
-        if (invalidateCaches) {
-            invalidateBottomTrendingCaches();
-        }
+    function scheduleBottomTrendingFrameUpdate({ invalidateCaches = false, updateLayout = false } = {}) {
+        if (invalidateCaches) bottomTrendingRafNeedsInvalidate = true;
+        if (updateLayout) bottomTrendingRafNeedsLayout = true;
         if (bottomTrendingLayoutRaf) return;
         bottomTrendingLayoutRaf = requestAnimationFrame(() => {
             bottomTrendingLayoutRaf = null;
-            applyBottomTrendingBarLayout();
+            if (bottomTrendingRafNeedsInvalidate) {
+                invalidateBottomTrendingCaches();
+            }
+            if (bottomTrendingRafNeedsLayout) {
+                applyBottomTrendingBarLayout();
+            }
             updateBottomTrendingBarVisibility();
+            bottomTrendingRafNeedsInvalidate = false;
+            bottomTrendingRafNeedsLayout = false;
         });
     }
 
@@ -1112,7 +1135,7 @@ function initNavigationScript() {
             scheduleBottomTrendingFrameUpdate();
         }, { passive: true });
         window.addEventListener('resize', () => {
-            scheduleBottomTrendingFrameUpdate({ invalidateCaches: true });
+            scheduleBottomTrendingFrameUpdate({ invalidateCaches: true, updateLayout: true });
         }, { passive: true });
     }
 
