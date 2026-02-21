@@ -612,9 +612,6 @@ function initNavigationScript() {
                         // Add scroll listener for top row if not already added
                         topRow.addEventListener('scroll', () => {
                             updateScrollFades(topRow);
-                            if (topRow.scrollLeft > 0) {
-                                closeCommunityOverlayForPage();
-                            }
                             updateCommunityOverlayVisibility();
                         }, { passive: true });
                     }
@@ -1617,9 +1614,6 @@ function initNavigationScript() {
                 topRow.addEventListener('scroll', () => {
                     handleScroll(topRow);
                     updateScrollFades(topRow);
-                    if (topRow.scrollLeft > 0) {
-                        closeCommunityOverlayForPage();
-                    }
                     updateCommunityOverlayVisibility();
                 }, { passive: true });
             }
