@@ -1014,9 +1014,16 @@ function initNavigationScript() {
     let bottomTrendingLayoutLeft = '';
     let bottomTrendingLayoutWidth = '';
     let bottomTrendingVisibleState = false;
+    let bottomTrendingShowThresholdCache = null;
+    let bottomTrendingHideThresholdCache = null;
+    let bottomTrendingThresholdViewportWidth = null;
+    let bottomTrendingLastViewportWidth = window.innerWidth;
 
     function invalidateBottomTrendingCaches() {
         bottomTrendingParagraphCache = null;
+        bottomTrendingShowThresholdCache = null;
+        bottomTrendingHideThresholdCache = null;
+        bottomTrendingThresholdViewportWidth = null;
     }
 
     function getFirstContentParagraph() {
@@ -1081,12 +1088,27 @@ function initNavigationScript() {
     }
 
     function getNextReadScrollThresholds() {
+        const viewportWidth = window.innerWidth;
+        if (
+            bottomTrendingShowThresholdCache !== null &&
+            bottomTrendingHideThresholdCache !== null &&
+            bottomTrendingThresholdViewportWidth === viewportWidth
+        ) {
+            return {
+                showPx: bottomTrendingShowThresholdCache,
+                hidePx: bottomTrendingHideThresholdCache
+            };
+        }
+
         const maxScrollable = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
         const clampedShowProgress = Math.min(0.95, Math.max(0, NEXT_READ_SHOW_PROGRESS));
         const defaultHideProgress = Math.max(0, clampedShowProgress - 0.03);
         const clampedHideProgress = Math.min(clampedShowProgress, Math.max(0, NEXT_READ_HIDE_PROGRESS >= 0 ? NEXT_READ_HIDE_PROGRESS : defaultHideProgress));
-        const showPx = Math.max(NEXT_READ_MIN_SHOW_SCROLL_PX, maxScrollable * clampedShowProgress);
-        const hidePx = Math.max(0, maxScrollable * clampedHideProgress);
+        const showPx = Math.min(maxScrollable, Math.max(NEXT_READ_MIN_SHOW_SCROLL_PX, maxScrollable * clampedShowProgress));
+        const hidePx = Math.min(showPx, Math.max(0, maxScrollable * clampedHideProgress));
+        bottomTrendingShowThresholdCache = showPx;
+        bottomTrendingHideThresholdCache = hidePx;
+        bottomTrendingThresholdViewportWidth = viewportWidth;
         return { showPx, hidePx };
     }
 
@@ -1135,7 +1157,9 @@ function initNavigationScript() {
             scheduleBottomTrendingFrameUpdate();
         }, { passive: true });
         window.addEventListener('resize', () => {
-            scheduleBottomTrendingFrameUpdate({ invalidateCaches: true, updateLayout: true });
+            const widthChanged = Math.abs(window.innerWidth - bottomTrendingLastViewportWidth) > 1;
+            bottomTrendingLastViewportWidth = window.innerWidth;
+            scheduleBottomTrendingFrameUpdate({ invalidateCaches: widthChanged, updateLayout: widthChanged });
         }, { passive: true });
     }
 
