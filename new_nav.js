@@ -33,6 +33,8 @@ function initNavigationScript() {
     const ENABLE_FAKE_BOTTOM_AD_UNIT = window.NAV_ENABLE_FAKE_BOTTOM_AD_UNIT !== false;
     const NEXT_READ_FALLBACK_RSS_URL = window.NAV_NEXT_READ_FALLBACK_RSS_URL || 'https://www.sasktoday.ca/rss';
     const NEXT_READ_VISITED_PATHS_KEY = 'nav_next_read_visited_paths_v1';
+    const NEXT_READ_FEED_CACHE_TTL_MS = Number(window.NAV_NEXT_READ_FEED_CACHE_TTL_MS || 300000);
+    const NEXT_READ_FEED_CACHE_PREFIX = 'nav_next_read_feed_cache_v1:';
 
     // PostHog session recording helper
     // Note: Configure PostHog to start recording when any of these nav events are captured
@@ -823,8 +825,46 @@ function initNavigationScript() {
         }
     }
 
+    const nextReadFeedMemoryCache = new Map();
+    function getNextReadFeedCacheKey(rssUrl) {
+        return `${NEXT_READ_FEED_CACHE_PREFIX}${rssUrl}`;
+    }
+
+    function getCachedNextReadFeedItems(rssUrl) {
+        const now = Date.now();
+        const memory = nextReadFeedMemoryCache.get(rssUrl);
+        if (memory && (now - memory.timestamp) < NEXT_READ_FEED_CACHE_TTL_MS) {
+            return memory.items;
+        }
+
+        try {
+            const raw = sessionStorage.getItem(getNextReadFeedCacheKey(rssUrl));
+            if (!raw) return null;
+            const parsed = JSON.parse(raw);
+            if (!parsed || !Array.isArray(parsed.items) || typeof parsed.timestamp !== 'number') return null;
+            if ((now - parsed.timestamp) >= NEXT_READ_FEED_CACHE_TTL_MS) return null;
+            nextReadFeedMemoryCache.set(rssUrl, { timestamp: parsed.timestamp, items: parsed.items });
+            return parsed.items;
+        } catch (_) {
+            return null;
+        }
+    }
+
+    function cacheNextReadFeedItems(rssUrl, items) {
+        const payload = { timestamp: Date.now(), items };
+        nextReadFeedMemoryCache.set(rssUrl, payload);
+        try {
+            sessionStorage.setItem(getNextReadFeedCacheKey(rssUrl), JSON.stringify(payload));
+        } catch (_) {
+            // Ignore session storage failures.
+        }
+    }
+
     async function fetchRssItems(rssUrl) {
-        const response = await fetch(rssUrl, { cache: 'no-store' });
+        const cachedItems = getCachedNextReadFeedItems(rssUrl);
+        if (cachedItems) return cachedItems;
+
+        const response = await fetch(rssUrl);
         if (!response.ok) throw new Error(`RSS request failed: ${response.status}`);
         const xmlText = await response.text();
         const parser = new DOMParser();
@@ -846,6 +886,7 @@ function initNavigationScript() {
                 // Ignore malformed links.
             }
         });
+        cacheNextReadFeedItems(rssUrl, items);
         return items;
     }
 
@@ -950,14 +991,28 @@ function initNavigationScript() {
         if (!existing) {
             document.body.appendChild(bar);
         }
-        applyBottomTrendingBarLayout();
-        updateBottomTrendingBarVisibility();
+        scheduleBottomTrendingFrameUpdate({ invalidateCaches: true });
         bindBottomTrendingBarVisibilityHandlers();
     }
 
     let bottomTrendingVisibilityHandlersBound = false;
-    let bottomTrendingVisibilityTimeout = null;
+    let bottomTrendingParagraphCache = null;
+    let bottomTrendingThresholdCache = null;
+    let bottomTrendingLayoutRaf = null;
+    let bottomTrendingLayoutMode = '';
+    let bottomTrendingLayoutLeft = '';
+    let bottomTrendingLayoutWidth = '';
+
+    function invalidateBottomTrendingCaches() {
+        bottomTrendingParagraphCache = null;
+        bottomTrendingThresholdCache = null;
+    }
+
     function getFirstContentParagraph() {
+        if (bottomTrendingParagraphCache && bottomTrendingParagraphCache.isConnected) {
+            return bottomTrendingParagraphCache;
+        }
+
         const paragraphs = document.querySelectorAll('main p, article p, .entry-content p, .post-content p, p');
         for (const p of paragraphs) {
             if (!p || !p.isConnected) continue;
@@ -968,6 +1023,7 @@ function initNavigationScript() {
             if (style.display === 'none' || style.visibility === 'hidden') continue;
             const rect = p.getBoundingClientRect();
             if (rect.height < 8) continue;
+            bottomTrendingParagraphCache = p;
             return p;
         }
         return null;
@@ -979,10 +1035,15 @@ function initNavigationScript() {
 
         if (window.innerWidth <= 990) {
             // Let CSS handle mobile/tablet sizing.
-            bar.style.left = '';
-            bar.style.right = '';
-            bar.style.transform = '';
-            bar.style.width = '';
+            if (bottomTrendingLayoutMode !== 'mobile') {
+                bar.style.left = '';
+                bar.style.right = '';
+                bar.style.transform = '';
+                bar.style.width = '';
+                bottomTrendingLayoutMode = 'mobile';
+                bottomTrendingLayoutLeft = '';
+                bottomTrendingLayoutWidth = '';
+            }
             return;
         }
 
@@ -993,22 +1054,32 @@ function initNavigationScript() {
         const maxAllowedWidth = window.innerWidth - 20;
         const width = Math.min(rect.width, maxAllowedWidth);
         const left = Math.max(10, Math.min(rect.left, window.innerWidth - width - 10));
+        const widthPx = `${Math.round(width)}px`;
+        const leftPx = `${Math.round(left)}px`;
 
         // Match desktop bar width/position to the story content column.
-        bar.style.left = `${left}px`;
-        bar.style.right = 'auto';
-        bar.style.transform = 'none';
-        bar.style.width = `${width}px`;
+        if (bottomTrendingLayoutMode !== 'desktop' || bottomTrendingLayoutLeft !== leftPx || bottomTrendingLayoutWidth !== widthPx) {
+            bar.style.left = leftPx;
+            bar.style.right = 'auto';
+            bar.style.transform = 'none';
+            bar.style.width = widthPx;
+            bottomTrendingLayoutMode = 'desktop';
+            bottomTrendingLayoutLeft = leftPx;
+            bottomTrendingLayoutWidth = widthPx;
+        }
     }
 
     function getFirstParagraphScrollThreshold() {
+        if (bottomTrendingThresholdCache !== null) return bottomTrendingThresholdCache;
         const firstParagraph = getFirstContentParagraph();
         if (firstParagraph) {
             const rect = firstParagraph.getBoundingClientRect();
             // Trigger when user has passed the end of the first real paragraph.
-            return Math.max(0, window.scrollY + rect.bottom);
+            bottomTrendingThresholdCache = Math.max(0, window.scrollY + rect.bottom);
+            return bottomTrendingThresholdCache;
         }
-        return BOTTOM_TRENDING_FALLBACK_SCROLL_PX;
+        bottomTrendingThresholdCache = BOTTOM_TRENDING_FALLBACK_SCROLL_PX;
+        return bottomTrendingThresholdCache;
     }
 
     function updateBottomTrendingBarVisibility() {
@@ -1020,20 +1091,28 @@ function initNavigationScript() {
         bar.classList.toggle('visible', passedThreshold);
     }
 
+    function scheduleBottomTrendingFrameUpdate({ invalidateCaches = false } = {}) {
+        if (invalidateCaches) {
+            invalidateBottomTrendingCaches();
+        }
+        if (bottomTrendingLayoutRaf) return;
+        bottomTrendingLayoutRaf = requestAnimationFrame(() => {
+            bottomTrendingLayoutRaf = null;
+            applyBottomTrendingBarLayout();
+            updateBottomTrendingBarVisibility();
+        });
+    }
+
     function bindBottomTrendingBarVisibilityHandlers() {
         if (bottomTrendingVisibilityHandlersBound) return;
         bottomTrendingVisibilityHandlersBound = true;
 
-        const onScrollOrResize = () => {
-            clearTimeout(bottomTrendingVisibilityTimeout);
-            bottomTrendingVisibilityTimeout = setTimeout(() => {
-                applyBottomTrendingBarLayout();
-                updateBottomTrendingBarVisibility();
-            }, 10);
-        };
-
-        window.addEventListener('scroll', onScrollOrResize, { passive: true });
-        window.addEventListener('resize', onScrollOrResize, { passive: true });
+        window.addEventListener('scroll', () => {
+            scheduleBottomTrendingFrameUpdate();
+        }, { passive: true });
+        window.addEventListener('resize', () => {
+            scheduleBottomTrendingFrameUpdate({ invalidateCaches: true });
+        }, { passive: true });
     }
 
     function handleScrollLogic() {
