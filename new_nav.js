@@ -20,23 +20,19 @@ function initNavigationScript() {
     window.navScriptLoaded = true;
 
     // Version identifier - check in console: window.navVersion
-    window.navVersion = '2026-02-21-bottom-trending-desktop';
+    window.navVersion = '2026-02-21-next-read-article-mode';
     if (console && console.log) {
         console.log('%cNew Nav Script Loaded', 'color: #016A1B; font-weight: bold; font-size: 12px;', 'Version:', window.navVersion);
     }
 
-    // Bottom trending story feature flags (easy on/off + positioning override)
-    const ENABLE_BOTTOM_TRENDING_STORY = window.NAV_ENABLE_BOTTOM_TRENDING_STORY !== false;
+    // NEXT READ feature flags (easy on/off + positioning override)
+    const ENABLE_NEXT_READ = window.NAV_ENABLE_NEXT_READ !== false && window.NAV_ENABLE_BOTTOM_TRENDING_STORY !== false;
     const BOTTOM_STICKY_AD_HEIGHT = Number(window.NAV_STICKY_AD_HEIGHT || 70);
     const BOTTOM_TRENDING_BOTTOM_OFFSET = Number(window.NAV_BOTTOM_TRENDING_BOTTOM_OFFSET || 100);
     const BOTTOM_TRENDING_FALLBACK_SCROLL_PX = Number(window.NAV_BOTTOM_TRENDING_FALLBACK_SCROLL_PX || 300);
     const ENABLE_FAKE_BOTTOM_AD_UNIT = window.NAV_ENABLE_FAKE_BOTTOM_AD_UNIT !== false;
-    const TRENDING_RSS_URL = window.NAV_TRENDING_RSS_URL || 'https://www.sasktoday.ca/rss/trending';
-    const TRENDING_RSS_SOURCES = Array.from(new Set([
-        `${window.location.origin}/rss/agriculture`,
-        TRENDING_RSS_URL,
-        'https://www.sasktoday.ca/rss/trending'
-    ].filter(Boolean)));
+    const NEXT_READ_FALLBACK_RSS_URL = window.NAV_NEXT_READ_FALLBACK_RSS_URL || 'https://www.sasktoday.ca/rss';
+    const NEXT_READ_VISITED_PATHS_KEY = 'nav_next_read_visited_paths_v1';
 
     // PostHog session recording helper
     // Note: Configure PostHog to start recording when any of these nav events are captured
@@ -585,21 +581,23 @@ function initNavigationScript() {
             console.error('[NAV DEBUG] Error in handleScrollLogic():', e);
         }
 
-        try {
-            initBottomTrendingStoryBar();
-            console.log('[NAV DEBUG] initBottomTrendingStoryBar() completed');
-        } catch (e) {
-            console.error('[NAV DEBUG] Error in initBottomTrendingStoryBar():', e);
-        }
-
-        // Keep bottom trending bar/ad synced to viewport mode (mobile-only feature)
-        let bottomTrendingResizeTimeout = null;
-        window.addEventListener('resize', () => {
-            clearTimeout(bottomTrendingResizeTimeout);
-            bottomTrendingResizeTimeout = setTimeout(() => {
+        if (ENABLE_NEXT_READ) {
+            try {
                 initBottomTrendingStoryBar();
-            }, 150);
-        });
+                console.log('[NAV DEBUG] initBottomTrendingStoryBar() completed');
+            } catch (e) {
+                console.error('[NAV DEBUG] Error in initBottomTrendingStoryBar():', e);
+            }
+
+            // Keep NEXT READ bar/ad synced to viewport mode.
+            let bottomTrendingResizeTimeout = null;
+            window.addEventListener('resize', () => {
+                clearTimeout(bottomTrendingResizeTimeout);
+                bottomTrendingResizeTimeout = setTimeout(() => {
+                    initBottomTrendingStoryBar();
+                }, 150);
+            });
+        }
         
         // Align bottom-row with leftmost pill on mobile and tablet (after initial render)
         if (window.innerWidth <= 991) {
@@ -778,13 +776,101 @@ function initNavigationScript() {
         }
     }
 
-    // TODO(next-read): Implement article-only "NEXT READ" feed selection plan documented in NEXT_READ_PLAN.md.
+    function isArticlePath(path) {
+        const normalized = normalizePath(path);
+        const segments = normalized.split('/').filter(Boolean);
+        const slug = segments[segments.length - 1] || '';
+        return /-\d+$/.test(slug);
+    }
+
+    function getParentPath(path) {
+        const normalized = normalizePath(path);
+        const segments = normalized.split('/').filter(Boolean);
+        if (segments.length < 2) return null;
+        segments.pop();
+        return `/${segments.join('/')}`;
+    }
+
+    function buildParentRssUrl(path) {
+        const parentPath = getParentPath(path);
+        if (!parentPath) return null;
+        return new URL(`/rss${parentPath}/`, window.location.origin).toString();
+    }
+
+    function getNextReadVisitedPaths() {
+        try {
+            const raw = sessionStorage.getItem(NEXT_READ_VISITED_PATHS_KEY);
+            if (!raw) return [];
+            const parsed = JSON.parse(raw);
+            return Array.isArray(parsed) ? parsed : [];
+        } catch (_) {
+            return [];
+        }
+    }
+
+    function addNextReadVisitedPath(path) {
+        const normalized = normalizePath(path);
+        const visited = getNextReadVisitedPaths();
+        if (!visited.includes(normalized)) {
+            visited.push(normalized);
+        }
+        // Keep the list bounded.
+        const trimmed = visited.slice(-100);
+        try {
+            sessionStorage.setItem(NEXT_READ_VISITED_PATHS_KEY, JSON.stringify(trimmed));
+        } catch (_) {
+            // Ignore session storage failures.
+        }
+    }
+
+    async function fetchRssItems(rssUrl) {
+        const response = await fetch(rssUrl, { cache: 'no-store' });
+        if (!response.ok) throw new Error(`RSS request failed: ${response.status}`);
+        const xmlText = await response.text();
+        const parser = new DOMParser();
+        const xml = parser.parseFromString(xmlText, 'text/xml');
+        const parseError = xml.querySelector('parsererror');
+        if (parseError) throw new Error('RSS parse error');
+
+        const items = [];
+        const itemNodes = xml.querySelectorAll('item');
+        itemNodes.forEach(item => {
+            const title = item.querySelector('title')?.textContent?.trim();
+            const rawLink = item.querySelector('link')?.textContent?.trim();
+            if (!title || !rawLink) return;
+            try {
+                const absolute = new URL(rawLink, rssUrl);
+                const path = normalizePath(absolute.pathname);
+                items.push({ title, link: absolute.toString(), path });
+            } catch (_) {
+                // Ignore malformed links.
+            }
+        });
+        return items;
+    }
+
+    function pickNextReadItem(items, currentPath, visitedSet, includeVisited) {
+        const seenPaths = new Set();
+        for (const item of items) {
+            if (!item?.path || !item?.link || !item?.title) continue;
+            if (seenPaths.has(item.path)) continue;
+            seenPaths.add(item.path);
+
+            if (!isArticlePath(item.path)) continue;
+            if (item.path === currentPath) continue;
+            if (!includeVisited && visitedSet.has(item.path)) continue;
+            return item;
+        }
+        return null;
+    }
+
     async function initBottomTrendingStoryBar() {
         const existing = document.getElementById('bottom-trending-story-bar');
         const existingAd = document.getElementById('bottom-sticky-ad-sim');
         const isMobileViewport = window.innerWidth <= 990;
+        const currentPath = normalizePath(window.location.pathname);
 
-        if (!ENABLE_BOTTOM_TRENDING_STORY) {
+        if (!ENABLE_NEXT_READ || !isArticlePath(currentPath)) {
             if (existing) existing.remove();
             if (existingAd) existingAd.remove();
             return;
@@ -802,69 +888,71 @@ function initNavigationScript() {
 
         if (existing) {
             existing.style.bottom = `${BOTTOM_TRENDING_BOTTOM_OFFSET}px`;
-            applyBottomTrendingBarLayout();
-            updateBottomTrendingBarVisibility();
-            return;
+        } else {
+            addNextReadVisitedPath(currentPath);
         }
+
+        const visitedSet = new Set(getNextReadVisitedPaths());
+        const parentRssUrl = buildParentRssUrl(currentPath);
+        let nextItem = null;
         let lastError = null;
 
-        for (const rssUrl of TRENDING_RSS_SOURCES) {
+        const selectFromFeed = async (rssUrl, includeVisited) => {
+            if (!rssUrl) return null;
             try {
-                const response = await fetch(rssUrl, { cache: 'no-store' });
-                if (!response.ok) throw new Error(`Trending RSS request failed: ${response.status}`);
-
-                const xmlText = await response.text();
-                const parser = new DOMParser();
-                const xml = parser.parseFromString(xmlText, 'text/xml');
-                const parseError = xml.querySelector('parsererror');
-                if (parseError) throw new Error('Trending RSS parse error');
-
-                const firstItem = xml.querySelector('item');
-                if (!firstItem) throw new Error('Trending RSS has no items');
-
-                const title = firstItem.querySelector('title')?.textContent?.trim();
-                const link = firstItem.querySelector('link')?.textContent?.trim();
-                if (!title || !link) throw new Error('Trending RSS item missing title or link');
-
-                const bar = document.createElement('div');
-                bar.id = 'bottom-trending-story-bar';
-                bar.style.bottom = `${BOTTOM_TRENDING_BOTTOM_OFFSET}px`;
-
-                const label = document.createElement('span');
-                label.className = 'label';
-                label.textContent = 'NEXT READ';
-
-                const storyLink = document.createElement('a');
-                storyLink.className = 'story-link';
-                storyLink.href = link;
-                storyLink.textContent = title;
-
-                const closeBtn = document.createElement('button');
-                closeBtn.className = 'close-btn';
-                closeBtn.type = 'button';
-                closeBtn.setAttribute('aria-label', 'Close trending story bar');
-                closeBtn.textContent = '×';
-                closeBtn.addEventListener('click', () => {
-                    bar.remove();
-                });
-
-                bar.appendChild(label);
-                bar.appendChild(storyLink);
-                bar.appendChild(closeBtn);
-                document.body.appendChild(bar);
-                applyBottomTrendingBarLayout();
-                updateBottomTrendingBarVisibility();
-                bindBottomTrendingBarVisibilityHandlers();
-
-                console.log('[NAV DEBUG] Bottom trending story loaded from:', rssUrl);
-                return;
+                const items = await fetchRssItems(rssUrl);
+                return pickNextReadItem(items, currentPath, visitedSet, includeVisited);
             } catch (error) {
                 lastError = error;
-                console.warn('[NAV DEBUG] Trending RSS source failed:', rssUrl, error);
+                console.warn('[NAV DEBUG] NEXT READ RSS source failed:', rssUrl, error);
+                return null;
             }
+        };
+
+        nextItem = await selectFromFeed(parentRssUrl, false);
+        if (!nextItem) nextItem = await selectFromFeed(NEXT_READ_FALLBACK_RSS_URL, false);
+        if (!nextItem) nextItem = await selectFromFeed(NEXT_READ_FALLBACK_RSS_URL, true);
+
+        if (!nextItem) {
+            if (existing) existing.remove();
+            console.warn('[NAV DEBUG] NEXT READ: no eligible article found', lastError);
+            return;
         }
 
-        console.error('[NAV DEBUG] Failed to initialize bottom trending story bar:', lastError);
+        const bar = existing || document.createElement('div');
+        if (!existing) {
+            bar.id = 'bottom-trending-story-bar';
+            bar.style.bottom = `${BOTTOM_TRENDING_BOTTOM_OFFSET}px`;
+        }
+
+        const label = document.createElement('span');
+        label.className = 'label';
+        label.textContent = 'NEXT READ';
+
+        const storyLink = document.createElement('a');
+        storyLink.className = 'story-link';
+        storyLink.href = nextItem.link;
+        storyLink.textContent = nextItem.title;
+
+        const closeBtn = document.createElement('button');
+        closeBtn.className = 'close-btn';
+        closeBtn.type = 'button';
+        closeBtn.setAttribute('aria-label', 'Close next read bar');
+        closeBtn.textContent = '×';
+        closeBtn.addEventListener('click', () => {
+            bar.remove();
+        });
+
+        bar.innerHTML = '';
+        bar.appendChild(label);
+        bar.appendChild(storyLink);
+        bar.appendChild(closeBtn);
+        if (!existing) {
+            document.body.appendChild(bar);
+        }
+        applyBottomTrendingBarLayout();
+        updateBottomTrendingBarVisibility();
+        bindBottomTrendingBarVisibilityHandlers();
     }
 
     let bottomTrendingVisibilityHandlersBound = false;
