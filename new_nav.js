@@ -1050,18 +1050,28 @@ function initNavigationScript() {
         bottomTrendingThresholdViewportWidth = null;
     }
 
-    function getNextReadScrollContainer() {
+    function getWindowScrollTop() {
+        return window.scrollY || document.documentElement.scrollTop || document.body.scrollTop || 0;
+    }
+
+    function getBodyContainerScrollTop() {
         const bodyContainer = document.getElementById('body-container');
-        if (bodyContainer && bodyContainer.scrollHeight > bodyContainer.clientHeight + 1) {
-            return bodyContainer;
-        }
-        return null;
+        return bodyContainer ? (bodyContainer.scrollTop || 0) : 0;
     }
 
     function getCurrentScrollTop() {
-        const container = getNextReadScrollContainer();
-        if (container) return container.scrollTop || 0;
-        return window.scrollY || document.documentElement.scrollTop || document.body.scrollTop || 0;
+        // Use whichever scroll context is actively moving.
+        return Math.max(getWindowScrollTop(), getBodyContainerScrollTop());
+    }
+
+    function getMaxScrollableDistance() {
+        const windowScrollable = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+        const bodyContainer = document.getElementById('body-container');
+        const containerScrollable = bodyContainer
+            ? Math.max(0, bodyContainer.scrollHeight - bodyContainer.clientHeight)
+            : 0;
+        // Prefer the larger scrollable context so thresholds remain reachable.
+        return Math.max(windowScrollable, containerScrollable);
     }
 
     function getFirstContentParagraph() {
@@ -1138,10 +1148,7 @@ function initNavigationScript() {
             };
         }
 
-        const scrollContainer = getNextReadScrollContainer();
-        const maxScrollable = scrollContainer
-            ? Math.max(0, scrollContainer.scrollHeight - scrollContainer.clientHeight)
-            : Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+        const maxScrollable = getMaxScrollableDistance();
         const clampedShowProgress = Math.min(0.95, Math.max(0, NEXT_READ_SHOW_PROGRESS));
         const defaultHideProgress = Math.max(0, clampedShowProgress - 0.03);
         const clampedHideProgress = Math.min(clampedShowProgress, Math.max(0, NEXT_READ_HIDE_PROGRESS >= 0 ? NEXT_READ_HIDE_PROGRESS : defaultHideProgress));
