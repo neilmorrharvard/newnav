@@ -1137,6 +1137,27 @@ function initNavigationScript() {
         return null;
     }
 
+    function getNextReadDesktopAnchorRect() {
+        const primaryColumn = document.querySelector('section.col-md-8');
+        if (primaryColumn && primaryColumn.isConnected) {
+            const style = window.getComputedStyle(primaryColumn);
+            if (style.display !== 'none' && style.visibility !== 'hidden') {
+                const rect = primaryColumn.getBoundingClientRect();
+                if (rect.width > 0 && rect.height > 0) {
+                    return rect;
+                }
+            }
+        }
+
+        // Fallback to first meaningful paragraph if the expected column is unavailable.
+        const anchorParagraph = getFirstContentParagraph();
+        if (anchorParagraph) {
+            return anchorParagraph.getBoundingClientRect();
+        }
+
+        return null;
+    }
+
     function applyBottomTrendingBarLayout() {
         const bar = document.getElementById('bottom-trending-story-bar');
         if (!bar) return;
@@ -1155,10 +1176,8 @@ function initNavigationScript() {
             return;
         }
 
-        const anchorParagraph = getFirstContentParagraph();
-        if (!anchorParagraph) return;
-
-        const rect = anchorParagraph.getBoundingClientRect();
+        const rect = getNextReadDesktopAnchorRect();
+        if (!rect) return;
         const maxAllowedWidth = window.innerWidth - 20;
         const width = Math.min(rect.width, maxAllowedWidth);
         const left = Math.max(10, Math.min(rect.left, window.innerWidth - width - 10));
