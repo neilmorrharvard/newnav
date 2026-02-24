@@ -430,7 +430,8 @@ function initNavigationScript() {
             
             .bottom-row { display: none; height: 44px; width: 100%; opacity: 0; position: relative; margin-top: 10px; }
             .bottom-row.active { display: flex; opacity: 1; }
-            .bottom-row-inner { display: flex; align-items: center; gap: 20px; padding: 10px 0; padding-left: 10px; width: 100%; }
+            .bottom-row-inner { display: flex; align-items: center; padding: 10px 0; padding-left: 10px; width: 100%; }
+            .bottom-row-inner > * + * { margin-left: 20px; }
             .text-link { color: var(--text-inactive); text-decoration: none; font-size: 12px; font-weight: 400; border-bottom: 2px solid transparent; padding-bottom: 2px; }
             .text-link.active { color: var(--primary); font-weight: 700; border-bottom: none; }
             
