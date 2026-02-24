@@ -39,6 +39,7 @@ function initNavigationScript() {
     const NEXT_READ_FEED_CACHE_TTL_MS = Number(window.NAV_NEXT_READ_FEED_CACHE_TTL_MS || 300000);
     const NEXT_READ_FEED_TIMEOUT_MS = Number(window.NAV_NEXT_READ_FEED_TIMEOUT_MS || 2000);
     const NEXT_READ_FEED_CACHE_PREFIX = 'nav_next_read_feed_cache_v1:';
+    const NEXT_READ_DEBUG = window.NAV_NEXT_READ_DEBUG === true;
 
     // PostHog session recording helper
     // Note: Configure PostHog to start recording when any of these nav events are captured
@@ -944,8 +945,16 @@ function initNavigationScript() {
         const existingAd = document.getElementById('bottom-sticky-ad-sim');
         const isMobileViewport = window.innerWidth <= 990;
         const currentPath = normalizePath(window.location.pathname);
+        const isArticle = isArticlePath(currentPath);
+        logNextReadDebug('init start', {
+            enabled: ENABLE_NEXT_READ,
+            currentPath,
+            isArticle,
+            viewport: isMobileViewport ? 'mobile' : 'desktop'
+        });
 
-        if (!ENABLE_NEXT_READ || !isArticlePath(currentPath)) {
+        if (!ENABLE_NEXT_READ || !isArticle) {
+            logNextReadDebug('exit early: disabled or non-article', { enabled: ENABLE_NEXT_READ, isArticle });
             if (existing) existing.remove();
             if (existingAd) existingAd.remove();
             return;
@@ -969,6 +978,7 @@ function initNavigationScript() {
 
         const visitedSet = new Set(getNextReadVisitedPaths());
         const parentRssUrl = buildParentRssUrl(currentPath);
+        logNextReadDebug('feed candidates', { parentRssUrl, fallbackRssUrl: NEXT_READ_FALLBACK_RSS_URL, visitedCount: visitedSet.size });
         let nextItem = null;
         let lastError = null;
 
@@ -976,10 +986,18 @@ function initNavigationScript() {
             if (!rssUrl) return null;
             try {
                 const items = await fetchRssItems(rssUrl);
-                return pickNextReadItem(items, currentPath, visitedSet, includeVisited);
+                const picked = pickNextReadItem(items, currentPath, visitedSet, includeVisited);
+                logNextReadDebug('feed evaluated', {
+                    rssUrl,
+                    includeVisited,
+                    itemCount: items.length,
+                    pickedPath: picked?.path || null
+                });
+                return picked;
             } catch (error) {
                 lastError = error;
                 console.warn('[NAV DEBUG] NEXT READ RSS source failed:', rssUrl, error);
+                logNextReadDebug('feed failed', { rssUrl, includeVisited, error: String(error && error.message ? error.message : error) });
                 return null;
             }
         };
@@ -991,6 +1009,7 @@ function initNavigationScript() {
         if (!nextItem) {
             if (existing) existing.remove();
             console.warn('[NAV DEBUG] NEXT READ: no eligible article found', lastError);
+            logNextReadDebug('exit: no eligible item found');
             return;
         }
 
@@ -1025,6 +1044,7 @@ function initNavigationScript() {
         if (!existing) {
             document.body.appendChild(bar);
         }
+        logNextReadDebug('bar rendered', { title: nextItem.title, link: nextItem.link });
         scheduleBottomTrendingFrameUpdate({ invalidateCaches: true, updateLayout: true });
         bindBottomTrendingBarVisibilityHandlers();
     }
@@ -1072,6 +1092,15 @@ function initNavigationScript() {
             : 0;
         // Prefer the larger scrollable context so thresholds remain reachable.
         return Math.max(windowScrollable, containerScrollable);
+    }
+
+    function logNextReadDebug(message, details) {
+        if (!NEXT_READ_DEBUG) return;
+        if (details !== undefined) {
+            console.log('[NEXT READ DEBUG]', message, details);
+        } else {
+            console.log('[NEXT READ DEBUG]', message);
+        }
     }
 
     function getFirstContentParagraph() {
@@ -1164,6 +1193,7 @@ function initNavigationScript() {
         const bar = document.getElementById('bottom-trending-story-bar');
         if (!bar) {
             bottomTrendingVisibleState = false;
+            logNextReadDebug('visibility update skipped: no bar');
             return;
         }
 
@@ -1187,6 +1217,16 @@ function initNavigationScript() {
         }
 
         bar.classList.toggle('visible', bottomTrendingVisibleState);
+        logNextReadDebug('visibility updated', {
+            currentY: Math.round(currentY),
+            showPx: Math.round(showPx),
+            hidePx: Math.round(hidePx),
+            visible: bottomTrendingVisibleState,
+            windowY: Math.round(getWindowScrollTop()),
+            bodyContainerY: Math.round(getBodyContainerScrollTop()),
+            maxScrollable: Math.round(getMaxScrollableDistance()),
+            viewport: isMobileViewport ? 'mobile' : 'desktop'
+        });
     }
 
     function scheduleBottomTrendingFrameUpdate({ invalidateCaches = false, updateLayout = false } = {}) {
