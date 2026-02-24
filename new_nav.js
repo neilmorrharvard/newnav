@@ -34,7 +34,7 @@ function initNavigationScript() {
     const NEXT_READ_MIN_SHOW_SCROLL_PX = Number(window.NAV_NEXT_READ_MIN_SHOW_SCROLL_PX || 200);
     const NEXT_READ_MOBILE_HIDE_TOP_PX = Number(window.NAV_NEXT_READ_MOBILE_HIDE_TOP_PX || 80);
     const ENABLE_FAKE_BOTTOM_AD_UNIT = window.NAV_ENABLE_FAKE_BOTTOM_AD_UNIT !== false;
-    const NEXT_READ_FALLBACK_RSS_URL = window.NAV_NEXT_READ_FALLBACK_RSS_URL || 'https://www.sasktoday.ca/rss';
+    const NEXT_READ_FALLBACK_RSS_URL = window.NAV_NEXT_READ_FALLBACK_RSS_URL || `${window.location.origin}/rss`;
     const NEXT_READ_VISITED_PATHS_KEY = 'nav_next_read_visited_paths_v1';
     const NEXT_READ_FEED_CACHE_TTL_MS = Number(window.NAV_NEXT_READ_FEED_CACHE_TTL_MS || 300000);
     const NEXT_READ_FEED_TIMEOUT_MS = Number(window.NAV_NEXT_READ_FEED_TIMEOUT_MS || 2000);
@@ -827,6 +827,31 @@ function initNavigationScript() {
         return new URL(`/rss${parentPath}`, window.location.origin).toString();
     }
 
+    function buildParentRssUrls(path) {
+        const primary = buildParentRssUrl(path);
+        if (!primary) return [];
+        const urls = [primary];
+
+        // Some community feeds can use non-hyphenated terminal slugs (e.g. weyburnreview).
+        try {
+            const parsed = new URL(primary);
+            const parts = parsed.pathname.split('/').filter(Boolean);
+            if (parts.length >= 3) {
+                const last = parts[parts.length - 1];
+                const compact = last.replace(/-/g, '');
+                if (compact && compact !== last) {
+                    parts[parts.length - 1] = compact;
+                    parsed.pathname = `/${parts.join('/')}`;
+                    urls.push(parsed.toString());
+                }
+            }
+        } catch (_) {
+            // Keep primary only if URL parsing fails.
+        }
+
+        return Array.from(new Set(urls));
+    }
+
     function getNextReadVisitedPaths() {
         try {
             const raw = sessionStorage.getItem(NEXT_READ_VISITED_PATHS_KEY);
@@ -977,10 +1002,10 @@ function initNavigationScript() {
         }
 
         const visitedSet = new Set(getNextReadVisitedPaths());
-        const parentRssUrl = buildParentRssUrl(currentPath);
-        logNextReadDebug('feed candidates', { parentRssUrl, fallbackRssUrl: NEXT_READ_FALLBACK_RSS_URL, visitedCount: visitedSet.size });
+        const parentRssUrls = buildParentRssUrls(currentPath);
+        logNextReadDebug('feed candidates', { parentRssUrls, fallbackRssUrl: NEXT_READ_FALLBACK_RSS_URL, visitedCount: visitedSet.size });
         let nextItem = null;
-        let lastError = null;
+        const failedFeeds = [];
 
         const selectFromFeed = async (rssUrl, includeVisited) => {
             if (!rssUrl) return null;
@@ -995,20 +1020,28 @@ function initNavigationScript() {
                 });
                 return picked;
             } catch (error) {
-                lastError = error;
                 console.warn('[NAV DEBUG] NEXT READ RSS source failed:', rssUrl, error);
+                failedFeeds.push({
+                    rssUrl,
+                    includeVisited,
+                    name: error?.name || 'Error',
+                    message: error?.message || String(error)
+                });
                 logNextReadDebug('feed failed', { rssUrl, includeVisited, error: String(error && error.message ? error.message : error) });
                 return null;
             }
         };
 
-        nextItem = await selectFromFeed(parentRssUrl, false);
+        for (const rssUrl of parentRssUrls) {
+            nextItem = await selectFromFeed(rssUrl, false);
+            if (nextItem) break;
+        }
         if (!nextItem) nextItem = await selectFromFeed(NEXT_READ_FALLBACK_RSS_URL, false);
         if (!nextItem) nextItem = await selectFromFeed(NEXT_READ_FALLBACK_RSS_URL, true);
 
         if (!nextItem) {
             if (existing) existing.remove();
-            console.warn('[NAV DEBUG] NEXT READ: no eligible article found', lastError);
+            console.warn('[NAV DEBUG] NEXT READ: no eligible article found', failedFeeds);
             logNextReadDebug('exit: no eligible item found');
             return;
         }
