@@ -824,7 +824,7 @@ function initNavigationScript() {
     function buildParentRssUrl(path) {
         const parentPath = getParentPath(path);
         if (!parentPath) return null;
-        return new URL(`/rss${parentPath}`, window.location.origin).toString();
+        return new URL(`/rss${parentPath}`, window.location.origin).toString().replace(/\/+$/, '');
     }
 
     function buildParentRssUrls(path) {
@@ -842,7 +842,7 @@ function initNavigationScript() {
                 if (compact && compact !== last) {
                     parts[parts.length - 1] = compact;
                     parsed.pathname = `/${parts.join('/')}`;
-                    urls.push(parsed.toString());
+                    urls.push(parsed.toString().replace(/\/+$/, ''));
                 }
             }
         } catch (_) {
@@ -1032,9 +1032,16 @@ function initNavigationScript() {
             }
         };
 
+        // Prefer contextual community/category feed first (unvisited, then visited).
         for (const rssUrl of parentRssUrls) {
             nextItem = await selectFromFeed(rssUrl, false);
             if (nextItem) break;
+        }
+        if (!nextItem) {
+            for (const rssUrl of parentRssUrls) {
+                nextItem = await selectFromFeed(rssUrl, true);
+                if (nextItem) break;
+            }
         }
         if (!nextItem) nextItem = await selectFromFeed(NEXT_READ_FALLBACK_RSS_URL, false);
         if (!nextItem) nextItem = await selectFromFeed(NEXT_READ_FALLBACK_RSS_URL, true);
