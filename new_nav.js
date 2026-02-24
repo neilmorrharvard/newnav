@@ -28,7 +28,8 @@ function initNavigationScript() {
     // NEXT READ feature flags (easy on/off + positioning override)
     const ENABLE_NEXT_READ = window.NAV_ENABLE_NEXT_READ !== false && window.NAV_ENABLE_BOTTOM_TRENDING_STORY !== false;
     const BOTTOM_STICKY_AD_HEIGHT = Number(window.NAV_STICKY_AD_HEIGHT || 70);
-    const BOTTOM_TRENDING_BOTTOM_OFFSET = Number(window.NAV_BOTTOM_TRENDING_BOTTOM_OFFSET || 100);
+    const BOTTOM_TRENDING_MOBILE_BOTTOM_OFFSET = Number(window.NAV_NEXT_READ_MOBILE_BOTTOM_OFFSET || 100);
+    const BOTTOM_TRENDING_DESKTOP_BOTTOM_OFFSET = Number(window.NAV_NEXT_READ_DESKTOP_BOTTOM_OFFSET || 50);
     const NEXT_READ_SHOW_PROGRESS = Number(window.NAV_NEXT_READ_SHOW_PROGRESS ?? 0.25);
     const NEXT_READ_HIDE_PROGRESS = Number(window.NAV_NEXT_READ_HIDE_PROGRESS ?? -1);
     const NEXT_READ_MIN_SHOW_SCROLL_PX = Number(window.NAV_NEXT_READ_MIN_SHOW_SCROLL_PX || 200);
@@ -988,7 +989,7 @@ function initNavigationScript() {
         }
 
         if (existing) {
-            existing.style.bottom = `${BOTTOM_TRENDING_BOTTOM_OFFSET}px`;
+            existing.style.bottom = `${getBottomTrendingBottomOffset()}px`;
         } else {
             addNextReadVisitedPath(currentPath);
         }
@@ -1039,7 +1040,7 @@ function initNavigationScript() {
         const bar = existing || document.createElement('div');
         if (!existing) {
             bar.id = 'bottom-trending-story-bar';
-            bar.style.bottom = `${BOTTOM_TRENDING_BOTTOM_OFFSET}px`;
+            bar.style.bottom = `${getBottomTrendingBottomOffset()}px`;
         }
 
         const label = document.createElement('span');
@@ -1090,6 +1091,12 @@ function initNavigationScript() {
         bottomTrendingShowThresholdCache = null;
         bottomTrendingHideThresholdCache = null;
         bottomTrendingThresholdViewportWidth = null;
+    }
+
+    function getBottomTrendingBottomOffset() {
+        return window.innerWidth <= 767
+            ? BOTTOM_TRENDING_MOBILE_BOTTOM_OFFSET
+            : BOTTOM_TRENDING_DESKTOP_BOTTOM_OFFSET;
     }
 
     function getWindowScrollTop() {
