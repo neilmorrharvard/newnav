@@ -44,16 +44,16 @@ function initNavigationScript() {
 
     // PostHog session recording helper
     // Note: Configure PostHog to start recording when any of these nav events are captured
-    const triggerPostHogRecording = (eventName) => {
+    const triggerPostHogRecording = (eventName, properties) => {
         try {
             if (typeof posthog !== 'undefined' && posthog && posthog.capture) {
-                // Capture the specific event - PostHog will start recording based on your settings
-                posthog.capture(eventName, {
-                    viewport: window.innerWidth > 990 ? 'desktop' : 'mobile'
-                });
+                const payload = Object.assign(
+                    { viewport: window.innerWidth > 990 ? 'desktop' : 'mobile' },
+                    properties || {}
+                );
+                posthog.capture(eventName, payload);
             }
         } catch (error) {
-            // Silently fail if PostHog is not available
             console.debug('PostHog not available:', error);
         }
     };
@@ -108,6 +108,7 @@ function initNavigationScript() {
             carlyle: "https://staging-www2.villagemedia.ca/southeast/carlyleobserver",
             humboldt: "https://staging-www2.villagemedia.ca/north/humboldtjournal",
             moosejaw: "https://staging-www2.villagemedia.ca/southwest/moosejaw",
+            assiniboia: "https://staging-www2.villagemedia.ca/southwest/assiniboia",
             outlook: "https://staging-www2.villagemedia.ca/north/theoutlook",
             princealbert: "https://staging-www2.villagemedia.ca/north/prince-albert",
             unitywilkie: "https://staging-www2.villagemedia.ca/north/unitywilkiepressherald",
@@ -184,6 +185,7 @@ function initNavigationScript() {
                 { text: "Carlyle", url: "https://staging-www2.villagemedia.ca/southeast/carlyleobserver" },
                 { text: "Humboldt", url: "https://staging-www2.villagemedia.ca/north/humboldtjournal" },
                 { text: "Moose Jaw", url: "https://staging-www2.villagemedia.ca/southwest/moosejaw" },
+                { text: "Assiniboia", url: "https://staging-www2.villagemedia.ca/southwest/assiniboia" },
                 { text: "Outlook", url: "https://staging-www2.villagemedia.ca/north/theoutlook" },
                 { text: "Prince Albert", url: "https://staging-www2.villagemedia.ca/north/prince-albert" },
                 { text: "Unity-Wilkie", url: "https://staging-www2.villagemedia.ca/north/unitywilkiepressherald" },
@@ -352,7 +354,7 @@ function initNavigationScript() {
             }
             .community-tip-overlay {
                 position: fixed;
-                z-index: 20;
+                z-index: 15;
                 display: flex;
                 align-items: center;
                 gap: 14px;
@@ -400,6 +402,13 @@ function initNavigationScript() {
             .desktop-mega-menu-inner { display: flex; width: 990px; margin: 0 auto; padding: 30px 10px 30px 30px; gap: 80px; }
             @media (min-width: 768px) and (max-width: 991px) { .desktop-mega-menu-inner { width: 750px; } }
             .desktop-mega-menu-inner.communities-menu { gap: 80px; }
+            .desktop-mega-menu-regions { display: flex; flex-wrap: nowrap; gap: 32px; width: 100%; }
+            .desktop-mega-menu-region-group { flex: 0 0 auto; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+            .desktop-mega-menu-region-label { font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--primary); text-decoration: none; margin-bottom: 2px; white-space: nowrap; }
+            .desktop-mega-menu-region-label:hover { text-decoration: underline; }
+            .desktop-mega-menu-region-links { display: flex; flex-direction: column; gap: 8px; }
+            .desktop-mega-menu-region-links a { color: var(--text-inactive); text-decoration: none; font-size: 12px; font-weight: 500; padding: 2px 0; transition: color 0.2s; text-align: left; white-space: nowrap; }
+            .desktop-mega-menu-region-links a:hover { color: var(--primary); font-weight: bold; }
             .desktop-mega-menu-links { flex: 0 0 auto; display: flex; flex-direction: column; gap: 12px; align-items: flex-start; }
             .desktop-mega-menu-links h3 { font-size: 11px; font-weight: 500; margin: 0 0 12px 0; color: #999; width: 100%; text-transform: uppercase; }
             .desktop-mega-menu-links-items { display: flex; flex-direction: column; gap: 12px; width: 100%; }
@@ -1070,6 +1079,9 @@ function initNavigationScript() {
         storyLink.className = 'story-link';
         storyLink.href = nextItem.link;
         storyLink.textContent = nextItem.title;
+        storyLink.addEventListener('click', () => {
+            triggerPostHogRecording('nav_next_read_click', { destination_url: nextItem.link });
+        });
 
         const closeBtn = document.createElement('button');
         closeBtn.className = 'close-btn';
@@ -1077,6 +1089,7 @@ function initNavigationScript() {
         closeBtn.setAttribute('aria-label', 'Close next read bar');
         closeBtn.textContent = '×';
         closeBtn.addEventListener('click', () => {
+            triggerPostHogRecording('nav_next_read_dismiss');
             sessionStorage.setItem(NEXT_READ_DISMISSED_SESSION_KEY, '1');
             bar.remove();
         });
@@ -1667,6 +1680,7 @@ function initNavigationScript() {
     }
 
     function dismissCommunityOverlay() {
+        triggerPostHogRecording('nav_community_overlay_dismiss');
         try {
             localStorage.setItem(COMMUNITY_OVERLAY_DISMISS_KEY, '1');
         } catch (error) {
@@ -1690,6 +1704,16 @@ function initNavigationScript() {
         communityOverlayEl.addEventListener('click', () => {
             dismissCommunityOverlay();
         });
+        const overlaySpan = communityOverlayEl.querySelector('span');
+        if (overlaySpan) {
+            overlaySpan.addEventListener('click', (e) => {
+                e.stopPropagation();
+                closeCommunityOverlayForPage();
+                triggerPostHogRecording('nav_community_overlay_click');
+                const commContainer = document.getElementById('comm-container');
+                if (commContainer) commContainer.click();
+            });
+        }
         const closeBtn = communityOverlayEl.querySelector('.community-tip-overlay-close');
         if (closeBtn) {
             closeBtn.addEventListener('click', (event) => {
@@ -1735,6 +1759,7 @@ function initNavigationScript() {
         if (!communityOverlayShownThisPage) {
             communityOverlayShownThisPage = true;
             markCommunityOverlaySeenInSession();
+            triggerPostHogRecording('nav_community_overlay_seen');
         }
     }
 
@@ -1828,8 +1853,7 @@ function initNavigationScript() {
         // Parent Click Handlers
         document.querySelectorAll('.category-pill:not(#mega-menu-trigger):not(#search-trigger)').forEach(pill => {
             pill.addEventListener('click', () => {
-                // Trigger PostHog recording on parent item click
-                triggerPostHogRecording('nav_parent_item_click');
+                triggerPostHogRecording('nav_parent_item_click', { category: pill.dataset.category || undefined });
                 window.location.href = routes.categories[pill.dataset.category];
             });
         });
@@ -1874,6 +1898,7 @@ function initNavigationScript() {
             }
             drop.style.display = (drop.style.display === 'block') ? 'none' : 'block';
             if (drop.style.display === 'block') {
+                triggerPostHogRecording('nav_communities_dropdown_open');
                 closeCommunityOverlayForPage();
             }
             updateCommunityOverlayVisibility();
@@ -1927,12 +1952,34 @@ function initNavigationScript() {
 
         document.querySelectorAll('.dropdown-option').forEach(opt => {
             opt.addEventListener('click', () => {
-                // Trigger PostHog recording on mobile community selection
                 if (window.innerWidth <= 990) {
-                    triggerPostHogRecording('nav_parent_item_click');
+                    triggerPostHogRecording('nav_parent_item_click', { community: opt.dataset.community || undefined });
                 }
                 window.location.href = routes.communities[opt.dataset.community];
             });
+        });
+
+        // Child link click tracking (PostHog)
+        container.addEventListener('click', (e) => {
+            const childLink = e.target && e.target.closest ? e.target.closest('.bottom-row .text-link') : null;
+            if (childLink) {
+                triggerPostHogRecording('nav_child_link_click', {
+                    href: childLink.href || '',
+                    link_text: (childLink.textContent && childLink.textContent.trim) ? childLink.textContent.trim() : ''
+                });
+            }
+            // Mega menu link click tracking (desktop)
+            const megaLink = e.target && e.target.closest ? e.target.closest('.desktop-mega-menu a[href]') : null;
+            if (megaLink) {
+                let linkType = 'category';
+                if (megaLink.closest('.desktop-mega-menu-brand')) linkType = 'brand';
+                else if (megaLink.closest('.desktop-mega-menu-trending-items')) linkType = 'trending';
+                else if (megaLink.closest('.desktop-mega-menu-newsletters')) linkType = 'newsletter';
+                triggerPostHogRecording('nav_mega_menu_link_click', {
+                    link_type: linkType,
+                    destination: megaLink.href || ''
+                });
+            }
         });
 
         // Child Active States (longest path-prefix match so deep pages still map correctly)
@@ -2134,7 +2181,7 @@ function initNavigationScript() {
 
                 // Prevent column shift on hover by reserving bold-text width (same approach as Communities menu)
                 requestAnimationFrame(() => {
-                    const allLinks = inner.querySelectorAll('.desktop-mega-menu-links a, .desktop-mega-menu-newsletters a');
+                    const allLinks = inner.querySelectorAll('.desktop-mega-menu-links a, .desktop-mega-menu-newsletters a, .desktop-mega-menu-region-links a');
                     const measurements = [];
 
                     allLinks.forEach(link => {
@@ -2171,7 +2218,7 @@ function initNavigationScript() {
                 
                 // Trigger PostHog recording when search mega menu appears (desktop)
                 if (window.innerWidth > 990) {
-                    triggerPostHogRecording('nav_mega_menu_appear');
+                    triggerPostHogRecording('nav_mega_menu_appear', { trigger: 'search' });
                 }
                 
                 // Ensure hover-active class is maintained on search trigger when menu is visible
@@ -2191,6 +2238,7 @@ function initNavigationScript() {
                         if (e.key === 'Enter') {
                             const query = searchInput.value.trim();
                             if (query) {
+                                triggerPostHogRecording('nav_search_submit', { query: query, query_length: query.length });
                                 window.location.href = `https://www.sasktoday.ca/search?q=${encodeURIComponent(query)}`;
                             }
                         }
@@ -2391,40 +2439,47 @@ function initNavigationScript() {
                         }
                     }
                     
-                    // Left section - Communities list
+                    // Left section - Communities by region (4 columns with region labels)
+                    const baseUrl = (routes.communities && routes.communities.all) ? routes.communities.all.replace(/\/$/, '') : 'https://staging-www2.villagemedia.ca';
+                    const regionDisplayOverrides = { unitywilkie: 'Unity' };
+                    const regionGroups = [
+                        { label: 'West Central & North', path: '/north', keys: ['saskatoon', 'princealbert', 'thebattlefords', 'humboldt', 'outlook', 'unitywilkie'] },
+                        { label: 'East Central', path: '/central', keys: ['canora', 'kamsack', 'preeceville', 'yorkton'] },
+                        { label: 'Southwest', path: '/southwest', keys: ['regina', 'moosejaw', 'assiniboia'] },
+                        { label: 'Southeast', path: '/southeast', keys: ['estevan', 'carlyle', 'weyburn'] }
+                    ];
                     const communitiesSection = document.createElement('div');
                     communitiesSection.className = 'desktop-mega-menu-links';
                     const communitiesHeading = document.createElement('h3');
                     communitiesHeading.textContent = isActive ? 'Change Your Community' : 'Pick a Community';
                     communitiesSection.appendChild(communitiesHeading);
-                    
-                    const communitiesItems = document.createElement('div');
-                    const numColumns = Math.ceil(links.length / 4); // Limit to 4 items per column
-                    communitiesItems.className = 'desktop-mega-menu-links-items' + (links.length > 4 ? ' multi-column communities-columns' : '');
-                    if (links.length > 4) {
-                        communitiesItems.style.gridTemplateColumns = `repeat(${numColumns}, 1fr)`;
-                    }
-                    
-                    links.forEach(link => {
-                        const a = document.createElement('a');
-                        a.href = link.url;
-                        
-                        if (link.external) {
-                            a.target = '_blank';
-                            const textSpan = document.createElement('span');
-                            textSpan.textContent = link.text;
-                            a.appendChild(textSpan);
-                            const iconSvg = document.createElement('span');
-                            iconSvg.innerHTML = extIcon;
-                            a.appendChild(iconSvg);
-                        } else {
-                            const textNode = document.createTextNode(link.text);
-                            a.appendChild(textNode);
-                        }
-                        communitiesItems.appendChild(a);
+                    const regionsWrapper = document.createElement('div');
+                    regionsWrapper.className = 'desktop-mega-menu-regions';
+                    regionGroups.forEach(function (group) {
+                        const groupEl = document.createElement('div');
+                        groupEl.className = 'desktop-mega-menu-region-group';
+                        const labelLink = document.createElement('a');
+                        labelLink.className = 'desktop-mega-menu-region-label';
+                        labelLink.href = baseUrl + group.path;
+                        labelLink.textContent = group.label;
+                        groupEl.appendChild(labelLink);
+                        const linksEl = document.createElement('div');
+                        linksEl.className = 'desktop-mega-menu-region-links';
+                        group.keys.forEach(function (key) {
+                            const url = routes.communities[key];
+                            if (!url) return;
+                            const a = document.createElement('a');
+                            a.href = url;
+                            const linkEntry = routes.communityLinks.communities.find(function (c) { return c.url === url; });
+                            const displayText = regionDisplayOverrides[key] || (linkEntry ? linkEntry.text : key);
+                            a.textContent = displayText;
+                            a.setAttribute('data-text', displayText);
+                            linksEl.appendChild(a);
+                        });
+                        groupEl.appendChild(linksEl);
+                        regionsWrapper.appendChild(groupEl);
                     });
-                    
-                    communitiesSection.appendChild(communitiesItems);
+                    communitiesSection.appendChild(regionsWrapper);
                     inner.appendChild(communitiesSection);
                     
                     // Right section - Community sections (only if active)
@@ -2641,7 +2696,7 @@ function initNavigationScript() {
                 // Calculate min-widths asynchronously after showing menu to prevent layout shift
                 // Optimization: Batch all measurements first, then apply in one pass to reduce layout thrashing
                 requestAnimationFrame(() => {
-                    const allLinks = inner.querySelectorAll('.desktop-mega-menu-links a, .desktop-mega-menu-newsletters a');
+                    const allLinks = inner.querySelectorAll('.desktop-mega-menu-links a, .desktop-mega-menu-newsletters a, .desktop-mega-menu-region-links a');
                     const measurements = [];
                     
                     // Phase 1: Collect all measurements (batch DOM reads)
@@ -2683,7 +2738,7 @@ function initNavigationScript() {
                 
                 // Trigger PostHog recording when mega menu appears (desktop)
                 if (window.innerWidth > 990) {
-                    triggerPostHogRecording('nav_mega_menu_appear');
+                    triggerPostHogRecording('nav_mega_menu_appear', { trigger: 'category', category: (pill && pill.dataset && pill.dataset.category) ? pill.dataset.category : undefined });
                 }
             };
             
