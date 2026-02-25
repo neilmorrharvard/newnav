@@ -31,7 +31,8 @@ function initNavigationScript() {
     const BOTTOM_TRENDING_MOBILE_BOTTOM_OFFSET = Number(window.NAV_NEXT_READ_MOBILE_BOTTOM_OFFSET || 100);
     const BOTTOM_TRENDING_DESKTOP_BOTTOM_OFFSET = Number(window.NAV_NEXT_READ_DESKTOP_BOTTOM_OFFSET || 50);
     const NEXT_READ_HIDE_PROGRESS = Number(window.NAV_NEXT_READ_HIDE_PROGRESS != null ? window.NAV_NEXT_READ_HIDE_PROGRESS : -1);
-    const NEXT_READ_MIN_SHOW_SCROLL_PX = Number(window.NAV_NEXT_READ_MIN_SHOW_SCROLL_PX || 800);
+    const NEXT_READ_MIN_SHOW_SCROLL_PX = Number(window.NAV_NEXT_READ_MIN_SHOW_SCROLL_PX || 850);
+    const NEXT_READ_DISMISSED_SESSION_KEY = 'nav_next_read_dismissed_session_v1';
     const NEXT_READ_MOBILE_HIDE_TOP_PX = Number(window.NAV_NEXT_READ_MOBILE_HIDE_TOP_PX || 80);
     const ENABLE_FAKE_BOTTOM_AD_UNIT = window.NAV_ENABLE_FAKE_BOTTOM_AD_UNIT !== false;
     const NEXT_READ_FALLBACK_RSS_URL = window.NAV_NEXT_READ_FALLBACK_RSS_URL || `${window.location.origin}/rss`;
@@ -982,6 +983,19 @@ function initNavigationScript() {
             if (existingAd) existingAd.remove();
             return;
         }
+        if (sessionStorage.getItem(NEXT_READ_DISMISSED_SESSION_KEY)) {
+            if (existing) existing.remove();
+            if (isMobileViewport && ENABLE_FAKE_BOTTOM_AD_UNIT && !existingAd) {
+                const fakeAd = document.createElement('div');
+                fakeAd.id = 'bottom-sticky-ad-sim';
+                fakeAd.style.height = `${BOTTOM_STICKY_AD_HEIGHT}px`;
+                fakeAd.textContent = 'Sticky Ad Unit (Simulated)';
+                document.body.appendChild(fakeAd);
+            } else if (!isMobileViewport && existingAd) {
+                existingAd.remove();
+            }
+            return;
+        }
 
         if (isMobileViewport && ENABLE_FAKE_BOTTOM_AD_UNIT && !existingAd) {
             const fakeAd = document.createElement('div');
@@ -1063,6 +1077,7 @@ function initNavigationScript() {
         closeBtn.setAttribute('aria-label', 'Close next read bar');
         closeBtn.textContent = '×';
         closeBtn.addEventListener('click', () => {
+            sessionStorage.setItem(NEXT_READ_DISMISSED_SESSION_KEY, '1');
             bar.remove();
         });
 
