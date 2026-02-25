@@ -2272,14 +2272,23 @@ function initNavigationScript() {
         let desktopHoverArmed = false;
 
         // Prevent mega menu from opening from the initial post-navigation cursor position.
-        // Arm hover only after the mouse moves outside nav/mega-menu at least once.
+        // Arm hover when: (1) mouse leaves nav and comes back, or (2) mouse moves to a different parent than the active one.
         const armDesktopHover = (event) => {
             const target = event.target;
             const isWithinNav = !!(target && target.closest && (
                 target.closest('#main-top-row') ||
                 target.closest('.desktop-mega-menu')
             ));
-            if (isWithinNav) return;
+            if (isWithinNav) {
+                const pillUnderCursor = target && target.closest && (
+                    target.closest('.category-pill') || target.closest('#comm-container')
+                );
+                if (pillUnderCursor && !pillUnderCursor.classList.contains('active')) {
+                    desktopHoverArmed = true;
+                    document.removeEventListener('mousemove', armDesktopHover);
+                }
+                return;
+            }
             desktopHoverArmed = true;
             document.removeEventListener('mousemove', armDesktopHover);
         };
