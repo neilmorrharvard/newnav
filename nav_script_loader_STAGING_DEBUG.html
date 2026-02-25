@@ -59,6 +59,20 @@ console.log('[LOADER DEBUG] Head element exists:', !!document.head);
             
             fallbackScript.onload = function() {
                 console.log('[LOADER DEBUG] Fallback script loaded successfully');
+                // If the real script ran, we'd have [NAV DEBUG] logs and window.initNavigationScript. If not, the URL likely returned 404 HTML.
+                if (typeof window.initNavigationScript !== 'function') {
+                    console.error('[LOADER DEBUG] Script ran but initNavigationScript is missing. The fallback URL probably returned 404 HTML instead of JavaScript. Open https://neilmorrharvard.github.io/newnav/new_nav.js in a new tab and confirm it shows JS code.');
+                }
+                // Retry init after a short delay in case script ran before header existed (e.g. fallback loaded late)
+                setTimeout(function() {
+                    if (!document.querySelector('#village-nav-container') && typeof window.initNavigationScript === 'function') {
+                        console.warn('[LOADER DEBUG] Nav not in DOM after fallback load, retrying init...');
+                        window.initNavigationScript();
+                    }
+                    if (!document.querySelector('#village-nav-container')) {
+                        console.warn('[LOADER DEBUG] Nav still missing. Verify https://neilmorrharvard.github.io/newnav/new_nav.js returns JavaScript (not 404 HTML).');
+                    }
+                }, 400);
             };
             
             fallbackScript.onerror = function(e2) {

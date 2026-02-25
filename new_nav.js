@@ -12,9 +12,13 @@ function initNavigationScript() {
     console.log('[NAV DEBUG] Header exists:', !!document.querySelector('header'));
     console.log('[NAV DEBUG] Nav already exists:', !!document.querySelector('#village-nav-container'));
     
-    // Prevent script from running multiple times
+    // Skip only if nav is already in the DOM (allows retry when loaded via fallback before header existed)
+    if (document.querySelector('#village-nav-container')) {
+        console.warn('[NAV DEBUG] Nav already in DOM, skipping');
+        return;
+    }
     if (window.navScriptLoaded) {
-        console.warn('[NAV DEBUG] Script already loaded, skipping');
+        console.warn('[NAV DEBUG] Script init already in progress, skipping');
         return;
     }
     window.navScriptLoaded = true;
@@ -563,6 +567,7 @@ function initNavigationScript() {
                     initializeNav();
                 } else {
                     console.error('[NAV DEBUG] Body also not found! Cannot insert nav.');
+                    window.navScriptLoaded = false; // Allow retry
                 }
             }
         }, 100);
@@ -584,6 +589,7 @@ function initNavigationScript() {
             initializeNav();
         } else {
             console.error('[NAV DEBUG] insertNav() called but no header found!');
+            window.navScriptLoaded = false; // Allow retry (e.g. from loader after fallback)
         }
     }
     
@@ -2811,7 +2817,11 @@ if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initNavigationScript);
 } else {
     console.log('[NAV DEBUG] DOM already ready, running immediately');
-    // DOM is already ready, run immediately
     initNavigationScript();
 }
+
+// Expose for loader retry when fallback script runs after DOM is ready (e.g. header not yet available)
+try {
+    window.initNavigationScript = initNavigationScript;
+} catch (e) {}
 
