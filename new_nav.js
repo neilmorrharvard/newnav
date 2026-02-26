@@ -270,8 +270,9 @@ function initNavigationScript() {
                 .category-pill > * + *, #comm-container > * + * { margin-left: 6px; }
                 .category-pill span, #comm-container span { cursor: pointer; }
                 .category-pill:hover, #comm-container:hover, .category-pill.hover-active, #comm-container.hover-active, .category-pill.active, #comm-container.active { font-weight: 700; }
-                #village-nav-container:not(:has(.bottom-row.active)) .category-pill.active, 
+                #village-nav-container:not(:has(.bottom-row.active)) .category-pill.active,
                 #village-nav-container:not(:has(.bottom-row.active)) #comm-container.active { padding-bottom: 10px; }
+                #village-nav-container:not(:has(.bottom-row.active)) #home-trigger.active { padding-bottom: 8px; }
                 .top-row::after { content: ""; position: absolute; bottom: -2px; left: 0; width: 100%; height: 1px; background-color: var(--separator-color); z-index: 1; opacity: 0; }
                 #village-nav-container.mega-menu-open .top-row::after, #village-nav-container:has(.bottom-row.active) .top-row::after, #village-nav-container:has(.desktop-mega-menu.visible) .top-row::after { opacity: 1; }
                 .category-pill::after, #comm-container::after { content: ""; position: absolute; bottom: -2px; left: 12px; width: var(--underline-width, auto); height: 2px; background-color: var(--primary); transform: scaleX(0); transform-origin: left; z-index: 2; transition: transform 0.3s ease; border-radius: 2px 2px 0 0; will-change: transform; }
