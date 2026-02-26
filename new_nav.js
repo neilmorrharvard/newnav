@@ -962,6 +962,8 @@ function initNavigationScript() {
             if (!title || !rawLink) return;
             try {
                 const absolute = new URL(rawLink, rssUrl);
+                const protocol = absolute.protocol.toLowerCase();
+                if (protocol !== 'http:' && protocol !== 'https:') continue; // Reject javascript:, data:, etc.
                 const path = normalizePath(absolute.pathname);
                 items.push({ title, link: absolute.toString(), path });
             } catch (_) {
