@@ -123,6 +123,7 @@ function initNavigationScript() {
             all: base + "/"
         },
         categories: {
+            home: base + "/",
             sports: base + "/sports",
             obituaries: base + "/obituaries",
             agriculture: base + "/agriculture",
@@ -211,6 +212,7 @@ function initNavigationScript() {
     const iconOpinions = '<svg class="category-icon" viewBox="0 -960 960 960" xmlns="http://www.w3.org/2000/svg"><path data-fill="#6b7fa8" d="M611-461 461-612l111-110-29-29-219 219-56-56 218-219q24-24 56.5-24t56.5 24l29 29 50-50q12-12 28.5-12t28.5 12l93 93q12 12 12 28.5T828-678L611-461ZM270-120H120v-150l284-285 151 150-285 285Z" fill="#6b7fa8"/></svg>';
     const iconCrime = '<svg class="category-icon" viewBox="0 -960 960 960" xmlns="http://www.w3.org/2000/svg"><path data-fill="#2563eb" d="m368-336 112-84 110 84-42-136 112-88H524l-44-136-44 136H300l110 88-42 136ZM480-80q-139-35-229.5-159.5T160-516v-244l320-120 320 120v244q0 152-90.5 276.5T480-80Z" fill="#2563eb"/></svg>';
     const iconMore = '<svg class="category-icon more-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z" fill="#9ca3af"/></svg>';
+    const iconHome = '<svg class="category-icon" viewBox="0 -960 960 960" xmlns="http://www.w3.org/2000/svg"><path data-fill="#016a1a" d="M160-120v-480l320-240 320 240v480H560v-280H400v280H160Z" fill="#016a1a"/></svg>';
 
     function hasSecondaryNavForPath(path) {
         return !!resolveActiveParentFromPath(path);
@@ -323,6 +325,7 @@ function initNavigationScript() {
             }
 
             @media (max-width: 991px) {
+                #home-trigger { display: none !important; }
                 .top-row { padding-left: 10px; position: relative; }
                 .category-pill.active, #comm-container.active { background: var(--primary) !important; color: white !important; }
                 .category-pill.active .category-icon-wrapper .category-icon path,
@@ -490,6 +493,7 @@ function initNavigationScript() {
             </div>
 
             <div class="top-row hide-scrollbar" id="main-top-row">
+                <button class="category-pill" id="home-trigger" data-category="home" type="button"><span class="category-icon-wrapper">${iconHome}</span><span>Home</span></button>
                 <div id="comm-container" data-category="communities">
                     <span class="category-icon-wrapper">${iconLocation}</span><span id="community-label">Communities</span>
                     <svg class="dropdown-arrow-icon" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
@@ -1822,6 +1826,9 @@ function initNavigationScript() {
             const bottomRow = document.getElementById(`community-${activeParent.key}`);
             if (bottomRow) bottomRow.classList.add('active');
             if (bottomRow) container.classList.add('mega-menu-open');
+        } else if (activeParent == null && (currentPath === '' || currentPath === '/')) {
+            const homePill = document.querySelector('[data-category="home"]');
+            if (homePill) homePill.classList.add('active');
         }
 
         // If no parent/community matched, do not show a default child row.
@@ -2308,7 +2315,7 @@ function initNavigationScript() {
 
     function initHoverDropdowns() {
         if (window.innerWidth <= 990) return;
-        const pills = document.querySelectorAll('.category-pill:not(#search-trigger), #comm-container');
+        const pills = document.querySelectorAll('.category-pill:not(#search-trigger):not(#home-trigger), #comm-container');
         const wrapper = document.querySelector('.nav-content-wrapper');
         const container = document.getElementById('village-nav-container');
         let hoverTimeout = null;
