@@ -2205,7 +2205,13 @@ function initNavigationScript() {
                     const a = document.createElement('a');
                     a.href = link.url;
                     a.setAttribute('data-text', link.text);
-                    a.textContent = link.text;
+                    if (link.external) {
+                        a.target = '_blank';
+                        a.rel = 'noopener';
+                        a.innerHTML = `${link.text} ${extIcon}`;
+                    } else {
+                        a.textContent = link.text;
+                    }
                     communityItems.appendChild(a);
                 });
                 
@@ -2220,13 +2226,13 @@ function initNavigationScript() {
                 closeCommunityOverlayForPage();
                 updateCommunityOverlayVisibility();
 
-                // Prevent column shift on hover by reserving bold-text width (same approach as Communities menu)
+                // Prevent column shift on hover by reserving bold-text width (and external icon width when present)
                 requestAnimationFrame(() => {
                     const allLinks = inner.querySelectorAll('.desktop-mega-menu-links a, .desktop-mega-menu-newsletters a');
                     const measurements = [];
 
                     allLinks.forEach(link => {
-                        const text = link.getAttribute('data-text') || link.textContent.trim();
+                        const text = link.getAttribute('data-text') || link.textContent.trim().replace(/\s+/g, ' ').trim();
                         if (text) {
                             const temp = document.createElement('span');
                             temp.style.position = 'absolute';
@@ -2245,8 +2251,10 @@ function initNavigationScript() {
                     }
 
                     const widthData = measurements.map(({ element, link }) => {
-                        const width = element.offsetWidth;
+                        let width = element.offsetWidth;
                         document.body.removeChild(element);
+                        const iconEl = link.querySelector('.external-icon');
+                        if (iconEl) width += (iconEl.offsetWidth || 18) + 6;
                         return { link, width };
                     });
 
@@ -2497,9 +2505,10 @@ function initNavigationScript() {
                     links.forEach(link => {
                         const a = document.createElement('a');
                         a.href = link.url;
-                        
+                        a.setAttribute('data-text', link.text);
                         if (link.external) {
                             a.target = '_blank';
+                            a.rel = 'noopener';
                             const textSpan = document.createElement('span');
                             textSpan.textContent = link.text;
                             a.appendChild(textSpan);
@@ -2779,10 +2788,12 @@ function initNavigationScript() {
                         void measurements[0].element.offsetWidth;
                     }
                     
-                    // Phase 2: Read all widths and remove temp elements
+                    // Phase 2: Read all widths and remove temp elements (include external icon width to prevent shift)
                     const widthData = measurements.map(({ element, link }) => {
-                        const width = element.offsetWidth;
+                        let width = element.offsetWidth;
                         document.body.removeChild(element);
+                        const iconEl = link.querySelector('.external-icon');
+                        if (iconEl) width += (iconEl.offsetWidth || 18) + 6;
                         return { link, width };
                     });
                     
