@@ -47,7 +47,8 @@ function initNavigationScript() {
     const nextReadFeedMemoryCache = new Map();
 
     // PostHog session recording helper
-    // Note: Configure PostHog to start recording when 'nav_activity' is captured (umbrella for all nav events)
+    // Note: Configure PostHog to start recording when 'nav_activity' is captured (fired once per tab session)
+    const NAV_ACTIVITY_SENT_KEY = 'vm.nav.posthog.nav_activity.sent';
     const triggerPostHogRecording = (eventName, properties) => {
         try {
             if (typeof posthog !== 'undefined' && posthog && posthog.capture) {
@@ -56,8 +57,18 @@ function initNavigationScript() {
                     properties || {}
                 );
                 posthog.capture(eventName, payload);
-                // Umbrella event so session recording can trigger on one event (nav_activity) instead of every nav_* event
-                posthog.capture('nav_activity', Object.assign({ action: eventName }, payload));
+                // Umbrella event once per session so session recording can trigger on one event without duplicate events
+                // Skip nav_next_read_click so it does not trigger session recording
+                if (eventName !== 'nav_next_read_click') {
+                    try {
+                        if (!sessionStorage.getItem(NAV_ACTIVITY_SENT_KEY)) {
+                            posthog.capture('nav_activity', Object.assign({ action: eventName }, payload));
+                            sessionStorage.setItem(NAV_ACTIVITY_SENT_KEY, '1');
+                        }
+                    } catch (e) {
+                        posthog.capture('nav_activity', Object.assign({ action: eventName }, payload));
+                    }
+                }
             }
         } catch (error) {
             console.debug('PostHog not available:', error);
