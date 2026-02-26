@@ -97,7 +97,8 @@ function initNavigationScript() {
         { path: '/obituaries/kamsack-obituaries', communityKey: 'kamsack' },
         { path: '/obituaries/battlefords-obituaries', communityKey: 'thebattlefords' },
         { path: '/obituaries/carlyle-obituaries', communityKey: 'carlyle' },
-        { path: '/obituaries/assiniboia-obituaries', communityKey: 'assiniboia' }
+        { path: '/obituaries/assiniboia-obituaries', communityKey: 'assiniboia' },
+        { path: '/obituaries/weyburn-obituaries', communityKey: 'weyburn' }
     ];
     // Hyphenated "News" paths: activate parent community and show "[Community Name] News" in child row
     const COMMUNITY_NEWS_PATH_OVERRIDES = [
@@ -111,7 +112,8 @@ function initNavigationScript() {
         { path: '/southwest/assiniboia-times', communityKey: 'assiniboia' },
         { path: '/north/the-outlook', communityKey: 'outlook' },
         { path: '/north/unity-wilkie-press-herald', communityKey: 'unitywilkie' },
-        { path: '/southeast/estevan-mercury', communityKey: 'estevan' }
+        { path: '/southeast/estevan-mercury', communityKey: 'estevan' },
+        { path: '/southeast/weyburn-review', communityKey: 'weyburn' }
     ];
     let communityOverlayEl = null;
     let communityOverlayShownThisPage = false;
@@ -545,8 +547,8 @@ function initNavigationScript() {
                 <button class="category-pill search-trigger" id="search-trigger" type="button" style="display: none;"><span class="search-icon"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"/></svg></span></button>
             </div>
             
-            <div class="bottom-row" id="community-regina"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/regina-today" class="text-link">All Regina</a><a href="${base}/regina-today/regina-news" class="text-link">Regina News</a><a href="${base}/obituaries/regina-obituaries" class="text-link">Regina Obituaries</a><a href="${base}/regina-today/regina-newsletters" class="text-link">Regina Newsletters</a><a href="${base}/regina-today/regina-discussion" class="text-link">Regina Discussions</a><a href="${base}/classifieds/regina-classifieds" class="text-link">Regina Classifieds</a></div></div>
-            <div class="bottom-row" id="community-saskatoon"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/saskatoon-today" class="text-link">All Saskatoon</a><a href="${base}/saskatoon-today/saskatoon-news" class="text-link">Saskatoon News</a><a href="${base}/obituaries/saskatoon-obituaries" class="text-link">Saskatoon Obituaries</a><a href="${base}/saskatoon-today/saskatoon-newsletters" class="text-link">Saskatoon Newsletters</a><a href="${base}/saskatoon-today/saskatoon-discussion" class="text-link">Saskatoon Discussions</a><a href="${base}/classifieds/saskatoon-classifieds" class="text-link">Saskatoon Classifieds</a></div></div>
+            <div class="bottom-row" id="community-regina"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/regina-today" class="text-link">All Regina</a><a href="${base}/regina-today/regina-news" class="text-link">Regina News</a><a href="${base}/obituaries/regina-obituaries" class="text-link">Regina Obituaries</a><a href="${base}/regina-today/regina-newsletters" class="text-link">Regina Newsletters</a><a href="${base}/regina-today/regina-discussion" class="text-link">Regina Discussions</a><a href="${base}/classifieds/regina" class="text-link">Regina Classifieds</a></div></div>
+            <div class="bottom-row" id="community-saskatoon"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/saskatoon-today" class="text-link">All Saskatoon</a><a href="${base}/saskatoon-today/saskatoon-news" class="text-link">Saskatoon News</a><a href="${base}/obituaries/saskatoon-obituaries" class="text-link">Saskatoon Obituaries</a><a href="${base}/saskatoon-today/saskatoon-newsletters" class="text-link">Saskatoon Newsletters</a><a href="${base}/saskatoon-today/saskatoon-discussion" class="text-link">Saskatoon Discussions</a><a href="${base}/classifieds/saskatoon" class="text-link">Saskatoon Classifieds</a></div></div>
             <div class="bottom-row" id="community-yorkton"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/central/yorktonthisweek" class="text-link">All Yorkton</a><a href="${base}/central/yorkton-this-week" class="text-link">Yorkton News</a><a href="${base}/obituaries/yorkton-obituaries" class="text-link">Yorkton Obituaries</a></div></div>
             <div class="bottom-row" id="community-estevan"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/southeast/estevanmercury" class="text-link">All Estevan</a><a href="${base}/southeast/estevan-mercury" class="text-link">Estevan News</a><a href="${base}/obituaries/estevan-obituaries" class="text-link">Estevan Obituaries</a></div></div>
             <div class="bottom-row" id="community-humboldt"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/north/humboldtjournal" class="text-link">All Humboldt</a><a href="${base}/north/humboldt-journal" class="text-link">Humboldt News</a><a href="${base}/obituaries/humboldt-obituaries" class="text-link">Humboldt Obituaries</a></div></div>
@@ -560,6 +562,7 @@ function initNavigationScript() {
             <div class="bottom-row" id="community-outlook"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/north/theoutlook" class="text-link">All Outlook</a><a href="${base}/north/the-outlook" class="text-link">Outlook News</a><a href="${base}/obituaries/outlook-obituaries" class="text-link">Outlook Obituaries</a></div></div>
             <div class="bottom-row" id="community-preeceville"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/central/preecevilleprogress" class="text-link">All Preeceville</a><a href="${base}/central/preeceville-progress" class="text-link">Preeceville News</a><a href="${base}/obituaries/preeceville-obituaries" class="text-link">Preeceville Obituaries</a></div></div>
             <div class="bottom-row" id="community-princealbert"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/north/prince-albert" class="text-link">All Prince Albert</a><a href="${base}/obituaries/prince-albert-obituaries" class="text-link">Prince Albert Obituaries</a></div></div>
+            <div class="bottom-row" id="community-weyburn"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/southeast/weyburnreview" class="text-link">All Weyburn</a><a href="${base}/southeast/weyburn-review" class="text-link">Weyburn News</a><a href="${base}/obituaries/weyburn-obituaries" class="text-link">Weyburn Obituaries</a></div></div>
             <div class="bottom-row" id="category-sports"><div class="bottom-row-inner hide-scrollbar"><a href="https://www.sportscage.com" target="_blank" class="text-link">Go to SportsCage ${extIcon}</a><a href="${base}/sports" class="text-link">All Sports</a><a href="${base}/north/local-sports" class="text-link">North Sask Sports</a><a href="${base}/central/local-sports" class="text-link">Central Sask Sports</a><a href="${base}/southwest/local-sports" class="text-link">Southwest Sask Sports</a><a href="${base}/southeast/local-sports" class="text-link">Southeast Sask Sports</a></div></div>
             <div class="bottom-row" id="category-agriculture"><div class="bottom-row-inner hide-scrollbar"><a href="https://www.saskagtoday.com" target="_blank" class="text-link">Go to SaskAgToday ${extIcon}</a><a href="${base}/agriculture" class="text-link">All Agriculture</a><a href="${base}/north/agriculture" class="text-link">North Sask Agriculture</a><a href="${base}/central/agriculture" class="text-link">Central Sask Agriculture</a></div></div>
             <div class="bottom-row" id="category-obituaries"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/obituaries" class="text-link">All Obituaries</a><a href="${base}/obituaries/regina-obituaries" class="text-link">Regina Obituaries</a><a href="${base}/obituaries/saskatoon-obituaries" class="text-link">Saskatoon Obituaries</a><a href="${base}/obituaries/yorkton-obituaries" class="text-link">Yorkton Obituaries</a><a href="${base}/obituaries/assiniboia-obituaries" class="text-link">Assiniboia Obituaries</a><a href="${base}/obituaries/estevan-obituaries" class="text-link">Estevan Obituaries</a><a href="${base}/obituaries/humboldt-obituaries" class="text-link">Humboldt Obituaries</a><a href="${base}/obituaries/canora-obituaries" class="text-link">Canora Obituaries</a><a href="${base}/obituaries/unity-wilkie-obituaries" class="text-link">Unity-Wilkie Obituaries</a><a href="https://moosejawtoday.com/obituaries" target="_blank" rel="noopener" class="text-link">Moose Jaw Obituaries ${extIcon}</a><a href="${base}/obituaries/outlook-obituaries" class="text-link">Outlook Obituaries</a><a href="${base}/obituaries/preeceville-obituaries" class="text-link">Preeceville Obituaries</a><a href="${base}/obituaries/prince-albert-obituaries" class="text-link">Prince Albert Obituaries</a><a href="${base}/obituaries/battlefords-obituaries" class="text-link">Battlefords Obituaries</a><a href="${base}/obituaries/carlyle-obituaries" class="text-link">Carlyle Obituaries</a><a href="${base}/obituaries/kamsack-obituaries" class="text-link">Kamsack Obituaries</a><a href="${base}/obituaries/weyburn-obituaries" class="text-link">Weyburn Obituaries</a><a href="${base}/obituaries/in-memoriam" class="text-link">In Memoriam</a><a href="${base}/obituaries/pet-obituaries" class="text-link">Pet Obituaries</a></div></div>
@@ -2030,10 +2033,13 @@ function initNavigationScript() {
             // Mega menu link click tracking (desktop)
             const megaLink = e.target && e.target.closest ? e.target.closest('.desktop-mega-menu a[href]') : null;
             if (megaLink) {
-                let linkType = 'category';
-                if (megaLink.closest('.desktop-mega-menu-brand')) linkType = 'brand';
-                else if (megaLink.closest('.desktop-mega-menu-trending-items')) linkType = 'trending';
-                else if (megaLink.closest('.desktop-mega-menu-newsletters')) linkType = 'newsletter';
+                let linkType = megaLink.getAttribute('data-nav-type') || null;
+                if (!linkType) {
+                    if (megaLink.closest('.desktop-mega-menu-brand')) linkType = 'brand';
+                    else if (megaLink.closest('.desktop-mega-menu-trending-items')) linkType = 'trending';
+                    else if (megaLink.closest('.desktop-mega-menu-newsletters')) linkType = 'newsletter';
+                    else linkType = 'category';
+                }
                 triggerPostHogRecording('nav_mega_menu_link_click', {
                     link_type: linkType,
                     destination: megaLink.href || ''
@@ -2223,6 +2229,7 @@ function initNavigationScript() {
                     const a = document.createElement('a');
                     a.href = link.url;
                     a.setAttribute('data-text', link.text);
+                    a.setAttribute('data-nav-type', 'search_community');
                     if (link.external) {
                         a.target = '_blank';
                         a.rel = 'noopener';
@@ -2301,6 +2308,9 @@ function initNavigationScript() {
                 // Handle search input
                 const searchInput = document.getElementById('search-input');
                 if (searchInput) {
+                    searchInput.addEventListener('focus', () => {
+                        triggerPostHogRecording('nav_search_focus');
+                    });
                     searchInput.addEventListener('keypress', (e) => {
                         if (e.key === 'Enter') {
                             const query = searchInput.value.trim();
@@ -2316,6 +2326,9 @@ function initNavigationScript() {
             // Function to hide search menu
             const hideSearchMenu = () => {
                 if (searchMegaMenu) {
+                    if (searchMegaMenu.classList.contains('visible')) {
+                        triggerPostHogRecording('nav_mega_menu_close', { trigger: 'mouse_leave', menu: 'search' });
+                    }
                     searchMegaMenu.classList.remove('visible');
                     // Only remove mega-menu-open if no other mega menu is visible
                     const otherMegaMenu = container.querySelector('.desktop-mega-menu:not(.search-menu).visible');
@@ -2430,6 +2443,9 @@ function initNavigationScript() {
         }); 
         megaMenu.addEventListener('mouseleave', () => {
             hoverTimeout = setTimeout(() => { 
+                if (megaMenu.classList.contains('visible')) {
+                    triggerPostHogRecording('nav_mega_menu_close', { trigger: 'mouse_leave', category: (currentPill && currentPill.dataset) ? currentPill.dataset.category : undefined });
+                }
                 megaMenu.classList.remove('visible');
                 container.classList.remove('mega-menu-open');
                 if (currentPill) {
@@ -2524,6 +2540,7 @@ function initNavigationScript() {
                         const a = document.createElement('a');
                         a.href = link.url;
                         a.setAttribute('data-text', link.text);
+                        a.setAttribute('data-nav-type', 'communities_list');
                         if (link.external) {
                             a.target = '_blank';
                             a.rel = 'noopener';
@@ -2561,6 +2578,7 @@ function initNavigationScript() {
                     regionLinks.forEach(function (link) {
                         const a = document.createElement('a');
                         a.href = regionBase + link.path;
+                        a.setAttribute('data-nav-type', 'region');
                         a.appendChild(document.createTextNode(link.text));
                         regionItems.appendChild(a);
                     });
@@ -2832,6 +2850,9 @@ function initNavigationScript() {
             const hide = () => { 
                 clearTimeout(showTimeout); // Clear any pending show timeout
                 hoverTimeout = setTimeout(() => { 
+                    if (megaMenu.classList.contains('visible')) {
+                        triggerPostHogRecording('nav_mega_menu_close', { trigger: 'mouse_leave', category: (pill && pill.dataset) ? pill.dataset.category : undefined });
+                    }
                     megaMenu.classList.remove('visible');
                     container.classList.remove('mega-menu-open');
                     // Only remove hover-active if the pill is not active
