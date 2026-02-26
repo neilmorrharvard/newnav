@@ -297,6 +297,7 @@ function initNavigationScript() {
                 .desktop-down-arrow { display: block !important; width: 15px; height: 15px; }
                 .external-icon { width: 10px !important; height: 10px !important; }
                 #category-sports .bottom-row-inner a[href*="sportscage.com"], #category-agriculture .bottom-row-inner a[href*="saskagtoday.com"] { display: none; }
+                #category-sports .bottom-row-inner > *:nth-child(2), #category-agriculture .bottom-row-inner > *:nth-child(2) { margin-left: 0 !important; }
                 #search-trigger { display: inline-flex !important; }
                 #search-trigger.hover-active { padding-bottom: 10px; }
                 #search-trigger .search-icon { display: inline-flex; align-items: center; width: 17px; height: 17px; }
