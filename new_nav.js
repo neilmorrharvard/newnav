@@ -437,7 +437,7 @@ function initNavigationScript() {
             .desktop-mega-menu-links { flex: 0 0 auto; display: flex; flex-direction: column; gap: 12px; align-items: flex-start; }
             .desktop-mega-menu-links h3 { font-size: 11px; font-weight: 500; margin: 0 0 12px 0; color: #999; width: 100%; text-transform: uppercase; }
             .desktop-mega-menu-links-items { display: flex; flex-direction: column; gap: 12px; width: 100%; }
-            .desktop-mega-menu-links-items.multi-column { display: grid; grid-template-columns: repeat(2, 1fr); column-gap: 60px; }
+            .desktop-mega-menu-links-items.multi-column { display: grid; grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(4, auto); grid-auto-flow: column; column-gap: 60px; }
             .desktop-mega-menu-links-items.multi-column.communities-columns { column-gap: 40px; }
             .desktop-mega-menu-links a { color: var(--text-inactive); text-decoration: none; font-size: 12px; font-weight: 500; padding: 4px 0; transition: color 0.2s; text-align: left; position: relative; display: inline-block; white-space: nowrap; }
             .desktop-mega-menu-links a:hover { color: var(--primary); font-weight: bold; }
@@ -445,7 +445,7 @@ function initNavigationScript() {
             .desktop-mega-menu-newsletters.communities-split { flex: 0 0 auto; }
             .desktop-mega-menu-newsletters h3 { font-size: 11px; font-weight: 500; margin: 0 0 12px 0; color: #999; width: 100%; text-transform: uppercase; }
             .desktop-mega-menu-newsletters-items { display: flex; flex-direction: column; gap: 12px; width: 100%; }
-            .desktop-mega-menu-newsletters-items.multi-column { display: grid; grid-template-columns: repeat(2, 1fr); column-gap: 60px; }
+            .desktop-mega-menu-newsletters-items.multi-column { display: grid; grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(4, auto); grid-auto-flow: column; column-gap: 60px; }
             .desktop-mega-menu-newsletters-items.multi-column.communities-columns { column-gap: 60px; }
             .desktop-mega-menu-newsletters a { color: var(--text-inactive); text-decoration: none; font-size: 12px; font-weight: 500; padding: 4px 0; transition: color 0.2s; text-align: left; position: relative; display: inline-block; white-space: nowrap; }
             .desktop-mega-menu-newsletters a:hover { color: var(--primary); font-weight: bold; }
@@ -561,6 +561,7 @@ function initNavigationScript() {
     const existingNav = document.querySelector('#village-nav-container');
     if (existingNav) {
         console.log('[NAV DEBUG] Nav already exists, skipping insertion. Existing nav:', existingNav);
+        if (document.body) document.body.classList.add('village-nav-loaded');
         return; // Nav already exists, don't re-insert
     }
     
@@ -640,6 +641,8 @@ function initNavigationScript() {
         try {
             initNavLogic();
             console.log('[NAV DEBUG] initNavLogic() completed');
+            // Signal that new nav is present so site CSS can hide the default nav (desktop fallback: if this class is absent, show default nav)
+            if (document.body) document.body.classList.add('village-nav-loaded');
         } catch (e) {
             console.error('[NAV DEBUG] Error in initNavLogic():', e);
         }
