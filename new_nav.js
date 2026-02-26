@@ -99,6 +99,20 @@ function initNavigationScript() {
         { path: '/obituaries/carlyle-obituaries', communityKey: 'carlyle' },
         { path: '/obituaries/assiniboia-obituaries', communityKey: 'assiniboia' }
     ];
+    // Hyphenated "News" paths: activate parent community and show "[Community Name] News" in child row
+    const COMMUNITY_NEWS_PATH_OVERRIDES = [
+        { path: '/central/yorkton-this-week', communityKey: 'yorkton' },
+        { path: '/central/kamsack-times', communityKey: 'kamsack' },
+        { path: '/north/battlefords-news-optimist', communityKey: 'thebattlefords' },
+        { path: '/central/canora-courier', communityKey: 'canora' },
+        { path: '/central/preeceville-progress', communityKey: 'preeceville' },
+        { path: '/southeast/carlyle-observer', communityKey: 'carlyle' },
+        { path: '/north/humboldt-journal', communityKey: 'humboldt' },
+        { path: '/southwest/assiniboia-times', communityKey: 'assiniboia' },
+        { path: '/north/the-outlook', communityKey: 'outlook' },
+        { path: '/north/unity-wilkie-press-herald', communityKey: 'unitywilkie' },
+        { path: '/southeast/estevan-mercury', communityKey: 'estevan' }
+    ];
     let communityOverlayEl = null;
     let communityOverlayShownThisPage = false;
     let communityOverlayClosedThisPage = false;
@@ -533,18 +547,18 @@ function initNavigationScript() {
             
             <div class="bottom-row" id="community-regina"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/regina-today" class="text-link">All Regina</a><a href="${base}/regina-today/regina-news" class="text-link">Regina News</a><a href="${base}/obituaries/regina-obituaries" class="text-link">Regina Obituaries</a><a href="${base}/regina-today/regina-newsletters" class="text-link">Regina Newsletters</a><a href="${base}/regina-today/regina-discussion" class="text-link">Regina Discussions</a><a href="${base}/classifieds/regina-classifieds" class="text-link">Regina Classifieds</a></div></div>
             <div class="bottom-row" id="community-saskatoon"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/saskatoon-today" class="text-link">All Saskatoon</a><a href="${base}/saskatoon-today/saskatoon-news" class="text-link">Saskatoon News</a><a href="${base}/obituaries/saskatoon-obituaries" class="text-link">Saskatoon Obituaries</a><a href="${base}/saskatoon-today/saskatoon-newsletters" class="text-link">Saskatoon Newsletters</a><a href="${base}/saskatoon-today/saskatoon-discussion" class="text-link">Saskatoon Discussions</a><a href="${base}/classifieds/saskatoon-classifieds" class="text-link">Saskatoon Classifieds</a></div></div>
-            <div class="bottom-row" id="community-yorkton"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/central/yorktonthisweek" class="text-link">All Yorkton</a><a href="${base}/obituaries/yorkton-obituaries" class="text-link">Yorkton Obituaries</a></div></div>
-            <div class="bottom-row" id="community-estevan"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/southeast/estevanmercury" class="text-link">All Estevan</a><a href="${base}/obituaries/estevan-obituaries" class="text-link">Estevan Obituaries</a></div></div>
-            <div class="bottom-row" id="community-humboldt"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/north/humboldtjournal" class="text-link">All Humboldt</a><a href="${base}/obituaries/humboldt-obituaries" class="text-link">Humboldt Obituaries</a></div></div>
-            <div class="bottom-row" id="community-kamsack"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/central/kamsacktimes" class="text-link">All Kamsack</a><a href="${base}/obituaries/kamsack-obituaries" class="text-link">Kamsack Obituaries</a></div></div>
-            <div class="bottom-row" id="community-thebattlefords"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/north/battlefordsnewsoptimist" class="text-link">All The Battlefords</a><a href="${base}/obituaries/battlefords-obituaries" class="text-link">Battlefords Obituaries</a></div></div>
-            <div class="bottom-row" id="community-canora"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/central/canoracourier" class="text-link">All Canora</a><a href="${base}/obituaries/canora-obituaries" class="text-link">Canora Obituaries</a></div></div>
-            <div class="bottom-row" id="community-carlyle"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/southeast/carlyleobserver" class="text-link">All Carlyle</a><a href="${base}/obituaries/carlyle-obituaries" class="text-link">Carlyle Obituaries</a></div></div>
-            <div class="bottom-row" id="community-unitywilkie"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/north/unitywilkiepressherald" class="text-link">All Unity-Wilkie</a><a href="${base}/obituaries/unity-wilkie-obituaries" class="text-link">Unity-Wilkie Obituaries</a></div></div>
+            <div class="bottom-row" id="community-yorkton"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/central/yorktonthisweek" class="text-link">All Yorkton</a><a href="${base}/central/yorkton-this-week" class="text-link">Yorkton News</a><a href="${base}/obituaries/yorkton-obituaries" class="text-link">Yorkton Obituaries</a></div></div>
+            <div class="bottom-row" id="community-estevan"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/southeast/estevanmercury" class="text-link">All Estevan</a><a href="${base}/southeast/estevan-mercury" class="text-link">Estevan News</a><a href="${base}/obituaries/estevan-obituaries" class="text-link">Estevan Obituaries</a></div></div>
+            <div class="bottom-row" id="community-humboldt"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/north/humboldtjournal" class="text-link">All Humboldt</a><a href="${base}/north/humboldt-journal" class="text-link">Humboldt News</a><a href="${base}/obituaries/humboldt-obituaries" class="text-link">Humboldt Obituaries</a></div></div>
+            <div class="bottom-row" id="community-kamsack"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/central/kamsacktimes" class="text-link">All Kamsack</a><a href="${base}/central/kamsack-times" class="text-link">Kamsack News</a><a href="${base}/obituaries/kamsack-obituaries" class="text-link">Kamsack Obituaries</a></div></div>
+            <div class="bottom-row" id="community-thebattlefords"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/north/battlefordsnewsoptimist" class="text-link">All The Battlefords</a><a href="${base}/north/battlefords-news-optimist" class="text-link">The Battlefords News</a><a href="${base}/obituaries/battlefords-obituaries" class="text-link">Battlefords Obituaries</a></div></div>
+            <div class="bottom-row" id="community-canora"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/central/canoracourier" class="text-link">All Canora</a><a href="${base}/central/canora-courier" class="text-link">Canora News</a><a href="${base}/obituaries/canora-obituaries" class="text-link">Canora Obituaries</a></div></div>
+            <div class="bottom-row" id="community-carlyle"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/southeast/carlyleobserver" class="text-link">All Carlyle</a><a href="${base}/southeast/carlyle-observer" class="text-link">Carlyle News</a><a href="${base}/obituaries/carlyle-obituaries" class="text-link">Carlyle Obituaries</a></div></div>
+            <div class="bottom-row" id="community-unitywilkie"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/north/unitywilkiepressherald" class="text-link">All Unity-Wilkie</a><a href="${base}/north/unity-wilkie-press-herald" class="text-link">Unity-Wilkie News</a><a href="${base}/obituaries/unity-wilkie-obituaries" class="text-link">Unity-Wilkie Obituaries</a></div></div>
             <div class="bottom-row" id="community-moosejaw"><div class="bottom-row-inner hide-scrollbar"><a href="https://moosejawtoday.com" target="_blank" rel="noopener" class="text-link">Go to Moose Jaw Today ${extIcon}</a><a href="https://moosejawtoday.com/obituaries" target="_blank" rel="noopener" class="text-link">Moose Jaw Obituaries ${extIcon}</a></div></div>
-            <div class="bottom-row" id="community-assiniboia"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/southwest/assiniboiatimes" class="text-link">All Assiniboia</a><a href="${base}/obituaries/assiniboia-obituaries" class="text-link">Assiniboia Obituaries</a></div></div>
-            <div class="bottom-row" id="community-outlook"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/north/theoutlook" class="text-link">All Outlook</a><a href="${base}/obituaries/outlook-obituaries" class="text-link">Outlook Obituaries</a></div></div>
-            <div class="bottom-row" id="community-preeceville"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/central/preecevilleprogress" class="text-link">All Preeceville</a><a href="${base}/obituaries/preeceville-obituaries" class="text-link">Preeceville Obituaries</a></div></div>
+            <div class="bottom-row" id="community-assiniboia"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/southwest/assiniboiatimes" class="text-link">All Assiniboia</a><a href="${base}/southwest/assiniboia-times" class="text-link">Assiniboia News</a><a href="${base}/obituaries/assiniboia-obituaries" class="text-link">Assiniboia Obituaries</a></div></div>
+            <div class="bottom-row" id="community-outlook"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/north/theoutlook" class="text-link">All Outlook</a><a href="${base}/north/the-outlook" class="text-link">Outlook News</a><a href="${base}/obituaries/outlook-obituaries" class="text-link">Outlook Obituaries</a></div></div>
+            <div class="bottom-row" id="community-preeceville"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/central/preecevilleprogress" class="text-link">All Preeceville</a><a href="${base}/central/preeceville-progress" class="text-link">Preeceville News</a><a href="${base}/obituaries/preeceville-obituaries" class="text-link">Preeceville Obituaries</a></div></div>
             <div class="bottom-row" id="community-princealbert"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/north/prince-albert" class="text-link">All Prince Albert</a><a href="${base}/obituaries/prince-albert-obituaries" class="text-link">Prince Albert Obituaries</a></div></div>
             <div class="bottom-row" id="category-sports"><div class="bottom-row-inner hide-scrollbar"><a href="https://www.sportscage.com" target="_blank" class="text-link">Go to SportsCage ${extIcon}</a><a href="${base}/sports" class="text-link">All Sports</a><a href="${base}/north/local-sports" class="text-link">North Sask Sports</a><a href="${base}/central/local-sports" class="text-link">Central Sask Sports</a><a href="${base}/southwest/local-sports" class="text-link">Southwest Sask Sports</a><a href="${base}/southeast/local-sports" class="text-link">Southeast Sask Sports</a></div></div>
             <div class="bottom-row" id="category-agriculture"><div class="bottom-row-inner hide-scrollbar"><a href="https://www.saskagtoday.com" target="_blank" class="text-link">Go to SaskAgToday ${extIcon}</a><a href="${base}/agriculture" class="text-link">All Agriculture</a><a href="${base}/north/agriculture" class="text-link">North Sask Agriculture</a><a href="${base}/central/agriculture" class="text-link">Central Sask Agriculture</a></div></div>
@@ -1432,6 +1446,10 @@ function initNavigationScript() {
         const obitCommunityOverride = OBITUARY_COMMUNITY_PARENT_OVERRIDES.find(override => isPathMatch(currentPath, override.path));
         if (obitCommunityOverride) {
             return { type: 'community', key: obitCommunityOverride.communityKey, routePath: obitCommunityOverride.path };
+        }
+        const newsCommunityOverride = COMMUNITY_NEWS_PATH_OVERRIDES.find(override => isPathMatch(currentPath, override.path));
+        if (newsCommunityOverride) {
+            return { type: 'community', key: newsCommunityOverride.communityKey, routePath: newsCommunityOverride.path };
         }
 
         const candidates = [];
