@@ -23,7 +23,7 @@ Resource hints placement (top of `<head>`) is a **performance optimization**, no
 ### Test 1: Try Branch Name Again (Should Fail)
 ```javascript
 // In console, try loading with branch name:
-fetch('https://cdn.jsdelivr.net/gh/neilmorrharvard/newnav@staging/new_nav.js')
+fetch('https://cdn.jsdelivr.net/gh/sasktoday/newnav@staging/new_nav.js')
     .then(r => r.text())
     .then(t => {
         console.log('Contains [NAV DEBUG]:', t.includes('[NAV DEBUG]'));

@@ -12,28 +12,28 @@
     
     <!-- Step 1: DNS Prefetch - Resolves DNS early (non-blocking) -->
     <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
-    <link rel="dns-prefetch" href="https://neilmorrharvard.github.io">
+    <link rel="dns-prefetch" href="https://sasktoday.github.io">
     
     <!-- Step 2: Preconnect - Establishes connection early (non-blocking) -->
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-    <link rel="preconnect" href="https://neilmorrharvard.github.io" crossorigin>
+    <link rel="preconnect" href="https://sasktoday.github.io" crossorigin>
     
     <!-- Step 3: Preload - Downloads script early (non-blocking) -->
-    <link rel="preload" href="https://cdn.jsdelivr.net/gh/neilmorrharvard/newnav@main/new_nav.js" as="script">
+    <link rel="preload" href="https://cdn.jsdelivr.net/gh/sasktoday/newnav@main/new_nav.js" as="script">
     
     <!-- Step 4: Load script with fallback (jsDelivr → GitHub Pages) -->
     <script>
     (function() {
         // Try jsDelivr first (primary CDN)
         const script = document.createElement('script');
-        script.src = 'https://cdn.jsdelivr.net/gh/neilmorrharvard/newnav@main/new_nav.js';
+        script.src = 'https://cdn.jsdelivr.net/gh/sasktoday/newnav@main/new_nav.js';
         script.defer = true;
         
         // Fallback to GitHub Pages if jsDelivr fails
         script.onerror = function() {
             console.warn('jsDelivr failed, trying GitHub Pages fallback...');
             const fallbackScript = document.createElement('script');
-            fallbackScript.src = 'https://neilmorrharvard.github.io/newnav/new_nav.js';
+            fallbackScript.src = 'https://sasktoday.github.io/newnav/new_nav.js';
             fallbackScript.defer = true;
             fallbackScript.onerror = function() {
                 console.error('Both navigation script sources failed to load');

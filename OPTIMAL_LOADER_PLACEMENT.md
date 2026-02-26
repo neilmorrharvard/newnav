@@ -14,14 +14,14 @@ For maximum performance, place resource hints (DNS prefetch, preconnect, preload
     <!-- NAVIGATION SCRIPT LOADER - Place resource hints FIRST for best performance -->
     <!-- Step 1: DNS Prefetch (should be first) -->
     <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
-    <link rel="dns-prefetch" href="https://neilmorrharvard.github.io">
+    <link rel="dns-prefetch" href="https://sasktoday.github.io">
     
     <!-- Step 2: Preconnect (should be early) -->
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-    <link rel="preconnect" href="https://neilmorrharvard.github.io" crossorigin>
+    <link rel="preconnect" href="https://sasktoday.github.io" crossorigin>
     
     <!-- Step 3: Preload (should be early, before script) -->
-    <link rel="preload" href="https://cdn.jsdelivr.net/gh/neilmorrharvard/newnav@787064c/new_nav.js" as="script">
+    <link rel="preload" href="https://cdn.jsdelivr.net/gh/sasktoday/newnav@787064c/new_nav.js" as="script">
     
     <!-- Other head content (title, styles, etc.) -->
     <title>Your Page Title</title>

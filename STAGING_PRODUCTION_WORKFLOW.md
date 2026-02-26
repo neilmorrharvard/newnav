@@ -27,7 +27,7 @@ git push -u origin staging
 5. Save
 
 This will make your staging branch available at:
-`https://neilmorrharvard.github.io/newnav/` (same URL, but from staging branch)
+`https://sasktoday.github.io/newnav/` (same URL, but from staging branch)
 
 ### 3. Use Different Branch References
 
@@ -78,12 +78,12 @@ This loads from the `@main` branch, which is only updated after testing.
 ## URL Structure
 
 ### Staging URLs:
-- jsDelivr: `https://cdn.jsdelivr.net/gh/neilmorrharvard/newnav@staging/new_nav.js`
-- GitHub Pages: `https://neilmorrharvard.github.io/newnav/new_nav.js` (from staging branch)
+- jsDelivr: `https://cdn.jsdelivr.net/gh/sasktoday/newnav@staging/new_nav.js`
+- GitHub Pages: `https://sasktoday.github.io/newnav/new_nav.js` (from staging branch)
 
 ### Production URLs:
-- jsDelivr: `https://cdn.jsdelivr.net/gh/neilmorrharvard/newnav@main/new_nav.js`
-- GitHub Pages: `https://neilmorrharvard.github.io/newnav/new_nav.js` (from main branch after merge)
+- jsDelivr: `https://cdn.jsdelivr.net/gh/sasktoday/newnav@main/new_nav.js`
+- GitHub Pages: `https://sasktoday.github.io/newnav/new_nav.js` (from main branch after merge)
 
 ## Quick Reference
 

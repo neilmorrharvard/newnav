@@ -52,7 +52,7 @@ Add a version parameter you update manually:
 
 ```javascript
 const VERSION = '1.0.0'; // Update this when you push changes
-script.src = 'https://cdn.jsdelivr.net/gh/neilmorrharvard/newnav@staging/new_nav.js?v=' + VERSION;
+script.src = 'https://cdn.jsdelivr.net/gh/sasktoday/newnav@staging/new_nav.js?v=' + VERSION;
 ```
 
 **Pros:**
@@ -95,7 +95,7 @@ Use **Option 2** (Commit hash):
 2. Update production loader with commit hash:
    ```javascript
    const COMMIT_HASH = '8dde370'; // Update this
-   script.src = 'https://cdn.jsdelivr.net/gh/neilmorrharvard/newnav@' + COMMIT_HASH + '/new_nav.js';
+   script.src = 'https://cdn.jsdelivr.net/gh/sasktoday/newnav@' + COMMIT_HASH + '/new_nav.js';
    ```
 
 3. When you deploy new version, update the hash

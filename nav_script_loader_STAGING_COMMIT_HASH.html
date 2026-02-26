@@ -11,15 +11,15 @@
 
 <!-- Step 1: DNS Prefetch - Resolves DNS early (non-blocking) -->
 <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
-<link rel="dns-prefetch" href="https://neilmorrharvard.github.io">
+<link rel="dns-prefetch" href="https://sasktoday.github.io">
 
 <!-- Step 2: Preconnect - Establishes connection early (non-blocking) -->
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-<link rel="preconnect" href="https://neilmorrharvard.github.io" crossorigin>
+<link rel="preconnect" href="https://sasktoday.github.io" crossorigin>
 
 <!-- Step 3: Preload - Downloads script early (non-blocking) -->
 <!-- UPDATE COMMIT_HASH below with latest staging commit -->
-<link rel="preload" href="https://cdn.jsdelivr.net/gh/neilmorrharvard/newnav@COMMIT_HASH/new_nav.js" as="script">
+<link rel="preload" href="https://cdn.jsdelivr.net/gh/sasktoday/newnav@COMMIT_HASH/new_nav.js" as="script">
 
 <!-- Step 4: Load script with automatic fallback (USING COMMIT HASH) -->
 <script>
@@ -30,14 +30,14 @@
     
     // Try jsDelivr first (primary CDN - loads from specific commit, no caching issues)
     const script = document.createElement('script');
-    script.src = 'https://cdn.jsdelivr.net/gh/neilmorrharvard/newnav@' + COMMIT_HASH + '/new_nav.js';
+    script.src = 'https://cdn.jsdelivr.net/gh/sasktoday/newnav@' + COMMIT_HASH + '/new_nav.js';
     script.defer = true;
     
     // Fallback to GitHub Pages if jsDelivr fails
     script.onerror = function() {
         console.warn('Navigation: jsDelivr failed, trying GitHub Pages fallback (staging)...');
         const fallbackScript = document.createElement('script');
-        fallbackScript.src = 'https://neilmorrharvard.github.io/newnav/new_nav.js?v=' + COMMIT_HASH;
+        fallbackScript.src = 'https://sasktoday.github.io/newnav/new_nav.js?v=' + COMMIT_HASH;
         fallbackScript.defer = true;
         fallbackScript.onerror = function() {
             console.error('Navigation: Both script sources failed to load. Navigation may not function.');

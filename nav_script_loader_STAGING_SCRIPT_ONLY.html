@@ -25,7 +25,7 @@ try {
     
     // Try jsDelivr first (primary CDN - loads from specific commit for immediate updates)
     const script = document.createElement('script');
-    const scriptUrl = 'https://cdn.jsdelivr.net/gh/neilmorrharvard/newnav@' + COMMIT_HASH + '/new_nav.js' + cacheBuster;
+    const scriptUrl = 'https://cdn.jsdelivr.net/gh/sasktoday/newnav@' + COMMIT_HASH + '/new_nav.js' + cacheBuster;
     script.src = scriptUrl;
     script.defer = true;
     
@@ -41,7 +41,7 @@ try {
     script.onerror = function(e) {
         console.warn('[NAV LOADER] ⚠️ jsDelivr failed, trying GitHub Pages fallback (staging)...', e);
         const fallbackScript = document.createElement('script');
-        fallbackScript.src = 'https://neilmorrharvard.github.io/newnav/new_nav.js' + cacheBuster;
+        fallbackScript.src = 'https://sasktoday.github.io/newnav/new_nav.js' + cacheBuster;
         fallbackScript.defer = true;
         fallbackScript.onload = function() {
             console.log('[NAV LOADER] ✅ Fallback script loaded successfully');

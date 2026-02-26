@@ -8,13 +8,13 @@
 
 **Before (broken):**
 ```javascript
-const scriptUrl = 'https://cdn.jsdelivr.net/gh/neilmorrharvard/newnav@staging/new_nav.js';
+const scriptUrl = 'https://cdn.jsdelivr.net/gh/sasktoday/newnav@staging/new_nav.js';
 ```
 
 **After (fixed):**
 ```javascript
 const COMMIT_HASH = '8fe205a';
-const scriptUrl = 'https://cdn.jsdelivr.net/gh/neilmorrharvard/newnav@' + COMMIT_HASH + '/new_nav.js';
+const scriptUrl = 'https://cdn.jsdelivr.net/gh/sasktoday/newnav@' + COMMIT_HASH + '/new_nav.js';
 ```
 
 ### Why This Fixed It
@@ -41,7 +41,7 @@ console.log('Script contains [NAV DEBUG]:', document.querySelector('script[src*=
 ### Test 2: Try Branch Name Again (Should Show Old Version)
 ```javascript
 // In console, try loading with branch name:
-fetch('https://cdn.jsdelivr.net/gh/neilmorrharvard/newnav@staging/new_nav.js')
+fetch('https://cdn.jsdelivr.net/gh/sasktoday/newnav@staging/new_nav.js')
     .then(r => r.text())
     .then(t => {
         const hasDebug = t.includes('[NAV DEBUG]');

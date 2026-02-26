@@ -7,28 +7,40 @@
 
 <!-- Step 1: DNS Prefetch - Resolves DNS early (non-blocking) -->
 <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
-<link rel="dns-prefetch" href="https://neilmorrharvard.github.io">
+<link rel="dns-prefetch" href="https://sasktoday.github.io">
 
 <!-- Step 2: Preconnect - Establishes connection early (non-blocking) -->
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-<link rel="preconnect" href="https://neilmorrharvard.github.io" crossorigin>
+<link rel="preconnect" href="https://sasktoday.github.io" crossorigin>
 
 <!-- Step 3: Preload - Downloads script early (non-blocking) -->
-<link rel="preload" href="https://cdn.jsdelivr.net/gh/neilmorrharvard/newnav@main/new_nav.js" as="script">
+<!-- When using SRI, add integrity="sha384-..." to the preload link and update it when you update SRI_HASH below -->
+<link rel="preload" href="https://cdn.jsdelivr.net/gh/sasktoday/newnav@main/new_nav.js" as="script">
 
 <!-- Step 4: Load script with automatic fallback (PRODUCTION/MAIN BRANCH) -->
 <script>
 (function() {
+    // Optional SRI: set after generating hash for @main (see SRI_WORKFLOW.md). Leave '' to disable.
+    const SRI_HASH = '';
+
     // Try jsDelivr first (primary CDN - loads from @main branch)
     const script = document.createElement('script');
-    script.src = 'https://cdn.jsdelivr.net/gh/neilmorrharvard/newnav@main/new_nav.js';
+    script.src = 'https://cdn.jsdelivr.net/gh/sasktoday/newnav@main/new_nav.js';
+    if (SRI_HASH) {
+        script.integrity = SRI_HASH;
+        script.crossOrigin = 'anonymous';
+    }
     script.defer = true;
     
     // Fallback to GitHub Pages if jsDelivr fails (from main branch)
     script.onerror = function() {
         console.warn('Navigation: jsDelivr failed, trying GitHub Pages fallback (production)...');
         const fallbackScript = document.createElement('script');
-        fallbackScript.src = 'https://neilmorrharvard.github.io/newnav/new_nav.js';
+        fallbackScript.src = 'https://sasktoday.github.io/newnav/new_nav.js';
+        if (SRI_HASH) {
+            fallbackScript.integrity = SRI_HASH;
+            fallbackScript.crossOrigin = 'anonymous';
+        }
         fallbackScript.defer = true;
         fallbackScript.onerror = function() {
             console.error('Navigation: Both script sources failed to load. Navigation may not function.');

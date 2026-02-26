@@ -20,7 +20,7 @@ The fallback script uses `onerror` to load from GitHub Pages if jsDelivr fails:
 script.onerror = function(e) {
     // Fallback to GitHub Pages
     const fallbackScript = document.createElement('script');
-    fallbackScript.src = 'https://neilmorrharvard.github.io/newnav/new_nav.js' + cacheBuster;
+    fallbackScript.src = 'https://sasktoday.github.io/newnav/new_nav.js' + cacheBuster;
     fallbackScript.defer = true;
     document.head.appendChild(fallbackScript);
 };

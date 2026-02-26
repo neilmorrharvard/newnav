@@ -12,15 +12,15 @@
 <!-- Step 1: DNS Prefetch - Resolves DNS early (non-blocking) -->
 <!-- PLACE THESE AT THE TOP OF <head> FOR BEST PERFORMANCE -->
 <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
-<link rel="dns-prefetch" href="https://neilmorrharvard.github.io">
+<link rel="dns-prefetch" href="https://sasktoday.github.io">
 
 <!-- Step 2: Preconnect - Establishes connection early (non-blocking) -->
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-<link rel="preconnect" href="https://neilmorrharvard.github.io" crossorigin>
+<link rel="preconnect" href="https://sasktoday.github.io" crossorigin>
 
 <!-- Step 3: Preload - Downloads script early (non-blocking) -->
 <!-- Note: Update commit hash in script below when you update this -->
-<link rel="preload" href="https://cdn.jsdelivr.net/gh/neilmorrharvard/newnav@b716589/new_nav.js" as="script">
+<link rel="preload" href="https://cdn.jsdelivr.net/gh/sasktoday/newnav@b716589/new_nav.js" as="script">
 
 <!-- Step 4: Load script with automatic fallback (STAGING BRANCH + CACHE-BUSTING) -->
 <script>
@@ -37,6 +37,9 @@ try {
     // Update this commit hash when you push new changes to staging
     const COMMIT_HASH = 'b716589'; // Latest staging commit - update this when you push
     
+    // Optional SRI: set after generating hash (see SRI_WORKFLOW.md). Leave '' to disable.
+    const SRI_HASH = '';
+    
     // Cache-busting for staging: Add timestamp to ensure we see updates immediately
     const cacheBuster = '?v=' + Date.now();
     console.log('[NAV LOADER] Cache buster:', cacheBuster);
@@ -44,8 +47,12 @@ try {
     
     // Try jsDelivr first (primary CDN - loads from specific commit for immediate updates)
     const script = document.createElement('script');
-    const scriptUrl = 'https://cdn.jsdelivr.net/gh/neilmorrharvard/newnav@' + COMMIT_HASH + '/new_nav.js' + cacheBuster;
+    const scriptUrl = 'https://cdn.jsdelivr.net/gh/sasktoday/newnav@' + COMMIT_HASH + '/new_nav.js' + cacheBuster;
     script.src = scriptUrl;
+    if (SRI_HASH) {
+        script.integrity = SRI_HASH;
+        script.crossOrigin = 'anonymous';
+    }
     script.defer = true;
     
     console.log('[NAV LOADER] Created script element');
@@ -60,7 +67,11 @@ try {
     script.onerror = function(e) {
         console.warn('[NAV LOADER] ⚠️ jsDelivr failed, trying GitHub Pages fallback (staging)...', e);
         const fallbackScript = document.createElement('script');
-        fallbackScript.src = 'https://neilmorrharvard.github.io/newnav/new_nav.js' + cacheBuster;
+        fallbackScript.src = 'https://sasktoday.github.io/newnav/new_nav.js' + cacheBuster;
+        if (SRI_HASH) {
+            fallbackScript.integrity = SRI_HASH;
+            fallbackScript.crossOrigin = 'anonymous';
+        }
         fallbackScript.defer = true;
         fallbackScript.onload = function() {
             console.log('[NAV LOADER] ✅ Fallback script loaded successfully');

@@ -7,14 +7,14 @@
 
 <!-- Step 1: DNS Prefetch - Resolves DNS early (non-blocking) -->
 <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
-<link rel="dns-prefetch" href="https://neilmorrharvard.github.io">
+<link rel="dns-prefetch" href="https://sasktoday.github.io">
 
 <!-- Step 2: Preconnect - Establishes connection early (non-blocking) -->
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-<link rel="preconnect" href="https://neilmorrharvard.github.io" crossorigin>
+<link rel="preconnect" href="https://sasktoday.github.io" crossorigin>
 
 <!-- Step 3: Preload - Downloads script early (non-blocking) -->
-<link rel="preload" href="https://cdn.jsdelivr.net/gh/neilmorrharvard/newnav@staging/new_nav.js?v=staging" as="script">
+<link rel="preload" href="https://cdn.jsdelivr.net/gh/sasktoday/newnav@staging/new_nav.js?v=staging" as="script">
 
 <!-- Step 4: Load script with automatic fallback (STAGING BRANCH + CACHE-BUSTING) -->
 <script>
@@ -33,7 +33,7 @@ console.log('[LOADER DEBUG] Head element exists:', !!document.head);
         
         // Try jsDelivr first (primary CDN - loads from @staging branch with cache-busting)
         const script = document.createElement('script');
-        const scriptUrl = 'https://cdn.jsdelivr.net/gh/neilmorrharvard/newnav@staging/new_nav.js' + cacheBuster;
+        const scriptUrl = 'https://cdn.jsdelivr.net/gh/sasktoday/newnav@staging/new_nav.js' + cacheBuster;
         script.src = scriptUrl;
         script.defer = true;
         
@@ -50,7 +50,7 @@ console.log('[LOADER DEBUG] Head element exists:', !!document.head);
         script.onerror = function(e) {
             console.warn('[LOADER DEBUG] jsDelivr failed, trying GitHub Pages fallback...', e);
             const fallbackScript = document.createElement('script');
-            const fallbackUrl = 'https://neilmorrharvard.github.io/newnav/new_nav.js' + cacheBuster;
+            const fallbackUrl = 'https://sasktoday.github.io/newnav/new_nav.js' + cacheBuster;
             fallbackScript.src = fallbackUrl;
             fallbackScript.defer = true;
             
@@ -61,7 +61,7 @@ console.log('[LOADER DEBUG] Head element exists:', !!document.head);
                 console.log('[LOADER DEBUG] Fallback script loaded successfully');
                 // If the real script ran, we'd have [NAV DEBUG] logs and window.initNavigationScript. If not, the URL likely returned 404 HTML.
                 if (typeof window.initNavigationScript !== 'function') {
-                    console.error('[LOADER DEBUG] Script ran but initNavigationScript is missing. The fallback URL probably returned 404 HTML instead of JavaScript. Open https://neilmorrharvard.github.io/newnav/new_nav.js in a new tab and confirm it shows JS code.');
+                    console.error('[LOADER DEBUG] Script ran but initNavigationScript is missing. The fallback URL probably returned 404 HTML instead of JavaScript. Open https://sasktoday.github.io/newnav/new_nav.js in a new tab and confirm it shows JS code.');
                 }
                 // Retry init after a short delay in case script ran before header existed (e.g. fallback loaded late)
                 setTimeout(function() {
@@ -70,7 +70,7 @@ console.log('[LOADER DEBUG] Head element exists:', !!document.head);
                         window.initNavigationScript();
                     }
                     if (!document.querySelector('#village-nav-container')) {
-                        console.warn('[LOADER DEBUG] Nav still missing. Verify https://neilmorrharvard.github.io/newnav/new_nav.js returns JavaScript (not 404 HTML).');
+                        console.warn('[LOADER DEBUG] Nav still missing. Verify https://sasktoday.github.io/newnav/new_nav.js returns JavaScript (not 404 HTML).');
                     }
                 }, 400);
             };
