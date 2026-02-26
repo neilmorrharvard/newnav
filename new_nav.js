@@ -92,7 +92,10 @@ function initNavigationScript() {
         { path: '/obituaries/moosejaw-obituaries', communityKey: 'moosejaw' },
         { path: '/obituaries/outlook-obituaries', communityKey: 'outlook' },
         { path: '/obituaries/preeceville-obituaries', communityKey: 'preeceville' },
-        { path: '/obituaries/princealbert-obituaries', communityKey: 'princealbert' }
+        { path: '/obituaries/princealbert-obituaries', communityKey: 'princealbert' },
+        { path: '/obituaries/kamsack-obituaries', communityKey: 'kamsack' },
+        { path: '/obituaries/battlefords-obituaries', communityKey: 'thebattlefords' },
+        { path: '/obituaries/carlyle-obituaries', communityKey: 'carlyle' }
     ];
     let communityOverlayEl = null;
     let communityOverlayShownThisPage = false;
@@ -111,7 +114,7 @@ function initNavigationScript() {
             yorkton: base + "/central/yorktonthisweek",
             kamsack: base + "/central/kamsacktimes",
             thebattlefords: base + "/north/battlefordsnewsoptimist",
-            canora: base + "/central/canora",
+            canora: base + "/central/canoracourier",
             preeceville: base + "/central/preecevilleprogress",
             carlyle: base + "/southeast/carlyleobserver",
             humboldt: base + "/north/humboldtjournal",
@@ -188,11 +191,11 @@ function initNavigationScript() {
                 { text: "Yorkton", url: base + "/central/yorktonthisweek" },
                 { text: "Kamsack", url: base + "/central/kamsacktimes" },
                 { text: "The Battlefords", url: base + "/north/battlefordsnewsoptimist" },
-                { text: "Canora", url: base + "/central/canora" },
+                { text: "Canora", url: base + "/central/canoracourier" },
                 { text: "Preeceville", url: base + "/central/preecevilleprogress" },
                 { text: "Carlyle", url: base + "/southeast/carlyleobserver" },
                 { text: "Humboldt", url: base + "/north/humboldtjournal" },
-                { text: "Moose Jaw", url: base + "/southwest/moosejaw" },
+                { text: "Moose Jaw", url: "https://moosejawtoday.com", external: true },
                 { text: "Outlook", url: base + "/north/theoutlook" },
                 { text: "Prince Albert", url: base + "/north/prince-albert" },
                 { text: "Unity-Wilkie", url: base + "/north/unitywilkiepressherald" },
@@ -514,9 +517,12 @@ function initNavigationScript() {
             <div class="bottom-row" id="community-yorkton"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/central/yorktonthisweek" class="text-link">All Yorkton</a><a href="${base}/obituaries/yorkton-obituaries" class="text-link">Yorkton Obituaries</a></div></div>
             <div class="bottom-row" id="community-estevan"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/southeast/estevanmercury" class="text-link">All Estevan</a><a href="${base}/obituaries/estevan-obituaries" class="text-link">Estevan Obituaries</a></div></div>
             <div class="bottom-row" id="community-humboldt"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/north/humboldtjournal" class="text-link">All Humboldt</a><a href="${base}/obituaries/humboldt-obituaries" class="text-link">Humboldt Obituaries</a></div></div>
-            <div class="bottom-row" id="community-canora"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/central/canora" class="text-link">All Canora</a><a href="${base}/obituaries/canora-obituaries" class="text-link">Canora Obituaries</a></div></div>
+            <div class="bottom-row" id="community-kamsack"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/central/kamsacktimes" class="text-link">All Kamsack</a><a href="${base}/obituaries/kamsack-obituaries" class="text-link">Kamsack Obituaries</a></div></div>
+            <div class="bottom-row" id="community-thebattlefords"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/north/battlefordsnewsoptimist" class="text-link">All The Battlefords</a><a href="${base}/obituaries/battlefords-obituaries" class="text-link">Battlefords Obituaries</a></div></div>
+            <div class="bottom-row" id="community-canora"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/central/canoracourier" class="text-link">All Canora</a><a href="${base}/obituaries/canora-obituaries" class="text-link">Canora Obituaries</a></div></div>
+            <div class="bottom-row" id="community-carlyle"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/southeast/carlyleobserver" class="text-link">All Carlyle</a><a href="${base}/obituaries/carlyle-obituaries" class="text-link">Carlyle Obituaries</a></div></div>
             <div class="bottom-row" id="community-unitywilkie"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/north/unitywilkiepressherald" class="text-link">All Unity-Wilkie</a><a href="${base}/obituaries/unitywilkie-obituaries" class="text-link">Unity-Wilkie Obituaries</a></div></div>
-            <div class="bottom-row" id="community-moosejaw"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/southwest/moosejaw" class="text-link">All Moose Jaw</a><a href="${base}/obituaries/moosejaw-obituaries" class="text-link">Moose Jaw Obituaries</a></div></div>
+            <div class="bottom-row" id="community-moosejaw"><div class="bottom-row-inner hide-scrollbar"><a href="https://moosejawtoday.com" target="_blank" rel="noopener" class="text-link">Go to Moose Jaw Today ${extIcon}</a><a href="${base}/obituaries/moosejaw-obituaries" class="text-link">Moose Jaw Obituaries</a></div></div>
             <div class="bottom-row" id="community-outlook"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/north/theoutlook" class="text-link">All Outlook</a><a href="${base}/obituaries/outlook-obituaries" class="text-link">Outlook Obituaries</a></div></div>
             <div class="bottom-row" id="community-preeceville"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/central/preecevilleprogress" class="text-link">All Preeceville</a><a href="${base}/obituaries/preeceville-obituaries" class="text-link">Preeceville Obituaries</a></div></div>
             <div class="bottom-row" id="community-princealbert"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/north/prince-albert" class="text-link">All Prince Albert</a><a href="${base}/obituaries/princealbert-obituaries" class="text-link">Prince Albert Obituaries</a></div></div>
@@ -525,7 +531,7 @@ function initNavigationScript() {
             <div class="bottom-row" id="category-obituaries"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/obituaries" class="text-link">All Obituaries</a><a href="${base}/obituaries/regina-obituaries" class="text-link">Regina Obituaries</a><a href="${base}/obituaries/saskatoon-obituaries" class="text-link">Saskatoon Obituaries</a><a href="${base}/obituaries/yorkton-obituaries" class="text-link">Yorkton Obituaries</a><a href="${base}/obituaries/assiniboia-obituaries" class="text-link">Assiniboia Obituaries</a><a href="${base}/obituaries/estevan-obituaries" class="text-link">Estevan Obituaries</a><a href="${base}/obituaries/humboldt-obituaries" class="text-link">Humboldt Obituaries</a><a href="${base}/obituaries/canora-obituaries" class="text-link">Canora Obituaries</a><a href="${base}/obituaries/unitywilkie-obituaries" class="text-link">Unity-Wilkie Obituaries</a><a href="${base}/obituaries/moosejaw-obituaries" class="text-link">Moose Jaw Obituaries</a><a href="${base}/obituaries/outlook-obituaries" class="text-link">Outlook Obituaries</a><a href="${base}/obituaries/preeceville-obituaries" class="text-link">Preeceville Obituaries</a><a href="${base}/obituaries/princealbert-obituaries" class="text-link">Prince Albert Obituaries</a></div></div>
             <div class="bottom-row" id="category-opinions"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/opinion" class="text-link">All Opinion</a><a href="${base}/north/opinion" class="text-link">North Opinion</a><a href="${base}/central/opinion" class="text-link">Central Opinion</a><a href="${base}/south/opinion" class="text-link">South Opinion</a></div></div>
             <div class="bottom-row" id="category-crime"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/crime-cops-court" class="text-link">All Crime</a></div></div>
-            <div class="bottom-row" id="category-default"><div class="bottom-row-inner hide-scrollbar">${routes.communityLinks.communities.filter(link => link.text !== 'All Communities').map(link => `<a href="${link.url}" class="text-link">${link.text}</a>`).join('')}</div></div>
+            <div class="bottom-row" id="category-default"><div class="bottom-row-inner hide-scrollbar">${routes.communityLinks.communities.filter(link => link.text !== 'All Communities').map(link => link.external ? `<a href="${link.url}" target="_blank" rel="noopener" class="text-link">${link.text} ${extIcon}</a>` : `<a href="${link.url}" class="text-link">${link.text}</a>`).join('')}</div></div>
         </div>
     </div>`;
 
@@ -963,7 +969,7 @@ function initNavigationScript() {
             try {
                 const absolute = new URL(rawLink, rssUrl);
                 const protocol = absolute.protocol.toLowerCase();
-                if (protocol !== 'http:' && protocol !== 'https:') continue; // Reject javascript:, data:, etc.
+                if (protocol !== 'http:' && protocol !== 'https:') return; // Reject javascript:, data:, etc.
                 const path = normalizePath(absolute.pathname);
                 items.push({ title, link: absolute.toString(), path });
             } catch (_) {
