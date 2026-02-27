@@ -2476,41 +2476,6 @@ function initNavigationScript() {
                     const commContainer = document.getElementById('comm-container');
                     const isActive = commContainer && commContainer.classList.contains('active');
                     
-                    // Find active community
-                    let activeCommunityName = null;
-                    let childLinks = [];
-                    
-                    if (isActive) {
-                        const activeBottomRow = document.querySelector('.bottom-row.active[id^="community-"]');
-                        
-                        if (activeBottomRow) {
-                            const commId = activeBottomRow.id.replace('community-', '');
-                            // Find community name from routes by matching the ID (e.g., "regina" -> "Regina")
-                            // Skip "All Communities" - we want the actual community
-                            const commLink = routes.communityLinks.communities.find(c => 
-                                c.text.toLowerCase() === commId.toLowerCase() && c.text !== 'All Communities'
-                            );
-                            
-                            if (commLink) {
-                                activeCommunityName = commLink.text;
-                                // Get child links from the active bottom row
-                                const childLinkElements = activeBottomRow.querySelectorAll('.text-link');
-                                childLinks = Array.from(childLinkElements).map(link => {
-                                    // Get text content, removing any SVG icons
-                                    let text = link.textContent.trim();
-                                    // Remove the external icon text if present
-                                    text = text.replace(extIcon, '').trim();
-                                    const hasIcon = link.querySelector('.external-icon') !== null;
-                                    return {
-                                        text: text,
-                                        url: link.href,
-                                        external: hasIcon || link.target === '_blank'
-                                    };
-                                });
-                            }
-                        }
-                    }
-                    
                     // Left section - Communities list
                     const communitiesSection = document.createElement('div');
                     communitiesSection.className = 'desktop-mega-menu-links';
@@ -2573,38 +2538,6 @@ function initNavigationScript() {
                     });
                     regionSection.appendChild(regionItems);
                     inner.appendChild(regionSection);
-                    
-                    // Right section - Community sections (only if active)
-                    if (isActive && activeCommunityName && childLinks.length > 0) {
-                        const sectionsSection = document.createElement('div');
-                        sectionsSection.className = 'desktop-mega-menu-newsletters';
-                        const sectionsHeading = document.createElement('h3');
-                        sectionsHeading.textContent = `${activeCommunityName} Sections`;
-                        sectionsSection.appendChild(sectionsHeading);
-                        
-                        const sectionsItems = document.createElement('div');
-                        const childLinkColumns = Math.ceil(childLinks.length / 4);
-                        sectionsItems.className = 'desktop-mega-menu-newsletters-items' + (childLinks.length > 4 ? ' multi-column communities-columns' : '');
-                        if (childLinks.length > 4) {
-                            sectionsItems.style.gridTemplateColumns = `repeat(${childLinkColumns}, 1fr)`;
-                        }
-                        
-                        childLinks.forEach(link => {
-                            const a = document.createElement('a');
-                            a.href = link.url;
-                            a.setAttribute('data-text', link.text);
-                            if (link.external) {
-                                a.target = '_blank';
-                                a.innerHTML = `${link.text} ${extIcon}`;
-                            } else {
-                                a.textContent = link.text;
-                            }
-                            sectionsItems.appendChild(a);
-                        });
-                        
-                        sectionsSection.appendChild(sectionsItems);
-                        inner.appendChild(sectionsSection);
-                    }
                 } else {
                     // Regular categories - sections, optional brand section, and newsletter
                     // Left section - links
