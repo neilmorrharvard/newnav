@@ -413,7 +413,7 @@ function initNavigationScript() {
             }
             .community-tip-overlay {
                 position: fixed;
-                z-index: 15;
+                z-index: 17;
                 display: flex;
                 align-items: center;
                 gap: 14px;
