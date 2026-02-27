@@ -277,7 +277,7 @@ function initNavigationScript() {
         bodyOffsetStyle.id = bodyOffsetStyleId;
         bodyOffsetStyle.textContent = `
             html.vm-nav-has-secondary-row #body-container { margin-top: 148px !important; transition: none !important; }
-            @media (min-width: 992px) { html.vm-nav-has-secondary-row #body-container { margin-top: 160px !important; } }
+            @media (min-width: 992px) { html.vm-nav-has-secondary-row #body-container { margin-top: 156px !important; } }
         `;
         document.head.appendChild(bodyOffsetStyle);
     }
