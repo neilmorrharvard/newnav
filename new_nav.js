@@ -216,14 +216,14 @@ function initNavigationScript() {
                 { text: "Videos", url: base + "/video" },
                 { text: "Classifieds", url: base + "/classifieds" },
                 { text: "Newsletters", url: base + "/newsletters" },
-                { text: "Contact Us", url: base + "/contact" },
+                { text: "Contact Us", url: base + "/other/contact-us" },
                 { text: "Weather", url: base + "/weather" },
                 { text: "Digital Editions", url: base + "/other/digital-edition-links" },
                 { text: "Sask on Wheels", url: base + "/sask-on-wheels" },
                 { text: "Wildfire News", url: base + "/weather-news/wildfires" },
                 { text: "Tariffs and Trade", url: base + "/tariffs-and-trade" },
                 { text: "Local Business Directory", url: base + "/directory" },
-                { text: "Advertise With Us", url: base + "/advertising" }
+                { text: "Advertise With Us", url: base + "/other/advertising" }
             ]
         },
         communityLinks: {
@@ -557,7 +557,7 @@ function initNavigationScript() {
                 <button class="category-pill search-trigger" id="search-trigger" type="button" style="display: none;"><span class="search-icon"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"/></svg></span></button>
             </div>
             
-            <div class="bottom-row" id="community-regina"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/regina-today" class="text-link">All Regina</a><a href="${base}/regina-today/regina-news" class="text-link">Regina News</a><a href="${base}/obituaries/regina-obituaries" class="text-link">Regina Obituaries</a><a href="${base}/regina-today/regina-newsletters" class="text-link">Regina Newsletters</a><a href="${base}/regina-today/regina-discussion" class="text-link">Regina Discussions</a><a href="${base}/classifieds/regina" class="text-link">Regina Classifieds</a></div></div>
+            <div class="bottom-row" id="community-regina"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/regina-today" class="text-link">All Regina</a><a href="${base}/regina-today/regina-news" class="text-link">Regina News</a><a href="${base}/obituaries/regina-obituaries" class="text-link">Regina Obituaries</a><a href="${base}/regina-today/regina-newsletters" class="text-link">Regina Newsletters</a><a href="${base}/regina-today/regina-discussion" class="text-link">Regina Discussions</a><a href="${base}/classifieds/regina-classifieds" class="text-link">Regina Classifieds</a></div></div>
             <div class="bottom-row" id="community-saskatoon"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/saskatoon-today" class="text-link">All Saskatoon</a><a href="${base}/saskatoon-today/saskatoon-news" class="text-link">Saskatoon News</a><a href="${base}/obituaries/saskatoon-obituaries" class="text-link">Saskatoon Obituaries</a><a href="${base}/saskatoon-today/saskatoon-newsletters" class="text-link">Saskatoon Newsletters</a><a href="${base}/saskatoon-today/saskatoon-discussion" class="text-link">Saskatoon Discussions</a><a href="${base}/classifieds/saskatoon" class="text-link">Saskatoon Classifieds</a></div></div>
             <div class="bottom-row" id="community-yorkton"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/central/yorktonthisweek" class="text-link">All Yorkton</a><a href="${base}/central/yorkton-this-week" class="text-link">Yorkton News</a><a href="${base}/obituaries/yorkton-obituaries" class="text-link">Yorkton Obituaries</a></div></div>
             <div class="bottom-row" id="community-estevan"><div class="bottom-row-inner hide-scrollbar"><a href="${base}/southeast/estevanmercury" class="text-link">All Estevan</a><a href="${base}/southeast/estevan-mercury" class="text-link">Estevan News</a><a href="${base}/obituaries/estevan-obituaries" class="text-link">Estevan Obituaries</a></div></div>
